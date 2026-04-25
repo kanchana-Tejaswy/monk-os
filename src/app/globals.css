@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  --color-monk-pink: #F6C1CC;
+  --color-monk-rose: #FFE4EC;
+  --color-monk-gold: #E8C547;
+  --color-monk-lavender: #E8DFF5;
+  --color-monk-mint: #C7EDE6;
+  
+  --color-monk-dark-bg: #121212;
+  --color-monk-dark-surface: #1E1E1E;
+  --color-monk-dark-rose: #D9A7A7;
+  --color-monk-dark-lavender: #B9AEDC;
+  --color-monk-dark-mint: #8ED9CC;
+
+  --font-sans: "Inter", var(--font-geist-sans);
+  --font-heading: "Poppins", var(--font-geist-sans);
+  --font-soft: "Nunito", var(--font-geist-sans);
+}
+
+:root {
+  --background: #FFF8FA;
+  --foreground: #2E2E2E;
+  --card: #FFFFFF;
+  --card-foreground: #2E2E2E;
+  --primary: #F6C1CC;
+  --primary-foreground: #2E2E2E;
+  --secondary: #E8DFF5;
+  --secondary-foreground: #2E2E2E;
+  --accent: #E8C547;
+  --accent-foreground: #2E2E2E;
+  --success: #C7EDE6;
+  --radius: 1rem;
+}
+
+.dark {
+  --background: #121212;
+  --foreground: #F5F5F5;
+  --card: #1E1E1E;
+  --card-foreground: #F5F5F5;
+  --primary: #D9A7A7;
+  --primary-foreground: #121212;
+  --secondary: #B9AEDC;
+  --secondary-foreground: #121212;
+  --accent: #8ED9CC;
+  --accent-foreground: #121212;
+  --success: #8ED9CC;
+}
+
+@layer base {
+  * {
+    border-color: var(--monk-rose);
+    border-width: 0px;
+    border-style: solid;
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .monk-card {
+    background-color: var(--card);
+    color: var(--card-foreground);
+    border-radius: 20px;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  }
+}
