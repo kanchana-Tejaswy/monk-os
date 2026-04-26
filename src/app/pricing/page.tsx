@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { Flame, CheckCircle2, Sparkles, Zap, Target, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { RedeemCodeSection } from "@/components/pricing/RedeemCodeSection";
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-[#FFF8FA] font-sans text-[#2E2E2E] selection:bg-primary/30">
+    <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary/30">
       
       {/* Navigation */}
       <nav className="flex items-center justify-between px-8 py-6 max-w-7xl mx-auto">
@@ -15,7 +17,7 @@ export default function PricingPage() {
           <span className="text-sm font-bold uppercase tracking-widest">Back to Origin</span>
         </Link>
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 bg-[#F6C1CC] flex items-center justify-center rounded-xl text-[#2E2E2E] shadow-lg shadow-primary/20">
+          <div className="h-8 w-8 bg-primary flex items-center justify-center rounded-xl text-primary-foreground shadow-lg shadow-primary/20">
             <Flame className="h-5 w-5" />
           </div>
           <span className="text-xl font-heading font-bold tracking-tight">monk os</span>
@@ -60,10 +62,10 @@ export default function PricingPage() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="monk-card p-10 border-2 border-monk-rose/10 hover:border-primary/20 transition-all flex flex-col h-full bg-white"
+            className="monk-card p-10 border border-border hover:border-primary/20 transition-all flex flex-col h-full bg-card"
           >
             <div className="space-y-4 mb-8">
-              <h3 className="text-2xl font-heading font-bold text-muted-foreground">Initiate</h3>
+              <h3 className="text-2xl font-heading font-bold text-muted-foreground uppercase tracking-widest">Initiate</h3>
               <div className="flex items-end gap-2">
                 <span className="text-5xl font-heading font-extrabold text-foreground">₹0</span>
                 <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest pb-1">/ Forever</span>
@@ -72,14 +74,15 @@ export default function PricingPage() {
             </div>
 
             <div className="space-y-4 flex-1">
-              <PricingFeature text="3 Non-Negotiable Habits" />
-              <PricingFeature text="Basic Pomodoro Timer" />
-              <PricingFeature text="7-Day History Logs" />
-              <PricingFeature text="Standard Journal" />
+              <PricingFeature text="4 Non-Negotiable Habits" />
+              <PricingFeature text="Basic Streak Tracking" />
+              <PricingFeature text="Track Daily Expenses & Spending" />
+              <PricingFeature text="Manage up to 3 Goals" />
+              <PricingFeature text="Normal Dashboard Access" />
             </div>
 
             <Link href="/login" className="mt-10 w-full py-4 rounded-[20px] bg-secondary/20 text-foreground font-bold text-lg hover:bg-secondary/30 transition-all flex justify-center border border-secondary/30">
-              Start Free
+              Start the Path
             </Link>
           </motion.div>
 
@@ -98,7 +101,7 @@ export default function PricingPage() {
             </div>
 
             <div className="space-y-4 mb-8 relative z-10">
-              <h3 className="text-3xl font-heading font-bold text-primary">Mastery</h3>
+              <h3 className="text-3xl font-heading font-bold text-primary uppercase tracking-widest">Mastery</h3>
               <div className="flex items-end gap-2">
                 <span className="text-6xl font-heading font-extrabold text-foreground">₹499</span>
                 <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest pb-2">/ Month</span>
@@ -107,11 +110,13 @@ export default function PricingPage() {
             </div>
 
             <div className="space-y-4 flex-1 relative z-10">
+              <PricingFeature text="Debt & Bill Management System" highlight />
+              <PricingFeature text="Unlimited Guidance & Tasks via Gmail" highlight />
+              <PricingFeature text="Direct Email Guidance Messages" highlight />
               <PricingFeature text="Unlimited Non-Negotiables" highlight />
+              <PricingFeature text="Unlimited Goal Management" highlight />
               <PricingFeature text="Google Calendar Auto-Sync" highlight />
               <PricingFeature text="Advanced Life Score Analytics" highlight />
-              <PricingFeature text="Debt & Bill Automation" highlight />
-              <PricingFeature text="Vision Board & Milestones" highlight />
             </div>
 
             <Link href="/login" className="mt-10 w-full py-5 rounded-[24px] bg-primary text-primary-foreground font-bold text-xl hover:scale-[1.02] active:scale-95 transition-all flex justify-center shadow-xl shadow-primary/30 relative z-10">
@@ -120,6 +125,8 @@ export default function PricingPage() {
           </motion.div>
 
         </div>
+
+        <RedeemCodeSection />
 
         {/* FAQ / Trust */}
         <motion.div 

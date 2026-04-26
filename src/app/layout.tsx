@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Poppins, Nunito } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-geist-sans" });
 const poppins = Poppins({ 
@@ -18,6 +19,9 @@ export const metadata: Metadata = {
   title: "monk os | Self-Mastery System",
   description: "The all-in-one system for focus, habits, growth, and self-mastery.",
   manifest: "/manifest.json",
+};
+
+export const viewport = {
   themeColor: "#F6C1CC",
 };
 
@@ -36,7 +40,14 @@ export default function RootLayout({
           nunito.variable
         )}
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

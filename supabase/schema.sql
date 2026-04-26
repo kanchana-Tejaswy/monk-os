@@ -13,8 +13,20 @@ CREATE TABLE profiles (
   sleep_time TIME,
   deep_work_goal_hours INTEGER,
   water_goal_liters DECIMAL,
+  subscription_tier TEXT DEFAULT 'Free' CHECK (subscription_tier IN ('Free', 'Mastery')),
+  subscription_expiry TIMESTAMP WITH TIME ZONE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 1.1 Redeem Codes
+CREATE TABLE redeem_codes (
+  code TEXT PRIMARY KEY,
+  duration_type TEXT CHECK (duration_type IN ('1month', '1year', 'lifetime')),
+  is_used BOOLEAN DEFAULT FALSE,
+  used_by UUID REFERENCES profiles(id),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  used_at TIMESTAMP WITH TIME ZONE
 );
 
 -- 2. Habits (Non-Negotiables)

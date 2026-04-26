@@ -5,7 +5,6 @@ import {
   Flame, 
   CheckCircle2, 
   Zap, 
-  LayoutDashboard, 
   Lock, 
   ArrowRight,
   ShieldCheck,
@@ -16,13 +15,15 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { RedeemCodeSection } from "@/components/pricing/RedeemCodeSection";
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary/30 overflow-x-hidden flex flex-col">
       
       {/* Navbar */}
-      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-monk-rose/20">
+      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-border/10 transition-colors duration-300">
         <div className="flex items-center justify-between px-6 md:px-12 py-4 max-w-7xl mx-auto">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 bg-primary flex items-center justify-center rounded-2xl text-primary-foreground shadow-lg shadow-primary/20">
@@ -31,11 +32,12 @@ export default function LandingPage() {
             <span className="text-2xl font-heading font-extrabold tracking-tight">monk os</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
-            <NavLink href="#features">Philosophy</NavLink>
+            <NavLink href="#manifesto">Manifesto</NavLink>
             <NavLink href="#system">The System</NavLink>
-            <NavLink href="/pricing">Pricing</NavLink>
+            <NavLink href="#pricing">Pricing</NavLink>
           </div>
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             <Link href="/login" className="hidden sm:block text-sm font-bold text-muted-foreground hover:text-foreground transition-colors">
               Login
             </Link>
@@ -57,9 +59,9 @@ export default function LandingPage() {
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-card border border-monk-rose/30 shadow-sm text-xs font-bold uppercase tracking-widest text-foreground mx-auto"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-card border border-border shadow-sm text-xs font-bold uppercase tracking-widest text-foreground mx-auto"
           >
-            <ShieldCheck className="h-4 w-4 text-monk-mint" /> Built for Deep Work & Self-Mastery
+            <ShieldCheck className="h-4 w-4 text-success" /> Built for Deep Work & Self-Mastery
           </motion.div>
           
           <motion.h1 
@@ -79,7 +81,7 @@ export default function LandingPage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-lg sm:text-xl md:text-2xl text-muted-foreground font-soft max-w-2xl mx-auto leading-relaxed"
           >
-            Replace your scattered habit trackers, journals, and planners with a single, peaceful digital ashram. Focus on what truly matters.
+            Motivation gets you started. Environment keeps you going. Replace scattered habits with a single, uncompromising digital battlefield.
           </motion.p>
 
           <motion.div 
@@ -95,7 +97,7 @@ export default function LandingPage() {
               Enter Monk Mode <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
             </Link>
             <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">
-              Join 12,000+ builders
+              Join the disciplined few
             </p>
           </motion.div>
         </div>
@@ -105,17 +107,17 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.5 }}
-          className="mt-24 max-w-5xl mx-auto border-[8px] border-card/50 rounded-[40px] shadow-2xl bg-card overflow-hidden relative"
+          className="mt-24 max-w-5xl mx-auto border border-border/50 rounded-[40px] shadow-2xl bg-card overflow-hidden relative"
         >
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
-          <div className="p-8 md:p-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="p-8 md:p-12 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
              <div className="col-span-2 space-y-6">
                 <div className="h-10 w-48 bg-secondary/30 rounded-xl animate-pulse" />
                 <div className="h-40 w-full bg-primary/10 rounded-[32px] border border-primary/20 flex items-center justify-center">
                    <Flame className="h-16 w-16 text-primary opacity-50" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="h-32 bg-monk-mint/10 rounded-[24px] border border-monk-mint/20" />
+                  <div className="h-32 bg-success/10 rounded-[24px] border border-success/20" />
                   <div className="h-32 bg-accent/10 rounded-[24px] border border-accent/20" />
                 </div>
              </div>
@@ -130,21 +132,41 @@ export default function LandingPage() {
         </motion.div>
       </main>
 
+      {/* Manifesto Section */}
+      <section id="manifesto" className="py-24 md:py-32 px-6 bg-foreground text-background border-y border-border/10 text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/20 via-foreground to-foreground opacity-50 pointer-events-none" />
+        <div className="max-w-4xl mx-auto space-y-12 relative z-10">
+          <h2 className="text-4xl md:text-5xl lg:text-7xl font-heading font-extrabold tracking-tighter uppercase leading-tight">
+            You vs. You. <br />
+            <span className="text-primary italic">The Ultimate Battleground.</span>
+          </h2>
+          <p className="text-xl md:text-2xl font-soft opacity-80 leading-relaxed max-w-3xl mx-auto">
+            This isn't for everyone. Typical apps let you lie to yourself by back-filling history. Not here. In monk os, the only opponent is the version of you that wants to quit.
+          </p>
+          <div className="inline-block border border-primary/30 rounded-2xl p-6 bg-background/5 backdrop-blur-sm">
+            <p className="text-lg font-heading font-bold text-primary uppercase tracking-widest">
+              "Discipline is choosing between what you want now, and what you want most."
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* The 48-Hour Integrity Section */}
-      <section id="features" className="py-24 md:py-32 px-6 bg-secondary/5 border-y border-monk-rose/10">
+      <section className="py-24 md:py-32 px-6 bg-background">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-center">
-          <div className="space-y-8 order-2 lg:order-1">
-            <div className="monk-card p-6 sm:p-10 bg-card shadow-xl space-y-6">
-              <div className="flex items-center justify-between p-5 rounded-2xl bg-monk-mint/10 border-2 border-monk-mint/20">
+          <div className="space-y-8 order-2 lg:order-1 relative">
+            <div className="absolute -inset-4 bg-primary/10 blur-3xl rounded-[3rem] -z-10" />
+            <div className="monk-card p-6 sm:p-10 bg-card shadow-xl space-y-6 relative border border-border">
+              <div className="flex items-center justify-between p-5 rounded-2xl bg-success/10 border border-success/20">
                 <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 bg-monk-mint rounded-xl flex items-center justify-center text-white shadow-md shadow-monk-mint/30">
+                  <div className="h-12 w-12 bg-success rounded-xl flex items-center justify-center text-[#121212] shadow-md shadow-success/30">
                     <CheckCircle2 className="h-6 w-6" />
                   </div>
-                  <span className="font-bold text-lg">Morning Chanting</span>
+                  <span className="font-bold text-lg text-foreground">Morning Chanting</span>
                 </div>
-                <span className="text-[10px] font-bold text-monk-mint uppercase tracking-widest hidden sm:block">Verified</span>
+                <span className="text-[10px] font-bold text-success uppercase tracking-widest hidden sm:block">Verified</span>
               </div>
-              <div className="flex items-center justify-between p-5 rounded-2xl bg-secondary/10 border-2 border-secondary/20 opacity-60">
+              <div className="flex items-center justify-between p-5 rounded-2xl bg-secondary/10 border border-secondary/20 opacity-60">
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 bg-secondary/30 rounded-xl flex items-center justify-center text-muted-foreground">
                     <Lock className="h-6 w-6" />
@@ -154,7 +176,7 @@ export default function LandingPage() {
                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest hidden sm:block">Locked</span>
               </div>
               <p className="text-center text-xs font-bold text-muted-foreground uppercase tracking-widest pt-4">
-                Yesterday was locked 4 hours ago.
+                Yesterday was locked 4 hours ago. No edits allowed.
               </p>
             </div>
           </div>
@@ -167,16 +189,16 @@ export default function LandingPage() {
               The 48-Hour <br/>Integrity Rule.
             </h2>
             <p className="text-lg md:text-xl text-muted-foreground font-soft leading-relaxed">
-              Typical habit apps allow you to "fake" your history. Not here. 
+              If you miss a day, you own it. 
               <br/><br/>
-              In <strong className="text-foreground">monk os</strong>, habit checkboxes permanently lock after 48 hours. No back-filling. No lying to yourself. If you missed a day, you own it. This is how real discipline is engineered.
+              In <strong className="text-foreground">monk os</strong>, logs permanently lock after 48 hours. No back-filling. No lying to yourself. Real discipline requires real consequences.
             </p>
             <div className="flex items-center gap-8 pt-4">
               <div className="flex flex-col">
-                <span className="text-4xl font-heading font-extrabold text-monk-mint">100%</span>
+                <span className="text-4xl font-heading font-extrabold text-success">100%</span>
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">Honest Tracking</span>
               </div>
-              <div className="w-px h-12 bg-monk-rose/30" />
+              <div className="w-px h-12 bg-border" />
               <div className="flex flex-col">
                 <span className="text-4xl font-heading font-extrabold text-primary">0</span>
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">Fake Streaks</span>
@@ -187,12 +209,12 @@ export default function LandingPage() {
       </section>
 
       {/* Identity Domains */}
-      <section id="system" className="py-24 md:py-32 bg-background px-6">
+      <section id="system" className="py-24 md:py-32 bg-secondary/5 px-6 border-y border-border/10">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 md:mb-24 space-y-6">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight">Identity-Driven Domains.</h2>
             <p className="text-lg md:text-xl text-muted-foreground font-soft max-w-2xl mx-auto">
-              We don't just track tasks. We track the evolution of your identity across four core domains.
+              Life is holistic. We don't just track tasks; we track the evolution of your identity across four core pillars.
             </p>
           </div>
 
@@ -209,9 +231,9 @@ export default function LandingPage() {
               icon={Dumbbell} 
               title="Physical" 
               desc="Mastery over your vessel through workout discipline." 
-              color="text-monk-mint" 
-              bg="bg-monk-mint/10" 
-              borderColor="hover:border-monk-mint/30"
+              color="text-success" 
+              bg="bg-success/10" 
+              borderColor="hover:border-success/30"
             />
             <DomainCard 
               icon={Heart} 
@@ -233,11 +255,84 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Pricing Section (Free vs Premium) */}
+      <section id="pricing" className="py-24 md:py-32 px-6 bg-background">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16 space-y-6">
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight">Invest in Your Evolution.</h2>
+            <p className="text-lg md:text-xl text-muted-foreground font-soft max-w-2xl mx-auto">
+              Discipline isn't cheap. But the cost of regret is higher. Choose the tier that matches your commitment.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+            {/* Free Tier */}
+            <div className="monk-card p-10 border border-border hover:border-primary/30 transition-all flex flex-col bg-card relative z-10">
+              <div className="space-y-4 mb-8">
+                <h3 className="text-2xl font-heading font-bold text-muted-foreground uppercase tracking-widest">Initiate</h3>
+                <div className="flex items-end gap-2">
+                  <span className="text-5xl font-heading font-extrabold text-foreground">Free</span>
+                  <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest pb-1">/ Forever</span>
+                </div>
+                <p className="text-sm text-muted-foreground font-soft">The foundation of discipline. Everything you need to start building habits.</p>
+              </div>
+
+              <div className="space-y-4 flex-1">
+                <PricingFeature text="4 Non-Negotiable Habits" />
+                <PricingFeature text="Basic Streak Tracking" />
+                <PricingFeature text="Track Daily Expenses & Spending" />
+                <PricingFeature text="Manage up to 3 Goals" />
+                <PricingFeature text="Normal Dashboard Access" />
+              </div>
+
+              <Link href="/login" className="mt-10 w-full py-4 rounded-[20px] bg-secondary/20 text-foreground font-bold text-lg hover:bg-secondary/30 transition-all flex justify-center border border-secondary/30">
+                Start the Path
+              </Link>
+            </div>
+
+            {/* Pro Tier */}
+            <div className="monk-card p-10 md:p-12 border-2 border-primary shadow-2xl shadow-primary/10 flex flex-col h-full bg-primary/5 relative overflow-hidden transform md:-translate-y-4">
+              <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                <Flame className="h-32 w-32 text-primary" />
+              </div>
+              <div className="absolute top-4 right-4 px-3 py-1 bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-widest rounded-full">
+                Required for Mastery
+              </div>
+
+              <div className="space-y-4 mb-8 relative z-10">
+                <h3 className="text-3xl font-heading font-bold text-primary uppercase tracking-widest">Mastery</h3>
+                <div className="flex items-end gap-2">
+                  <span className="text-6xl font-heading font-extrabold text-foreground">₹499</span>
+                  <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest pb-2">/ Month</span>
+                </div>
+                <p className="text-sm text-foreground font-soft">For those who take their identity evolution seriously. Unlocks advanced analytics and infinite tracking.</p>
+              </div>
+
+              <div className="space-y-4 flex-1 relative z-10">
+                <PricingFeature text="Debt & Bill Management System" highlight />
+                <PricingFeature text="Unlimited Guidance & Tasks via Gmail" highlight />
+                <PricingFeature text="Direct Email Guidance Messages" highlight />
+                <PricingFeature text="Unlimited Non-Negotiables" highlight />
+                <PricingFeature text="Unlimited Goal Management" highlight />
+                <PricingFeature text="Google Calendar Auto-Sync" highlight />
+                <PricingFeature text="Advanced Life Score Analytics" highlight />
+              </div>
+
+              <Link href="/login" className="mt-10 w-full py-5 rounded-[24px] bg-primary text-primary-foreground font-bold text-xl hover:scale-[1.02] active:scale-95 transition-all flex justify-center shadow-xl shadow-primary/30 relative z-10">
+                Unlock Mastery
+              </Link>
+            </div>
+          </div>
+
+          <RedeemCodeSection />
+        </div>
+      </section>
+
       {/* CTA Section */}
-      <section className="py-32 md:py-40 px-6 text-center bg-foreground text-background">
+      <section className="py-32 md:py-40 px-6 text-center bg-foreground text-background border-t border-border/10">
         <div className="max-w-4xl mx-auto space-y-12">
           <Flame className="h-20 w-20 text-primary mx-auto animate-pulse" />
-          <h2 className="text-5xl md:text-6xl lg:text-8xl font-heading font-extrabold tracking-tighter">
+          <h2 className="text-5xl md:text-6xl lg:text-8xl font-heading font-extrabold tracking-tighter uppercase leading-tight">
             Your Best Life is <br/>A Click Away.
           </h2>
           <p className="text-lg md:text-xl text-background/70 font-soft max-w-2xl mx-auto leading-relaxed">
@@ -255,7 +350,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-card py-16 px-6 border-t border-monk-rose/20">
+      <footer className="bg-card py-16 px-6 border-t border-border">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-2 space-y-6">
             <div className="flex items-center gap-3">
@@ -285,7 +380,7 @@ export default function LandingPage() {
             </ul>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto pt-8 border-t border-monk-rose/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold text-muted-foreground uppercase tracking-widest">
+        <div className="max-w-7xl mx-auto pt-8 border-t border-border/50 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold text-muted-foreground uppercase tracking-widest">
           <span>© 2026 monk os. All rights reserved.</span>
           <span>Peace is the Ultimate Productivity.</span>
         </div>
@@ -305,12 +400,29 @@ function NavLink({ href, children }: { href: string, children: React.ReactNode }
 
 function DomainCard({ icon: Icon, title, desc, color, bg, borderColor }: any) {
   return (
-    <div className={cn("monk-card p-8 md:p-10 border-2 border-transparent transition-all duration-300 h-full", borderColor)}>
+    <div className={cn("monk-card p-8 md:p-10 border border-transparent transition-all duration-300 h-full", borderColor)}>
       <div className={`h-16 w-16 rounded-[24px] flex items-center justify-center mb-8 ${bg}`}>
         <Icon className={`h-8 w-8 ${color}`} />
       </div>
       <h3 className="text-2xl font-heading font-bold mb-4">{title}</h3>
       <p className="text-muted-foreground font-soft leading-relaxed text-lg">{desc}</p>
+    </div>
+  );
+}
+
+function PricingFeature({ text, highlight }: { text: string, highlight?: boolean }) {
+  return (
+    <div className="flex items-center gap-3">
+      <div className={cn(
+        "h-6 w-6 rounded-full flex items-center justify-center shrink-0",
+        highlight ? "bg-primary/20 text-primary" : "bg-secondary/30 text-muted-foreground"
+      )}>
+        <CheckCircle2 className="h-4 w-4" />
+      </div>
+      <span className={cn(
+        "font-medium",
+        highlight ? "text-foreground font-bold" : "text-muted-foreground"
+      )}>{text}</span>
     </div>
   );
 }
