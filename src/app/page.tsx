@@ -52,10 +52,10 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <main className="flex-1 w-full pt-32 pb-20 px-6">
+      <main className="flex-1 w-full pt-24 pb-16 px-4 md:px-8">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-gradient-to-b from-primary/10 to-transparent -z-10 pointer-events-none" />
         
-        <div className="max-w-4xl mx-auto text-center space-y-10 relative z-10">
+        <div className="max-w-6xl mx-auto text-center space-y-8 relative z-10">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -68,11 +68,15 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-5xl sm:text-6xl md:text-8xl font-heading font-extrabold tracking-tighter leading-[1.1]"
+            className="text-6xl sm:text-7xl md:text-9xl font-heading font-black tracking-tight leading-[0.9] flex flex-col items-center"
           >
-            Don't Chase <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent italic">Discipline.</span> <br className="hidden md:block" />
-            Engineer It.
+            <span className="block">Stop Chasing</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F6C1CC] via-[#E8C547] to-[#C7EDE6] italic drop-shadow-sm">
+              Motivation.
+            </span>
+            <span className="text-3xl sm:text-4xl md:text-5xl font-heading font-bold tracking-tighter mt-4 opacity-90">
+              Build Systems That Create Discipline.
+            </span>
           </motion.h1>
 
           <motion.p 
@@ -101,35 +105,6 @@ export default function LandingPage() {
             </p>
           </motion.div>
         </div>
-
-        {/* Abstract Dashboard Representation */}
-        <motion.div 
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.5 }}
-          className="mt-24 max-w-5xl mx-auto border border-border/50 rounded-[40px] shadow-2xl bg-card overflow-hidden relative"
-        >
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
-          <div className="p-8 md:p-12 grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-             <div className="col-span-2 space-y-6">
-                <div className="h-10 w-48 bg-secondary/30 rounded-xl animate-pulse" />
-                <div className="h-40 w-full bg-primary/10 rounded-[32px] border border-primary/20 flex items-center justify-center">
-                   <Flame className="h-16 w-16 text-primary opacity-50" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="h-32 bg-success/10 rounded-[24px] border border-success/20" />
-                  <div className="h-32 bg-accent/10 rounded-[24px] border border-accent/20" />
-                </div>
-             </div>
-             <div className="space-y-6">
-               <div className="h-full w-full bg-secondary/10 rounded-[32px] border border-secondary/20 flex flex-col items-center justify-center gap-4 p-8">
-                  <Zap className="h-12 w-12 text-secondary opacity-50" />
-                  <div className="h-4 w-24 bg-secondary/20 rounded-full" />
-                  <div className="h-4 w-32 bg-secondary/20 rounded-full" />
-               </div>
-             </div>
-          </div>
-        </motion.div>
       </main>
 
       {/* Manifesto Section */}
@@ -138,7 +113,9 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto space-y-12 relative z-10">
           <h2 className="text-4xl md:text-5xl lg:text-7xl font-heading font-extrabold tracking-tighter uppercase leading-tight">
             You vs. You. <br />
-            <span className="text-primary italic">The Ultimate Battleground.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F6C1CC] via-[#E8C547] to-[#F6C1CC] italic drop-shadow-[0_0_15px_rgba(246,193,204,0.3)]">
+              The Ultimate Battleground.
+            </span>
           </h2>
           <p className="text-xl md:text-2xl font-soft opacity-80 leading-relaxed max-w-3xl mx-auto">
             This isn't for everyone. Typical apps let you lie to yourself by back-filling history. Not here. In monk os, the only opponent is the version of you that wants to quit.
@@ -209,16 +186,16 @@ export default function LandingPage() {
       </section>
 
       {/* Identity Domains */}
-      <section id="system" className="py-24 md:py-32 bg-secondary/5 px-6 border-y border-border/10">
+      <section id="system" className="py-20 md:py-28 bg-secondary/5 px-4 md:px-8 border-y border-border/10">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 md:mb-24 space-y-6">
+          <div className="text-center mb-12 md:mb-16 space-y-4">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight">Identity-Driven Domains.</h2>
             <p className="text-lg md:text-xl text-muted-foreground font-soft max-w-2xl mx-auto">
               Life is holistic. We don't just track tasks; we track the evolution of your identity across four core pillars.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             <DomainCard 
               icon={Brain} 
               title="Academic" 
@@ -400,12 +377,12 @@ function NavLink({ href, children }: { href: string, children: React.ReactNode }
 
 function DomainCard({ icon: Icon, title, desc, color, bg, borderColor }: any) {
   return (
-    <div className={cn("monk-card p-8 md:p-10 border border-transparent transition-all duration-300 h-full", borderColor)}>
-      <div className={`h-16 w-16 rounded-[24px] flex items-center justify-center mb-8 ${bg}`}>
-        <Icon className={`h-8 w-8 ${color}`} />
+    <div className={cn("monk-card p-6 md:p-8 border border-transparent transition-all duration-300 h-full flex flex-col items-center text-center", borderColor)}>
+      <div className={`h-14 w-14 rounded-[20px] flex items-center justify-center mb-6 shrink-0 ${bg}`}>
+        <Icon className={`h-7 w-7 ${color}`} />
       </div>
-      <h3 className="text-2xl font-heading font-bold mb-4">{title}</h3>
-      <p className="text-muted-foreground font-soft leading-relaxed text-lg">{desc}</p>
+      <h3 className="text-xl font-heading font-bold mb-3">{title}</h3>
+      <p className="text-muted-foreground font-soft leading-relaxed text-sm md:text-base">{desc}</p>
     </div>
   );
 }

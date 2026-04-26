@@ -17,13 +17,15 @@ import {
   Flame,
   Wallet,
   ListTodo,
-  RotateCcw
+  RotateCcw,
+  ShieldAlert
 } from "lucide-react";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Analytics", href: "/analytics", icon: BarChart3 },
   { name: "Habit Tracker", href: "/habits", icon: CheckCircle2 },
+  { name: "Iron Will", href: "/iron-will", icon: ShieldAlert },
   { name: "Journal", href: "/journal", icon: BookText },
   { name: "Goals", href: "/goals", icon: Target },
   { name: "Calendar", href: "/calendar", icon: CalendarIcon },
@@ -43,8 +45,10 @@ export function Sidebar() {
       const restartDate = localStorage.getItem("monk_os_streak_restart");
       const logs = savedLogs ? JSON.parse(savedLogs) : {};
       
-      // In a real app, habit IDs would be fetched from a central store/API
-      const currentStreak = calculateStreak(logs, ["1", "2", "3", "4"], restartDate);
+      const savedHabits = localStorage.getItem("monk_os_habits");
+      const habitIds = savedHabits ? JSON.parse(savedHabits).map((h: any) => h.id) : ["1", "2", "3", "4"];
+      
+      const currentStreak = calculateStreak(logs, habitIds, restartDate);
       setStreak(currentStreak);
     };
 
@@ -69,7 +73,7 @@ export function Sidebar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <Flame className="h-5 w-5" />
           </div>
-          <span className="text-xl font-heading font-bold tracking-tight text-foreground">
+          <span className="text-xl font-heading font-bold tracking-tight text-foreground uppercase">
             monk os
           </span>
         </div>
@@ -102,7 +106,7 @@ export function Sidebar() {
       <div className="p-4 border-t border-monk-rose/10 bg-background/50">
         <div className="rounded-2xl bg-secondary/30 p-4 relative group">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-primary uppercase tracking-wider">Current Streak</span>
+            <span className="text-xs font-semibold text-primary uppercase tracking-wider">Life Streak</span>
             <button 
               onClick={handleRestartStreak}
               className="opacity-0 group-hover:opacity-100 transition-opacity p-1 bg-background rounded-full hover:text-red-500"

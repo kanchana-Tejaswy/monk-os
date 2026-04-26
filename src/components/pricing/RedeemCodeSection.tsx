@@ -57,6 +57,7 @@ export function RedeemCodeSection() {
                 onChange={(e) => setCode(e.target.value.toUpperCase())}
                 className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm font-bold uppercase tracking-widest focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                 disabled={status.type === "loading"}
+                suppressHydrationWarning
               />
             </div>
 
