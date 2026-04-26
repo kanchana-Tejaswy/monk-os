@@ -9,7 +9,13 @@ const withPWA = withPWAInit({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
+  reactStrictMode: true,
+  // Ensure that the build uses the standard webpack engine
+  // Turbopack is not yet compatible with next-pwa
+  webpack: (config, { isServer }) => {
+    // Custom webpack config if needed
+    return config;
+  },
 };
 
 export default withPWA(nextConfig);
