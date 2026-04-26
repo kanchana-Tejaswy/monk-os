@@ -97,6 +97,24 @@ export default function HabitTrackerPage() {
     }, 0);
   };
 
+  const startEditing = (habit: Habit) => {
+    setEditingId(habit.id);
+    setEditValue(habit.title);
+  };
+
+  const saveEdit = () => {
+    if (!editingId || !editValue.trim()) {
+      setEditingId(null);
+      return;
+    }
+    const updated = habits.map(h => 
+      h.id === editingId ? { ...h, title: editValue } : h
+    );
+    saveHabits(updated);
+    setEditingId(null);
+    setEditValue("");
+  };
+
   const addHabit = () => {
     if (!newHabitTitle.trim()) return;
     const newHabit: Habit = {
