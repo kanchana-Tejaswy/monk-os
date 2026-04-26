@@ -2,19 +2,24 @@
 
 import { useState, useEffect } from "react";
 import { 
-  BarChart3, 
   TrendingUp, 
   Activity, 
-  Target, 
   Zap, 
-  Brain, 
-  Dumbbell, 
-  Heart,
   Flame,
   PieChart as PieChartIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+
+interface FocusSession {
+  timestamp: string;
+  duration: number;
+}
+
+interface Transaction {
+  type: "credit" | "debit";
+  amount: number;
+}
 
 export default function AnalyticsPage() {
   const [metrics, setMetrics] = useState({
@@ -49,18 +54,18 @@ export default function AnalyticsPage() {
     });
 
     // 2. Focus (Deep Work)
-    const focusHistory = JSON.parse(localStorage.getItem("monk_os_focus") || "[]");
+    const focusHistory: FocusSession[] = JSON.parse(localStorage.getItem("monk_os_focus") || "[]");
     const focusTrend = last7Days.map(date => {
-      const daySessions = focusHistory.filter((s: any) => s.timestamp.startsWith(date));
-      const totalMinutes = daySessions.reduce((acc: number, curr: any) => acc + curr.duration, 0);
+      const daySessions = focusHistory.filter((s: FocusSession) => s.timestamp.startsWith(date));
+      const totalMinutes = daySessions.reduce((acc: number, curr: FocusSession) => acc + curr.duration, 0);
       return totalMinutes / 60; // Hours
     });
     const totalFocusHours = focusTrend.reduce((a, b) => a + b, 0);
 
     // 3. Wealth (Finance)
-    const transactions = JSON.parse(localStorage.getItem("monk_os_finance") || "[]");
-    const income = transactions.filter((t: any) => t.type === "credit").reduce((a: any, b: any) => a + b.amount, 0);
-    const spent = transactions.filter((t: any) => t.type === "debit").reduce((a: any, b: any) => a + b.amount, 0);
+    const transactions: Transaction[] = JSON.parse(localStorage.getItem("monk_os_finance") || "[]");
+    const income = transactions.filter((t: Transaction) => t.type === "credit").reduce((a: number, b: Transaction) => a + b.amount, 0);
+    const spent = transactions.filter((t: Transaction) => t.type === "debit").reduce((a: number, b: Transaction) => a + b.amount, 0);
     const savingsRate = income > 0 ? Math.round(((income - spent) / income) * 100) : 0;
 
     // 4. Life Score Calculation
@@ -84,7 +89,7 @@ export default function AnalyticsPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h1 className="text-3xl font-heading font-bold text-foreground italic">Identity Evolution</h1>
-          <p className="text-muted-foreground mt-1">Numbers don't lie. Data is the proof of your growth.</p>
+          <p className="text-muted-foreground mt-1">Numbers don&apos;t lie. Data is the proof of your growth.</p>
         </div>
         <div className="flex items-center gap-2 p-1 bg-secondary/20 rounded-2xl">
           <button className="px-6 py-2 rounded-xl text-sm font-bold bg-card text-foreground shadow-sm">Weekly</button>

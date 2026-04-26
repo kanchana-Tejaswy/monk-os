@@ -9,7 +9,7 @@ export function calculateStreak(logs: Record<string, boolean>, habitIds: string[
     streak++;
   }
 
-  let checkDate = new Date(today);
+  const checkDate = new Date(today);
   checkDate.setDate(checkDate.getDate() - 1);
   
   while (true) {

@@ -109,7 +109,7 @@ export default function CalendarPage() {
             )}
 
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-xl font-heading font-bold">Today's Schedule</h2>
+              <h2 className="text-xl font-heading font-bold">Today&apos;s Schedule</h2>
               <button className="p-2 bg-primary/10 text-primary rounded-xl hover:bg-primary/20 transition-all">
                 <Plus className="h-5 w-5" />
               </button>

@@ -1,19 +1,15 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { 
   BookText, 
-  RotateCcw, 
-  RotateCw, 
   Trash2, 
   Save, 
-  Plus, 
   Heart, 
   Brain, 
   Sparkles, 
   Dumbbell,
   Search,
-  ChevronRight,
   Undo2,
   Redo2
 } from "lucide-react";
@@ -118,7 +114,7 @@ export default function JournalPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h1 className="text-3xl font-heading font-bold text-foreground italic">The Digital Ashram</h1>
-          <p className="text-muted-foreground mt-1">Reflection is the mirror of the soul's progress.</p>
+          <p className="text-muted-foreground mt-1">Reflection is the mirror of the soul&apos;s progress.</p>
         </div>
         
         <div className="flex items-center gap-2">
@@ -165,7 +161,7 @@ export default function JournalPage() {
           <section className="monk-card p-6 sticky top-6">
             <div className="flex items-center gap-2 mb-6">
               <Sparkles className="h-5 w-5 text-accent" />
-              <h2 className="font-heading font-bold">Write Today's Truth</h2>
+              <h2 className="font-heading font-bold">Write Today&apos;s Truth</h2>
             </div>
             
             <div className="space-y-4">

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Flame, CheckCircle2, Sparkles, Zap, Target, ArrowLeft } from "lucide-react";
+import { Flame, CheckCircle2, Sparkles, Zap, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { RedeemCodeSection } from "@/components/pricing/RedeemCodeSection";
@@ -49,7 +49,7 @@ export default function PricingPage() {
           transition={{ delay: 0.2 }}
           className="text-xl text-muted-foreground font-soft max-w-2xl mx-auto"
         >
-          Discipline isn't cheap. But the cost of regret is higher. Choose the tier that matches your commitment.
+          Discipline isn&apos;t cheap. But the cost of regret is higher. Choose the tier that matches your commitment.
         </motion.p>
       </section>
 

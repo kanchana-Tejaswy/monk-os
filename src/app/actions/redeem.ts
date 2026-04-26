@@ -25,7 +25,7 @@ export async function redeemCode(code: string) {
   }
 
   // 3. Calculate expiry date
-  let expiryDate = new Date()
+  const expiryDate = new Date()
   if (codeData.duration_type === "1month") {
     expiryDate.setMonth(expiryDate.getMonth() + 1)
   } else if (codeData.duration_type === "1year") {

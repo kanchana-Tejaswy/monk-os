@@ -4,7 +4,6 @@ import Link from "next/link";
 import { 
   Flame, 
   CheckCircle2, 
-  Zap, 
   Lock, 
   ArrowRight,
   ShieldCheck,
@@ -118,11 +117,11 @@ export default function LandingPage() {
             </span>
           </h2>
           <p className="text-xl md:text-2xl font-soft opacity-80 leading-relaxed max-w-3xl mx-auto">
-            This isn't for everyone. Typical apps let you lie to yourself by back-filling history. Not here. In monk os, the only opponent is the version of you that wants to quit.
+            This isn&apos;t for everyone. Typical apps let you lie to yourself by back-filling history. Not here. In monk os, the only opponent is the version of you that wants to quit.
           </p>
           <div className="inline-block border border-primary/30 rounded-2xl p-6 bg-background/5 backdrop-blur-sm">
             <p className="text-lg font-heading font-bold text-primary uppercase tracking-widest">
-              "Discipline is choosing between what you want now, and what you want most."
+              &quot;Discipline is choosing between what you want now, and what you want most.&quot;
             </p>
           </div>
         </div>
@@ -191,7 +190,7 @@ export default function LandingPage() {
           <div className="text-center mb-12 md:mb-16 space-y-4">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight">Identity-Driven Domains.</h2>
             <p className="text-lg md:text-xl text-muted-foreground font-soft max-w-2xl mx-auto">
-              Life is holistic. We don't just track tasks; we track the evolution of your identity across four core pillars.
+              Life is holistic. We don&apos;t just track tasks; we track the evolution of your identity across four core pillars.
             </p>
           </div>
 
@@ -238,7 +237,7 @@ export default function LandingPage() {
           <div className="text-center mb-16 space-y-6">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight">Invest in Your Evolution.</h2>
             <p className="text-lg md:text-xl text-muted-foreground font-soft max-w-2xl mx-auto">
-              Discipline isn't cheap. But the cost of regret is higher. Choose the tier that matches your commitment.
+              Discipline isn&apos;t cheap. But the cost of regret is higher. Choose the tier that matches your commitment.
             </p>
           </div>
 
@@ -375,7 +374,16 @@ function NavLink({ href, children }: { href: string, children: React.ReactNode }
   );
 }
 
-function DomainCard({ icon: Icon, title, desc, color, bg, borderColor }: any) {
+interface DomainCardProps {
+  icon: React.ElementType;
+  title: string;
+  desc: string;
+  color: string;
+  bg: string;
+  borderColor: string;
+}
+
+function DomainCard({ icon: Icon, title, desc, color, bg, borderColor }: DomainCardProps) {
   return (
     <div className={cn("monk-card p-6 md:p-8 border border-transparent transition-all duration-300 h-full flex flex-col items-center text-center", borderColor)}>
       <div className={`h-14 w-14 rounded-[20px] flex items-center justify-center mb-6 shrink-0 ${bg}`}>

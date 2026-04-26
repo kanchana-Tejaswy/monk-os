@@ -42,6 +42,6 @@ export function ThemeToggle() {
 }
 
 // Helper for conditional classes since we are using it here
-function cn(...inputs: any[]) {
+function cn(...inputs: (string | boolean | undefined | null)[]) {
   return inputs.filter(Boolean).join(" ")
 }

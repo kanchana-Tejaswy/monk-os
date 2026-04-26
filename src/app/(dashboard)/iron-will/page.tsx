@@ -12,7 +12,6 @@ import {
   History,
   AlertCircle
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface IronWillChallenge {
@@ -101,7 +100,7 @@ export default function IronWillPage() {
           <h1 className="text-4xl font-heading font-bold text-foreground flex items-center gap-3">
             <ShieldAlert className="h-10 w-10 text-primary" /> Iron Will
           </h1>
-          <p className="text-muted-foreground font-soft text-lg italic">"You are the master of your impulses, not their slave."</p>
+          <p className="text-muted-foreground font-soft text-lg italic">&quot;You are the master of your impulses, not their slave.&quot;</p>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
@@ -182,7 +181,7 @@ export default function IronWillPage() {
                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2 flex items-center gap-1">
                           <AlertCircle className="h-3 w-3" /> Lessons from Failure
                         </p>
-                        <p className="text-xs italic text-muted-foreground/80">"{c.history[0].reason}"</p>
+                        <p className="text-xs italic text-muted-foreground/80">&quot;{c.history[0].reason}&quot;</p>
                      </div>
                    )}
                 </div>

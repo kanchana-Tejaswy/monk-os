@@ -9,15 +9,20 @@ import {
   Code, 
   BookOpen, 
   Wind,
-  Settings2,
-  CheckCircle2
+  Settings2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 type FocusMode = "Study" | "Coding" | "Reading" | "Meditation";
 
-const MODES: Record<FocusMode, { icon: any; color: string; bg: string }> = {
+interface ModeConfig {
+  icon: React.ElementType;
+  color: string;
+  bg: string;
+}
+
+const MODES: Record<FocusMode, ModeConfig> = {
   Study: { icon: BookOpen, color: "text-secondary", bg: "bg-secondary/10" },
   Coding: { icon: Code, color: "text-primary", bg: "bg-primary/10" },
   Reading: { icon: Brain, color: "text-accent", bg: "bg-accent/10" },

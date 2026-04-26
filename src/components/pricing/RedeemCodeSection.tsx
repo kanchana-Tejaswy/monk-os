@@ -26,7 +26,7 @@ export function RedeemCodeSection() {
         setStatus({ type: "success", message: result.success || "Code redeemed successfully!" })
         setCode("")
       }
-    } catch (err) {
+    } catch {
       setStatus({ type: "error", message: "Something went wrong. Please try again." })
     }
   }

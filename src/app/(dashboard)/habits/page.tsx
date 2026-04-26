@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { 
   CheckCircle2, 
-  Circle, 
   Lock, 
   Flame, 
   Calendar, 
@@ -151,15 +150,14 @@ export default function HabitTrackerPage() {
   const currentStreak = calculateStreak(logs, habits.map(h => h.id), restartDate);
 
   // Heatmap Data (Last 12 weeks)
-  const heatmapDays = Array.from({ length: 84 }).map((_, i) => {
+  const heatmapDays = Array.from({ length: 84 }).map((_, _i) => {
     const d = new Date();
-    d.setDate(d.getDate() - (83 - i));
+    d.setDate(d.getDate() - (83 - _i));
     const k = d.toISOString().split('T')[0];
-    const isPerfect = habits.length > 0 && habits.every(h => logs[`${k}-${h.id}`]);
     const completionRate = habits.length > 0 
       ? habits.filter(h => logs[`${k}-${h.id}`]).length / habits.length 
       : 0;
-    return { date: k, completionRate, isPerfect };
+    return { date: k, completionRate };
   });
 
   return (
@@ -353,7 +351,7 @@ export default function HabitTrackerPage() {
 
         <div className="flex justify-center">
           <div className="grid grid-flow-col grid-rows-7 gap-1.5 overflow-x-auto pb-2 custom-scrollbar">
-            {heatmapDays.map((day, i) => (
+            {heatmapDays.map((day) => (
               <div 
                 key={day.date}
                 title={`${day.date}: ${Math.round(day.completionRate * 100)}%`}

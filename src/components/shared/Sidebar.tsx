@@ -46,7 +46,7 @@ export function Sidebar() {
       const logs = savedLogs ? JSON.parse(savedLogs) : {};
       
       const savedHabits = localStorage.getItem("monk_os_habits");
-      const habitIds = savedHabits ? JSON.parse(savedHabits).map((h: any) => h.id) : ["1", "2", "3", "4"];
+      const habitIds = savedHabits ? JSON.parse(savedHabits).map((h: { id: string }) => h.id) : ["1", "2", "3", "4"];
       
       const currentStreak = calculateStreak(logs, habitIds, restartDate);
       setStreak(currentStreak);

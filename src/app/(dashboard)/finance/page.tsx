@@ -11,13 +11,10 @@ import {
   ArrowUpRight, 
   ArrowDownRight,
   Calendar,
-  CheckCircle2,
   Trash2,
   X,
   RotateCcw,
-  Receipt,
-  HandCoins,
-  AlertCircle
+  HandCoins
 } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -64,7 +61,6 @@ export default function FinancePage() {
   // Form States
   const [amount, setAmount] = useState("");
   const [reason, setReason] = useState("");
-  const [category, setCategory] = useState("General");
   const [dueDate, setDueDate] = useState("");
   const [personName, setPersonName] = useState("");
   const [debtType, setDebtType] = useState<"owe" | "receivable">("owe");
@@ -109,7 +105,7 @@ export default function FinancePage() {
         type: modalType,
         amount: parsedAmount,
         reason: reason || (modalType === "credit" ? "Income" : "Expense"),
-        category,
+        category: "General",
         date: new Date().toISOString().split('T')[0],
       };
       saveTransactions([newTx, ...transactions]);
@@ -144,7 +140,7 @@ export default function FinancePage() {
   };
 
   const resetForm = () => {
-    setAmount(""); setReason(""); setCategory("General"); setDueDate(""); setPersonName(""); setDebtType("owe"); setRepeatInterval("Monthly");
+    setAmount(""); setReason(""); setDueDate(""); setPersonName(""); setDebtType("owe"); setRepeatInterval("Monthly");
   };
 
   // --- CALCULATIONS ---
@@ -253,7 +249,7 @@ export default function FinancePage() {
             <div className="relative z-10">
               <h3 className="text-lg font-heading font-bold mb-4">Financial Identity Score</h3>
               <div className="text-4xl font-heading font-bold mb-2">{integrityScore}%</div>
-              <p className="text-sm text-white/60 leading-relaxed italic">"Precision in finance reflects precision in soul."</p>
+              <p className="text-sm text-white/60 leading-relaxed italic">&quot;Precision in finance reflects precision in soul.&quot;</p>
               <div className="mt-8 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.2em]">
                 <span>Ledger Integrity</span>
                 <span className={cn("font-bold", integrityScore > 80 ? "text-monk-mint" : "text-primary")}>{integrityScore > 80 ? "Perfect" : integrityScore > 50 ? "Stable" : "Unstable"}</span>
@@ -298,7 +294,7 @@ export default function FinancePage() {
                   {modalType === "debt" && (
                     <div className="col-span-2 grid grid-cols-2 gap-4">
                       <div className="space-y-2"><label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Person / Entity</label><input type="text" required value={personName} onChange={(e) => setPersonName(e.target.value)} placeholder="Who?" className="w-full px-4 py-3 rounded-xl bg-background border border-monk-rose/20 focus:outline-none focus:border-primary font-soft" /></div>
-                      <div className="space-y-2"><label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Debt Category</label><select value={debtType} onChange={(e: any) => setDebtType(e.target.value)} className="w-full px-4 py-3 rounded-xl bg-background border border-monk-rose/20 focus:outline-none focus:border-primary font-soft cursor-pointer"><option value="owe">I Owe This</option><option value="receivable">I Am Owed This</option></select></div>
+                      <div className="space-y-2"><label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Debt Category</label><select value={debtType} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setDebtType(e.target.value as "owe" | "receivable")} className="w-full px-4 py-3 rounded-xl bg-background border border-monk-rose/20 focus:outline-none focus:border-primary font-soft cursor-pointer"><option value="owe">I Owe This</option><option value="receivable">I Am Owed This</option></select></div>
                     </div>
                   )}
                   <div className="col-span-2 space-y-2"><label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Reason / Description</label><input type="text" required value={reason} onChange={(e) => setReason(e.target.value)} placeholder="e.g. Salary, Rent, Food" className="w-full px-4 py-3 rounded-xl bg-background border border-monk-rose/20 focus:outline-none focus:border-primary font-soft" /></div>
@@ -314,7 +310,16 @@ export default function FinancePage() {
 }
 
 // Sub-components
-function ActionButton({ onClick, icon: Icon, label, color, bg, border }: any) {
+interface ActionButtonProps {
+  onClick: () => void;
+  icon: React.ElementType;
+  label: string;
+  color: string;
+  bg: string;
+  border: string;
+}
+
+function ActionButton({ onClick, icon: Icon, label, color, bg, border }: ActionButtonProps) {
   return (<button onClick={onClick} className={cn("flex items-center gap-2 px-5 py-2.5 font-bold rounded-2xl border-2 transition-all hover:scale-105", bg, color, border)}><Icon className="h-4 w-4" /> {label}</button>);
 }
 
@@ -322,7 +327,12 @@ function EmptyState({ message }: { message: string }) {
   return <div className="text-center py-20 text-muted-foreground italic font-soft">{message}</div>;
 }
 
-function TransactionItem({ transaction: t, onDelete }: { transaction: Transaction, onDelete: any }) {
+interface TransactionItemProps {
+  transaction: Transaction;
+  onDelete: () => void;
+}
+
+function TransactionItem({ transaction: t, onDelete }: TransactionItemProps) {
   return (
     <div className="flex items-center justify-between p-4 bg-background/50 rounded-2xl border border-monk-rose/10 group hover:border-primary/20 transition-all">
       <div className="flex items-center gap-4">
@@ -339,7 +349,13 @@ function TransactionItem({ transaction: t, onDelete }: { transaction: Transactio
   );
 }
 
-function BillItem({ bill, onDelete, onToggle }: { bill: Bill, onDelete: any, onToggle: any }) {
+interface BillItemProps {
+  bill: Bill;
+  onDelete: () => void;
+  onToggle: () => void;
+}
+
+function BillItem({ bill, onDelete, onToggle }: BillItemProps) {
   return (
     <div className={cn("flex items-center justify-between p-5 rounded-2xl border-2 transition-all group", bill.isPaid ? "bg-monk-mint/5 border-monk-mint/20 opacity-60" : "bg-background border-secondary/20 hover:border-secondary/40")}>
       <div className="flex items-center gap-4"><div className={cn("h-10 w-10 rounded-xl flex items-center justify-center", bill.isPaid ? "bg-monk-mint text-white" : "bg-secondary/10 text-secondary")}><Calendar className="h-5 w-5" /></div><div><div className={cn("font-bold", bill.isPaid && "line-through")}>{bill.title}</div><div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Due: {bill.dueDate}</div></div></div>
@@ -348,20 +364,35 @@ function BillItem({ bill, onDelete, onToggle }: { bill: Bill, onDelete: any, onT
   );
 }
 
-function DebtCard({ debt, onDelete, onSettle }: { debt: Debt, onDelete: any, onSettle: any }) {
+interface DebtCardProps {
+  debt: Debt;
+  onDelete: () => void;
+  onSettle: () => void;
+}
+
+function DebtCard({ debt, onDelete, onSettle }: DebtCardProps) {
   return (
     <div className={cn("p-6 rounded-[24px] border-2 flex flex-col justify-between group h-52 transition-all relative overflow-hidden", debt.isSettled ? "bg-secondary/5 border-secondary/20 opacity-60" : debt.type === 'receivable' ? "bg-monk-mint/5 border-monk-mint/10 hover:border-monk-mint/30 shadow-sm" : "bg-primary/5 border-primary/10 hover:border-primary/30 shadow-sm")}>
       <div className="flex items-center justify-between mb-4 relative z-10">
         <div className="h-10 w-10 rounded-xl bg-white/50 flex items-center justify-center"><Users className={cn("h-5 w-5", debt.type === 'receivable' ? "text-monk-mint" : "text-primary")} /></div>
         <div className="flex items-center gap-2"><span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider", debt.isSettled ? "bg-secondary text-muted-foreground" : debt.type === 'receivable' ? "bg-monk-mint text-white" : "bg-primary text-white")}>{debt.isSettled ? 'Settled' : debt.type === 'receivable' ? 'Lent' : 'Borrowed'}</span><button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="p-1 text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"><X className="h-4 w-4" /></button></div>
       </div>
-      <div className="relative z-10"><div className={cn("text-xl font-heading font-bold", debt.isSettled && "line-through")}>{debt.personName}</div><div className="text-xs text-muted-foreground font-medium italic line-clamp-1">"{debt.reason}"</div><div className={cn("text-2xl font-heading font-bold mt-2", debt.isSettled ? "text-muted-foreground" : debt.type === 'receivable' ? "text-monk-mint" : "text-primary")}>{formatCurrency(debt.amount)}</div></div>
+      <div className="relative z-10"><div className={cn("text-xl font-heading font-bold", debt.isSettled && "line-through")}>{debt.personName}</div><div className="text-xs text-muted-foreground font-medium italic line-clamp-1">&quot;{debt.reason}&quot;</div><div className={cn("text-2xl font-heading font-bold mt-2", debt.isSettled ? "text-muted-foreground" : debt.type === 'receivable' ? "text-monk-mint" : "text-primary")}>{formatCurrency(debt.amount)}</div></div>
       <div className="mt-4 pt-4 border-t border-monk-rose/5 relative z-10"><button onClick={onSettle} className={cn("w-full py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all", debt.isSettled ? "bg-secondary/20 text-muted-foreground" : "bg-foreground text-background hover:scale-105")}>{debt.isSettled ? "Mark as Active" : "Mark as Settled"}</button></div>
     </div>
   );
 }
 
-function FinanceStatCard({ title, value, icon: Icon, color, bg, description }: any) {
+interface FinanceStatCardProps {
+  title: string;
+  value: string;
+  icon: React.ElementType;
+  color: string;
+  bg: string;
+  description?: string;
+}
+
+function FinanceStatCard({ title, value, icon: Icon, color, bg, description }: FinanceStatCardProps) {
   return (
     <div className="monk-card p-5 flex flex-col gap-3 group hover:border-primary/20 transition-all">
       <div className="flex items-center gap-4">

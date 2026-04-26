@@ -3,16 +3,13 @@
 import { useState, useEffect } from "react";
 import { 
   User, 
-  Bell, 
   Shield, 
-  Database, 
   Moon, 
   Sun, 
   CheckCircle2, 
   Flame, 
   ChevronRight,
   Monitor,
-  Lock,
   LogOut,
   Trash2,
   Download

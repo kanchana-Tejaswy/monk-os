@@ -3,19 +3,13 @@
 import { 
   Flame, 
   Zap, 
-  Clock, 
   CheckCircle2, 
   Circle, 
-  TrendingUp, 
-  Heart, 
-  BookText,
   Play,
   ArrowRight,
   Sparkles,
   ChevronRight,
-  Wallet,
-  Target,
-  ShieldAlert
+  Wallet
 } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -70,8 +64,6 @@ export default function DashboardPage() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [habits, setHabits] = useState<Habit[]>([]);
   const [logs, setLogs] = useState<Record<string, boolean>>({});
-  const [focusSessions, setFocusSessions] = useState<FocusSession[]>([]);
-  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [ironWillChallenges, setIronWillChallenges] = useState<IronWillChallenge[]>([]);
   const [financeData, setFinanceData] = useState({
     totalBalance: 0,
@@ -109,8 +101,6 @@ export default function DashboardPage() {
     setGoals(g.slice(0, 3));
     setHabits(h);
     setLogs(l);
-    setFocusSessions(fs);
-    setJournalEntries(je);
     setIronWillChallenges(iw.slice(0, 2)); // Show top 2 challenges
 
     // --- Finance Calculations (Monthly focus) ---
@@ -140,7 +130,7 @@ export default function DashboardPage() {
 
     // Life Score (Long term consistency)
     const streakScore = Math.min(streak / 30, 1) * 30;
-    const totalGoalProgress = g.length > 0 ? g.reduce((acc: number, cur: any) => acc + cur.progress, 0) / g.length : 0;
+    const totalGoalProgress = g.length > 0 ? g.reduce((acc: number, cur: Goal) => acc + cur.progress, 0) / g.length : 0;
     const goalScore = (totalGoalProgress / 100) * 40;
     
     let historyHabitSum = 0;
@@ -336,7 +326,17 @@ export default function DashboardPage() {
   );
 }
 
-function AuraCard({ label, value, sub, icon: Icon, color, glow, bg }: any) {
+interface AuraCardProps {
+  label: string;
+  value: string;
+  sub: string;
+  icon: React.ElementType;
+  color: string;
+  glow: string;
+  bg: string;
+}
+
+function AuraCard({ label, value, sub, icon: Icon, color, glow, bg }: AuraCardProps) {
   return (
     <motion.div whileHover={{ y: -5 }} className={cn("monk-card p-6 flex flex-col justify-between h-40 shadow-xl border border-monk-rose/10 relative overflow-hidden group", glow)}>
       <div className={cn("absolute -right-4 -top-4 p-8 rounded-full opacity-0 group-hover:opacity-10 transition-all", bg)}><Icon className="h-20 w-20" /></div>

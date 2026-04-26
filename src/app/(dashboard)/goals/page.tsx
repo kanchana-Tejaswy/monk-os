@@ -4,10 +4,7 @@ import { useState, useEffect } from "react";
 import { 
   Target, 
   Flag, 
-  ChevronRight, 
   CheckCircle2, 
-  Circle, 
-  TrendingUp, 
   Plus, 
   Trash2, 
   X, 
@@ -132,7 +129,7 @@ export default function GoalsPage() {
       {/* Goals Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
         <AnimatePresence mode="popLayout">
-          {goals.map((goal, index) => (
+          {goals.map((goal) => (
             <motion.div 
               layout
               initial={{ opacity: 0, y: 20 }}
@@ -312,7 +309,7 @@ export default function GoalsPage() {
                       type="text" 
                       value={milestoneInput}
                       onChange={(e) => setMilestoneInput(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddMilestone())}
+                      onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && (e.preventDefault(), handleAddMilestone())}
                       placeholder="Add a key milestone..."
                       className="flex-1 px-6 py-5 rounded-[24px] bg-background border border-monk-rose/20 focus:border-primary/50 focus:outline-none transition-all font-soft text-lg"
                     />

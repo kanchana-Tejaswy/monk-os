@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Flame, History, Award, CheckCircle2, TrendingUp, Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Flame, History, Award, TrendingUp, Trash2 } from "lucide-react";
 
 interface HistoryRecord {
   month: string;
