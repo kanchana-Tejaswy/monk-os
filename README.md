@@ -1,5 +1,5 @@
 # 🧘 monk os | Technical Manifesto & Architecture Manual
-
+  
 **Version:** 0.1.0  
 **Framework:** Next.js 15+ (App Router)  
 **Philosophy:** Peace is the Ultimate Productivity.
