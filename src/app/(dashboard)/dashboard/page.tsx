@@ -9,10 +9,13 @@ import {
   ArrowRight,
   Sparkles,
   ChevronRight,
-  Wallet
+  Wallet,
+  X,
+  History,
+  Compass
 } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { calculateStreak } from "@/lib/streak";
@@ -181,6 +184,9 @@ export default function DashboardPage() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-10 pb-20 animate-in fade-in duration-700">
+      
+      {/* 0. Onboarding Tutorial */}
+      <OnboardingTutorial />
       
       {/* 1. Header */}
       <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
