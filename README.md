@@ -1,114 +1,256 @@
-# 🧘 monk os | Technical Manifesto & Architecture Manual
+🧘 monk mode
+Self-Mastery Operating System
+1. Philosophy — Why monk mode Exists
 
-**Version:** 0.1.0  
-**Framework:** Next.js 15+ (App Router)  
-**Philosophy:** Peace is the Ultimate Productivity.
+monk mode is not a productivity tool.
 
----
+It is a Self-Mastery Operating System designed to transform behavior, identity, and discipline through structured reflection and measurable action.
 
-## 📖 1. Executive Summary
-**monk mode** is not a "productivity app." It is a **Self-Mastery System** designed to transition users from a state of "Scattered Input" to "Focused Output." The system is built around the concept of a **Digital Ashram**—a space where environment design makes discipline the path of least resistance.
+Most productivity apps optimize for task completion.
+monk mode optimizes for character formation.
 
-### The Prime Directive (For AI & Developers)
-> **"Do not allow the user to lie to themselves."**  
-> All features must adhere to the **48-Hour Integrity Rule**: Once a habit log or journal entry is older than 48 hours, it is immutable (locked). There is no "back-filling" history.
+Core Principle:
+Peace is the Ultimate Productivity.
 
----
+Instead of encouraging endless hustle, the system promotes clarity, consistency, and conscious execution.
 
-## 📂 2. Exhaustive Folder & File Directory
+The 48-Hour Integrity Rule
 
-### 📁 Root Directory
-- **`package.json`**: The heartbeat of the project. Note the use of **Next.js 16.2 (Canary/Latest)** and **Tailwind CSS 4**. This project uses cutting-edge React 19 features (Server Actions, Suspense).
-- **`next.config.mjs`**: Configured with PWA support (via `next-pwa`) to allow the Ashram to be "installed" on mobile devices.
-- **`tailwind.config.mjs` / `postcss.config.mjs`**: Integration for Tailwind 4's CSS-first engine.
-- **`tsconfig.json`**: Defines path aliases (e.g., `@/*` maps to `src/*`).
+Traditional habit trackers allow users to edit the past.
 
----
+monk mode does not.
 
-### 📁 `src/app/` (The Routing Engine)
-This directory uses the **Next.js App Router** with Route Groups for organizational clarity.
+If an action is not logged within 48 hours, it becomes permanently locked.
 
-#### 🗂 `(auth)/` & `login/`
-- **Purpose**: Handles user entry.
-- **Logic**: Uses Supabase OAuth (Google) for frictionless onboarding. 
-- **Files**: `login/page.tsx` is the primary entry gate.
+This enforces radical honesty:
 
-#### 🗂 `(dashboard)/`
-- **Purpose**: The protected "Internal Ashram." All routes here require a valid Supabase session.
-- **`layout.tsx`**: The Persistent Shell. It renders the `Sidebar` and manages the responsive layout for all dashboard sub-pages.
-- **`dashboard/page.tsx`**: The "Zen Hub." Aggregates data from all domains (Focus, Finance, Habits).
-- **`focus/page.tsx`**: Implementation of the Pomodoro/Deep Work system.
-- **`habits/page.tsx`**: The core of the system. Enforces the 48-hour lock logic.
-- **`finance/page.tsx`**: Conscious spending logs—the "Financial Discipline" domain.
-- **`journal/page.tsx`**: Daily reflection and mood tracking.
+No fake streaks
+No backfilling progress
+No illusion of discipline
 
-#### 🗂 `api/auth/callback/`
-- **`route.ts`**: The server-side handler for OAuth redirects. It exchanges the code for a session and sets the appropriate cookies.
+Motto:
+👉 Hard Data. Zero Lies.
 
----
+The goal is not perfection — it is truthful progress.
 
-### 📁 `src/components/` (The Building Blocks)
-- **`ui/`**: Atomic components (Buttons, Inputs, Cards). Follows the "monk-card" aesthetic—soft borders, high-quality shadows, and Lucide icons.
-- **`shared/Sidebar.tsx`**: The navigation spine. It must dynamically highlight the active Domain.
-- **`dashboard/`, `habits/`, etc.**: Feature-specific components. These are kept close to their domain logic to prevent "prop-drilling."
+2. System Vision
 
----
+monk mode combines multiple dimensions of life into one unified environment:
 
-### 📁 `src/utils/supabase/` (The Data Bridge)
-This is the most critical technical directory. It implements the **Supabase SSR** pattern.
+Discipline tracking
+Deep work execution
+Financial awareness
+Purpose alignment (Ikigai)
+Long-term identity evolution
 
-- **`client.ts`**: Used for Client Components. Use this for `onClick` handlers or `useEffect` hooks.
-- **`server.ts`**: Used for Server Components, Server Actions, and Metadata. It has access to secure cookies.
-- **`middleware.ts`**: The gatekeeper. It intercepts every request to:
-    1. Refresh expired sessions.
-    2. Redirect unauthenticated users to `/login`.
-    3. Redirect authenticated users away from `/login` to `/dashboard`.
+It functions like a digital monastery — a focused environment built to eliminate distraction and cultivate mastery.
 
----
+3. Technical Architecture
+Frontend
+Next.js 15 (App Router)
+Modern React architecture using Server Components for performance and Client Components for interactivity.
+React 19
+Enables concurrent rendering and smooth UI transitions.
+TypeScript
+Guarantees strict type safety across all modules and data models.
+UI & Design System
+Tailwind CSS v4
+Utility-first styling with custom theme tokens:
+--primary
+--accent
+--monk-mint
+--monk-rose
+Framer Motion
+Powers premium animations:
+dashboard transitions
+radar charts
+hover physics
+layout animations
+Lucide React
+Minimalist icon system aligned with calm design philosophy.
+next-themes
+Seamless Light/Dark mode switching without FOUC.
+Backend & Data Layer
+Supabase
+PostgreSQL database
+Authentication
+Row Level Security (RLS)
+Multi-tenant ready architecture
+Hybrid Storage Engine
+Guest Mode → localStorage persistence
+Instant loading without network latency
+Structured JSON state for habits, finance, and reflections
+Progressive Web App
+Installable on:
+Mobile
+Desktop
+Tablet
 
-### 📁 `src/lib/` (Core Logic)
-- **`utils.ts`**: Contains the `cn()` (classNames) helper, which merges Tailwind classes safely using `tailwind-merge` and `clsx`.
-- **`streak.ts`**: The algorithm for calculating "Real Streaks" based on the 48-Hour Integrity Rule.
+Built using next-pwa with custom webpack configuration.
 
----
+4. Core Modules
+🧭 Dashboard — Command Center
 
-### 📁 `supabase/`
-- **`schema.sql`**: The blueprint for the PostgreSQL database. It defines the tables for `habits`, `logs`, `profiles`, and `finance`.
+The central nervous system of monk mode.
 
----
+Features:
 
-## 🧠 3. Logic Mandates for AI Models
+Dynamic daily greeting
+Potential activation percentage
+Aura Grid KPI cards:
+Life Score
+Current Streak
+Deep Work Hours
+Capital Status
+One-click Deep Work portal
+Guided onboarding experience
 
-### I. The "Ashram" Design System
-- **Typography**: 
-    - `font-heading` (Poppins): Used for headers and primary labels.
-    - `font-soft` (Nunito): Used for body text and descriptions.
-- **Colors**:
-    - `primary` (#F6C1CC - Monk Rose): Used for growth and action.
-    - `monk-mint`: Used for completed states and "Verified" status.
-    - `background` (#FFF8FA): A soft off-white to reduce eye strain.
+The dashboard ensures users always see the big picture.
 
-### II. Component Constraints
-- **Client vs. Server**: If a component needs interactivity (buttons, state), add `"use client"` at the top. If it only fetches data, keep it as a Server Component for performance.
-- **Animations**: Use `framer-motion` for all transitions. Movements should be "gentle" (spring physics), never jarring.
+⚔️ Discipline Engine — Habit System
 
-### III. Security & Middleware
-- **Never bypass `updateSession`**: This function in the middleware is the only way to ensure user sessions don't expire while they are using the app.
-- **Protected Routes**: Any new folder added to `src/app/(dashboard)` is automatically protected by the middleware regex matcher.
+The heart of monk mode.
 
----
+Habit Types
+Non-Negotiables → identity-defining habits
+Maintenance → supportive routines
+Key Mechanics
+Integrity Score tracking
+Perfect Day recognition
+Mandatory reflection ("Witness Mastery")
+48-Hour Lock enforcement
+Consistency Heatmap visualization
 
-## 📈 4. Database Relations (AI Understanding)
-- Every record in `habits`, `journal_entries`, and `finance_logs` **MUST** have a `user_id` linked to `auth.users`.
-- Row Level Security (RLS) is enabled on Supabase to ensure users can only see their own data.
+The system prevents mindless checkbox behavior.
 
----
+Execution must be conscious.
 
-## 🛠 5. How to Modify This Project
-1. **To add a feature**: Create the route in `src/app/(dashboard)/`, add the icon to `Sidebar.tsx`, and define the SQL schema in `supabase/schema.sql`.
-2. **To change styles**: Edit `src/app/globals.css` or use Tailwind classes.
-3. **To update Auth**: Modify `src/utils/supabase/middleware.ts`.
+📜 Mastery Ledger — History & Progress
 
----
+Executive-level performance archive.
 
-**FINAL NOTE**: The project is designed for **Deep Work**. Do not add "noisy" features like notifications, badges, or gamification that distract the user. The only reward is the user's own evolution.
+Excel-style matrix view
+Habits vs Days layout
+Reflection-based tracking
+Hover expansion for detailed insights
+CSV export for personal ownership of data
+
+This transforms daily actions into long-term evidence of growth.
+
+🧠 Ikigai Compass — Life Direction
+
+Purpose alignment module.
+
+Users define:
+
+What they Love
+What they are Good At
+What the World Needs
+What can Sustain Them
+
+The system synthesizes these into:
+
+Direction statements
+Exploration paths
+Actionable next steps
+
+Focus: clarity without philosophy overload.
+
+📊 Analytics & Life Score
+
+Objective performance analysis.
+
+Life Score calculation:
+
+Discipline Consistency — 40%
+Focus Depth — 30%
+Financial Stability — 30%
+
+Includes:
+
+Animated radar chart
+Weekly momentum tracking
+Trend visualization
+
+No emotion. Only measurable reality.
+
+✅ Task Execution — Todo System
+
+Separated from identity habits.
+
+Purpose:
+Handle operational tasks without polluting discipline metrics.
+
+Features:
+
+Quick task capture
+Daily progress visualization
+Lightweight execution flow
+💰 Financial Pulse (Independent Module)
+
+Financial awareness without complexity.
+
+Tracks:
+
+Income
+Expenses
+Savings rate
+Capital growth
+
+Finance data remains separate from health or discipline analysis.
+
+5. Design Philosophy
+
+monk mode avoids:
+
+❌ dopamine addiction
+❌ toxic motivation
+❌ productivity anxiety
+
+Instead it promotes:
+
+✅ calm focus
+✅ deliberate action
+✅ measurable integrity
+
+The interface is intentionally:
+
+minimal
+peaceful
+structured
+non-overwhelming
+6. Identity Evolution Framework
+
+monk mode treats life as layered progression:
+
+Awareness
+Discipline
+Mastery
+Direction
+Integrity
+
+The application is not tracking tasks.
+
+It is tracking who the user is becoming.
+
+7. Future Roadmap
+Google Authentication Sync
+Cloud Backup & Restore
+XP & Streak Recovery System
+AI Reflection Analysis
+Community Monk Circles
+Offline-First Sync Engine
+8. Final Statement
+
+monk mode is an experiment in digital self-discipline.
+
+Not designed for everyone.
+
+Built for people willing to face reality, measure their actions, and grow intentionally.
+
+Consistency builds identity.
+Identity builds destiny.
+
+⭐ Contributing
+
+Contributions, feedback, and ideas are welcome.
