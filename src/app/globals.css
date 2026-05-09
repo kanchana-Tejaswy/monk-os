@@ -29,6 +29,21 @@
   --font-sans: "Inter", var(--font-geist-sans);
   --font-heading: "Poppins", var(--font-geist-sans);
   --font-soft: "Nunito", var(--font-geist-sans);
+
+  --animate-gradient: gradient 8s linear infinite;
+  --animate-shimmer: shimmer 2s infinite;
+
+  @keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
 }
 
 :root {
@@ -108,17 +123,3 @@
   }
 }
 
-@keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-.animate-gradient {
-  animation: gradient 8s linear infinite;
-}
-
-@keyframes shimmer {
-  100% {
-    transform: translateX(100%);
-  }
-}
