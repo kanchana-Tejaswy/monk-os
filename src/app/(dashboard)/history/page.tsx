@@ -1,16 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Flame, History, Award, TrendingUp, Trash2, CheckCircle2, Clock, BookText } from "lucide-react";
-import { calculateAllTimeStats } from "@/lib/streak";
-import { cn, formatDate } from "@/lib/utils";
+import { 
+  ChevronLeft, 
+  ChevronRight, 
+  Download, 
+  Table as TableIcon,
+  CheckCircle2,
+  Calendar,
+  Search,
+  ArrowUpRight
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
-interface HistoryRecord {
-  month: string;
-  year: number;
-  daysCompleted: number;
-  totalDays: number;
-  longestStreak: number;
+interface Habit {
+  id: string;
+  title: string;
+  category: string;
 }
 
 interface Reflection {
@@ -21,208 +28,194 @@ interface Reflection {
   date: string;
 }
 
-export default function ProgressHistoryPage() {
-  const [stats, setStats] = useState({
-    totalPerfectDays: 0,
-    longestStreak: 0,
-    consistency: 0
-  });
-  const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>([]);
-  const [allReflections, setReflections] = useState<Record<string, Reflection[]>>({});
+export default function HistoryPage() {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [habits, setHabits] = useState<Habit[]>([]);
+  const [reflections, setReflections] = useState<Record<string, Reflection[]>>({});
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    loadData();
-    window.addEventListener("streak_updated", loadData);
-    return () => window.removeEventListener("streak_updated", loadData);
-  }, []);
-
-  const loadData = () => {
-    const savedLogs = localStorage.getItem("monk_os_logs");
     const savedHabits = localStorage.getItem("monk_os_habits");
     const savedReflections = localStorage.getItem("monk_os_reflections");
     
-    if (savedLogs && savedHabits) {
-      const logs = JSON.parse(savedLogs);
-      const habits = JSON.parse(savedHabits);
-      const habitIds = habits.map((h: { id: string }) => h.id);
-      
-      const allTimeStats = calculateAllTimeStats(logs, habitIds);
-      
-      setStats({
-        totalPerfectDays: allTimeStats.totalPerfectDays,
-        longestStreak: allTimeStats.longestStreak,
-        consistency: allTimeStats.consistency
-      });
-      setHistoryRecords(allTimeStats.monthlyHistory);
-    }
+    if (savedHabits) setHabits(JSON.parse(savedHabits));
+    if (savedReflections) setReflections(JSON.parse(savedReflections));
+  }, []);
 
-    if (savedReflections) {
-      setReflections(JSON.parse(savedReflections));
-    }
+  const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+  const monthName = currentDate.toLocaleString('default', { month: 'long' });
+  const year = currentDate.getFullYear();
+
+  const handlePrevMonth = () => {
+    setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() - 1)));
   };
 
-  const getMonthReflections = (month: string, year: number) => {
-    // month is "April", year is 2026
-    const monthIndex = new Date(`${month} 1, ${year}`).getMonth();
-    const prefix = `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
+  const handleNextMonth = () => {
+    setCurrentDate(new Date(currentDate.setMonth(currentDate.getMonth() + 1)));
+  };
+
+  const getReflectionForHabitAndDay = (habitId: string, day: number) => {
+    const dateKey = `${year}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const dayReflections = reflections[dateKey] || [];
+    return dayReflections.find(r => r.habitId === habitId);
+  };
+
+  const exportToCSV = () => {
+    let csv = "Habit/Day," + Array.from({ length: daysInMonth }, (_, i) => i + 1).join(",") + "\n";
     
-    return Object.entries(allReflections)
-      .filter(([date]) => date.startsWith(prefix))
-      .sort((a, b) => b[0].localeCompare(a[0]));
+    habits.forEach(habit => {
+      let row = `"${habit.title}",`;
+      const rowData = Array.from({ length: daysInMonth }, (_, i) => {
+        const ref = getReflectionForHabitAndDay(habit.id, i + 1);
+        return `"${ref?.content.replace(/"/g, '""') || ""}"`;
+      });
+      csv += row + rowData.join(",") + "\n";
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `monk_mode_ledger_${monthName}_${year}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
-  const handleResetHistory = () => {
-    const confirm1 = confirm("⚠️ Are you sure you want to clear your History Archives? This will reset your habit logs and focus sessions, but preserve your Finance, Journals, and Goals.");
-    if (!confirm1) return;
-
-    if (confirm("Final confirmation: Reset history archives to zero?")) {
-      localStorage.removeItem("monk_os_logs");
-      localStorage.removeItem("monk_os_focus");
-      
-      // Update UI immediately
-      setStats({ totalPerfectDays: 0, longestStreak: 0, consistency: 0 });
-      setHistoryRecords([]);
-      
-      window.dispatchEvent(new Event("streak_updated"));
-      alert("History archives cleared. Your journey begins again today.");
-    }
-  };
+  const filteredHabits = habits.filter(h => 
+    h.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    h.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20">
+    <div className="max-w-full space-y-8 animate-in fade-in duration-700 pb-20">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <h1 className="text-3xl font-heading font-bold text-foreground">Progress History</h1>
-          <p className="text-muted-foreground mt-1">A true record of your discipline over time.</p>
-        </div>
-        <button 
-          onClick={handleResetHistory}
-          className="flex items-center gap-2 px-6 py-3 bg-red-50 text-red-600 font-bold rounded-2xl hover:bg-red-100 border border-red-100 transition-all text-sm shadow-sm"
-        >
-          <Trash2 className="h-4 w-4" /> Clear History Archives
-        </button>
-      </div>
-
-      {/* Dynamic Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="monk-card p-6 flex flex-col items-center justify-center text-center space-y-2">
-          <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-            <Award className="h-6 w-6 text-primary" />
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-primary font-bold uppercase tracking-[0.3em] text-[10px] md:text-xs">
+            <TableIcon className="h-4 w-4" /> Evidence of Mastery
           </div>
-          <div className="text-3xl font-heading font-bold text-foreground mt-2">{stats.totalPerfectDays}</div>
-          <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Total Perfect Days</div>
-        </div>
-        
-        <div className="monk-card p-6 flex flex-col items-center justify-center text-center space-y-2">
-          <div className="h-12 w-12 rounded-2xl bg-accent/10 flex items-center justify-center">
-            <Flame className="h-6 w-6 text-accent" />
-          </div>
-          <div className="text-3xl font-heading font-bold text-foreground mt-2">{stats.longestStreak}</div>
-          <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Longest Streak</div>
+          <h1 className="text-3xl md:text-4xl font-heading font-black tracking-tighter text-foreground italic">Mastery Ledger</h1>
+          <p className="text-muted-foreground font-soft text-sm md:text-base">Structured record of every action and reflection.</p>
         </div>
 
-        <div className="monk-card p-6 flex flex-col items-center justify-center text-center space-y-2">
-          <div className="h-12 w-12 rounded-2xl bg-monk-mint/10 flex items-center justify-center">
-            <TrendingUp className="h-6 w-6 text-monk-mint" />
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2 bg-card p-1.5 rounded-2xl border border-primary/10 shadow-sm">
+            <button onClick={handlePrevMonth} className="p-2 hover:bg-secondary/50 rounded-xl transition-all"><ChevronLeft className="h-4 w-4" /></button>
+            <span className="px-4 font-black text-xs uppercase tracking-widest min-w-[140px] text-center">{monthName} {year}</span>
+            <button onClick={handleNextMonth} className="p-2 hover:bg-secondary/50 rounded-xl transition-all"><ChevronRight className="h-4 w-4" /></button>
           </div>
-          <div className="text-3xl font-heading font-bold text-foreground mt-2">{stats.consistency}%</div>
-          <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">All-Time Consistency</div>
+          <button 
+            onClick={exportToCSV}
+            className="flex items-center gap-2 px-6 py-3 bg-foreground text-background font-black text-xs uppercase tracking-widest rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl"
+          >
+            <Download className="h-4 w-4" /> Export CSV
+          </button>
         </div>
       </div>
 
-      {/* Daily Evidence / Reflections Section */}
-      <div className="monk-card p-8 space-y-8">
-        <h2 className="text-xl font-heading font-bold flex items-center gap-2">
-          <BookText className="h-5 w-5 text-primary" /> Daily Evidence
-        </h2>
+      {/* Search & Filter */}
+      <div className="relative group max-w-md">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+        <input 
+          type="text" 
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Filter habits or categories..." 
+          className="w-full pl-12 pr-6 py-4 rounded-2xl bg-card border border-primary/10 focus:border-primary/40 focus:outline-none transition-all shadow-sm font-bold text-sm"
+        />
+      </div>
 
-        <div className="space-y-10">
-          {Object.keys(allReflections).length === 0 ? (
-            <div className="text-center py-10 bg-secondary/10 rounded-3xl border-2 border-dashed border-monk-rose/20">
-              <p className="text-sm text-muted-foreground italic">No evidence recorded yet. Complete habits to leave a trail of mastery.</p>
-            </div>
-          ) : (
-            Object.entries(allReflections)
-              .sort((a, b) => b[0].localeCompare(a[0]))
-              .map(([date, dayReflections]) => (
-                <div key={date} className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-px flex-1 bg-monk-rose/20" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground bg-background px-4 py-1 rounded-full border border-monk-rose/10">
-                      {formatDate(new Date(date))}
-                    </span>
-                    <div className="h-px flex-1 bg-monk-rose/20" />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {dayReflections.map((ref, idx) => (
-                      <div key={idx} className="bg-zinc-950 text-white p-6 rounded-[32px] border border-white/5 relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                          <CheckCircle2 className="h-12 w-12" />
-                        </div>
-                        <div className="flex items-center gap-2 mb-3">
-                          <div className="h-2 w-2 rounded-full bg-monk-mint animate-pulse" />
-                          <span className="text-[10px] font-black uppercase tracking-widest text-primary">
-                            {ref.habitTitle}
-                          </span>
-                          <span className="text-[8px] font-bold text-white/20 uppercase ml-auto">
-                            <Clock className="h-2 w-2 inline mr-1" />
-                            {new Date(ref.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                        </div>
-                        <p className="font-soft text-sm leading-relaxed text-white/80">
-                          {ref.content}
-                        </p>
+      {/* Spreadsheet View */}
+      <div className="monk-card overflow-hidden border-2 border-primary/5">
+        <div className="overflow-x-auto custom-scrollbar">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-secondary/10 border-b border-primary/10">
+                <th className="sticky left-0 z-20 bg-card/90 backdrop-blur-md p-6 text-left border-r border-primary/10 min-w-[240px]">
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Identity Anchors</span>
+                </th>
+                {Array.from({ length: daysInMonth }, (_, i) => (
+                  <th key={i} className="p-4 text-center min-w-[120px] border-r border-primary/5 last:border-r-0">
+                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{String(i + 1).padStart(2, '0')}</div>
+                    <div className="text-[8px] font-bold text-primary/40 uppercase tracking-tighter">
+                      {new Date(year, currentDate.getMonth(), i + 1).toLocaleString('default', { weekday: 'short' })}
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filteredHabits.map((habit, hIdx) => (
+                <tr key={habit.id} className="border-b border-primary/5 last:border-b-0 group hover:bg-primary/[0.02] transition-colors">
+                  <td className="sticky left-0 z-10 bg-card/90 backdrop-blur-md p-6 border-r border-primary/10 group-hover:bg-primary/[0.04]">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
                       </div>
-                    ))}
-                  </div>
-                </div>
-              ))
-          )}
+                      <div>
+                        <div className="text-sm font-black text-foreground tracking-tight">{habit.title}</div>
+                        <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{habit.category}</div>
+                      </div>
+                    </div>
+                  </td>
+                  {Array.from({ length: daysInMonth }, (_, i) => {
+                    const ref = getReflectionForHabitAndDay(habit.id, i + 1);
+                    return (
+                      <td key={i} className="p-4 align-top border-r border-primary/5 last:border-r-0 relative">
+                        {ref ? (
+                          <div className="space-y-2 animate-in fade-in duration-500">
+                             <div className="text-[10px] font-medium leading-relaxed text-foreground/80 line-clamp-4 hover:line-clamp-none transition-all">
+                               {ref.content}
+                             </div>
+                             <div className="h-1 w-full bg-monk-mint/30 rounded-full overflow-hidden">
+                               <div className="h-full bg-monk-mint w-full" />
+                             </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-center h-full opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+                            <ArrowUpRight className="h-6 w-6" />
+                          </div>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+              {filteredHabits.length === 0 && (
+                <tr>
+                  <td colSpan={daysInMonth + 1} className="p-20 text-center text-muted-foreground font-bold italic opacity-50 uppercase tracking-widest text-sm">
+                    No habits identified for record.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <div className="monk-card p-6 space-y-8">
-        <h2 className="text-xl font-heading font-bold mb-6 flex items-center gap-2">
-          <History className="h-5 w-5 text-secondary" /> Monthly Archives
-        </h2>
-
-        <div className="space-y-6">
-          {historyRecords.length === 0 ? (
-            <div className="text-center py-20 text-muted-foreground italic font-soft">
-              The archives are empty. Begin your journey to create history.
-            </div>
-          ) : (
-            historyRecords.map((record, i) => (
-              <div key={i} className="flex flex-col md:flex-row md:items-center justify-between p-6 bg-background/50 rounded-2xl border border-monk-rose/10 group hover:border-primary/20 transition-all gap-4">
-                <div className="flex-1">
-                  <h3 className="font-heading font-bold text-lg">{record.month} {record.year}</h3>
-                  <div className="flex items-center gap-4 mt-2">
-                    <span className="text-xs font-medium text-muted-foreground">
-                      <strong className="text-foreground">{record.daysCompleted}</strong> / {record.totalDays} Perfect Days
-                    </span>
-                    <span className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                      <Flame className="h-3 w-3 text-accent" /> Longest Streak: {record.longestStreak}
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="w-full md:w-1/3">
-                  <div className="flex justify-between text-xs font-bold uppercase tracking-wider mb-2">
-                    <span>Consistency</span>
-                    <span className="text-primary">{Math.round((record.daysCompleted / record.totalDays) * 100)}%</span>
-                  </div>
-                  <div className="h-2 w-full bg-secondary/20 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-primary rounded-full transition-all duration-1000" 
-                      style={{ width: `${(record.daysCompleted / record.totalDays) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
+      {/* Insight Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <section className="p-10 rounded-[40px] bg-primary/5 border-2 border-primary/10 relative overflow-hidden group">
+           <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-all">
+              <Calendar className="h-32 w-32" />
+           </div>
+           <h3 className="text-xs font-black uppercase tracking-[0.3em] text-primary mb-6">Ledger Insight</h3>
+           <p className="text-xl font-heading font-bold italic leading-relaxed text-foreground/80">
+            "Your ledger is the unbiased mirror of your commitment. Every note is a brick in the foundation of your new identity. Do not look for perfection; look for presence."
+           </p>
+        </section>
+        
+        <div className="monk-card p-10 flex flex-col justify-center items-center text-center space-y-6">
+           <div className="h-16 w-16 rounded-3xl bg-secondary/20 flex items-center justify-center">
+              <Download className="h-8 w-8 text-secondary-foreground" />
+           </div>
+           <div className="space-y-2">
+              <h4 className="text-xl font-heading font-black uppercase tracking-tighter">Physical Archive</h4>
+              <p className="text-sm text-muted-foreground max-w-xs">Download your complete monthly mastery records as a CSV file for your personal spreadsheets.</p>
+           </div>
+           <button onClick={exportToCSV} className="text-xs font-black text-primary uppercase tracking-widest hover:underline">Download {monthName} Archive</button>
         </div>
       </div>
     </div>

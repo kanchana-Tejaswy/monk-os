@@ -23,9 +23,8 @@ export default function TodoPage() {
     } else {
       // Default sample data for first time
       const defaults = [
-        { id: "1", title: "Complete DBMS Record", completed: false },
-        { id: "2", title: "Buy groceries", completed: false },
-        { id: "3", title: "Reply to emails", completed: true },
+        { id: "1", title: "Buy groceries", completed: false },
+        { id: "2", title: "Reply to emails", completed: true },
       ];
       setTodos(defaults);
       localStorage.setItem("monk_os_todos", JSON.stringify(defaults));

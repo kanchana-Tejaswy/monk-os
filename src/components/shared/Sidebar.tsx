@@ -85,27 +85,30 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       )}
 
       <div className={cn(
-        "fixed inset-y-0 left-0 z-50 w-64 flex-col bg-card border-r border-monk-rose/20 transition-transform duration-300 lg:static lg:flex lg:translate-x-0",
+        "fixed inset-y-0 left-0 z-50 w-72 flex-col glass-panel border-r border-white/20 dark:border-white/5 transition-transform duration-500 ease-out lg:static lg:flex lg:translate-x-0",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <div className="flex h-20 items-center justify-between px-6">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+        <div className="flex h-20 items-center justify-between px-6 shrink-0 border-b border-primary/5">
+          <div className="flex items-center gap-3 overflow-hidden">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shrink-0 shadow-lg shadow-primary/20">
               <Flame className="h-5 w-5" />
             </div>
-            <span className="text-xl font-heading font-bold tracking-tight text-foreground uppercase">
+            <span className="text-xl font-heading font-black tracking-tighter text-foreground uppercase truncate">
               monk mode
             </span>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 hover:bg-secondary/50 rounded-xl lg:hidden"
+            className="p-2 hover:bg-secondary/50 rounded-xl lg:hidden shrink-0 transition-colors"
           >
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5 text-muted-foreground" />
           </button>
         </div>
         
-        <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto custom-scrollbar">
+        <nav className="flex-1 space-y-1.5 px-4 py-6 overflow-y-auto custom-scrollbar relative">
+          {/* Subtle nav background glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-primary/5 rounded-full blur-[80px] pointer-events-none" />
+          
           {navigation.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -114,40 +117,47 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 href={item.href}
                 onClick={() => onClose?.()}
                 className={cn(
-                  "group flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                  "group flex items-center rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-300 relative overflow-hidden",
                   isActive 
-                    ? "bg-primary/10 text-primary" 
-                    : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                    ? "text-primary-foreground shadow-md" 
+                    : "text-muted-foreground hover:bg-secondary/30 hover:text-foreground hover:scale-[1.02]"
                 )}
               >
+                {isActive && (
+                   <div className="absolute inset-0 bg-primary opacity-100 transition-opacity duration-300" />
+                )}
+                {isActive && (
+                   <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-white/20 to-primary/0 translate-x-[-100%] animate-[shimmer_2s_infinite]" />
+                )}
                 <item.icon className={cn(
-                  "mr-3 h-5 w-5 flex-shrink-0 transition-colors",
-                  isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                  "mr-4 h-5 w-5 flex-shrink-0 transition-all duration-300 relative z-10",
+                  isActive ? "text-primary-foreground scale-110" : "text-muted-foreground group-hover:text-primary"
                 )} />
-                {item.name}
+                <span className="truncate relative z-10 tracking-wide">{item.name}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="p-4 border-t border-monk-rose/10 bg-background/50">
-          <div className="rounded-2xl bg-secondary/30 p-4 relative group">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-primary uppercase tracking-wider">Life Streak</span>
+        <div className="p-6 border-t border-primary/5 bg-background/30 backdrop-blur-md">
+          <div className="rounded-[24px] bg-secondary/10 border border-secondary/20 p-5 relative group overflow-hidden transition-all hover:bg-secondary/20">
+            <div className="absolute -right-4 -top-4 w-20 h-20 bg-accent/10 rounded-full blur-2xl group-hover:bg-accent/20 transition-colors" />
+            <div className="flex items-center justify-between mb-3 relative z-10">
+              <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Life Streak</span>
               <button 
                 onClick={handleRestartStreak}
-                className="opacity-0 group-hover:opacity-100 transition-opacity p-1 bg-background rounded-full hover:text-red-500"
+                className="opacity-0 group-hover:opacity-100 transition-all p-1.5 bg-background rounded-full hover:bg-red-500/10 hover:text-red-500 shadow-sm"
                 title="Restart Streak"
               >
                 <RotateCcw className="h-3 w-3" />
               </button>
             </div>
-            <div className="text-2xl font-heading font-bold flex items-center gap-2">
-              {streak} Days
-              <Flame className="h-5 w-5 text-accent animate-pulse" />
+            <div className="text-3xl font-heading font-black flex items-center gap-2 relative z-10">
+              {streak} <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest mt-2">Days</span>
+              <Flame className="h-6 w-6 text-accent animate-pulse ml-auto" />
             </div>
-            <div className="mt-2 h-1.5 w-full bg-background rounded-full overflow-hidden">
-              <div className="h-full bg-accent w-[80%] rounded-full" />
+            <div className="mt-4 h-2 w-full bg-background rounded-full overflow-hidden relative z-10 shadow-inner">
+              <div className="h-full bg-accent w-[80%] rounded-full shadow-[0_0_10px_rgba(232,197,71,0.5)]" />
             </div>
           </div>
         </div>

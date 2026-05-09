@@ -30,7 +30,6 @@ const DEFAULT_HABITS: Habit[] = [
   { id: "1", title: "Morning Chanting", category: "Spiritual", isNonNegotiable: true },
   { id: "2", title: "Deep Work: Coding", category: "Skill", isNonNegotiable: true },
   { id: "3", title: "45m Workout", category: "Health", isNonNegotiable: true },
-  { id: "4", title: "DBMS Study", category: "Academic", isNonNegotiable: true },
 ];
 
 export default function HabitTrackerPage() {
