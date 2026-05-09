@@ -410,3 +410,116 @@ function AuraCard({ label, value, sub, icon: Icon, color, glow, bg }: AuraCardPr
     </motion.div>
   );
 }
+
+// --- Onboarding Component ---
+
+function OnboardingTutorial() {
+  const [show, setShow] = useState(false);
+  const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    const seen = localStorage.getItem("monk_mode_tutorial_seen");
+    if (!seen) {
+      setTimeout(() => setShow(true), 1500); // Wait for dashboard to load
+    }
+  }, []);
+
+  const handleClose = () => {
+    localStorage.setItem("monk_mode_tutorial_seen", "true");
+    setShow(false);
+  };
+
+  const steps = [
+    {
+      title: "Welcome to Monk Mode.",
+      description: "You've entered a digital environment designed for total focus and self-mastery. This isn't a productivity app—it's a system for identity evolution.",
+      icon: Flame,
+      color: "text-primary",
+      bg: "bg-primary/10",
+      action: "Begin Initiation"
+    },
+    {
+      title: "The Discipline Engine",
+      description: "Define your 'Non-Negotiables'. These are the daily actions that define who you are. The Integrity Score tracks your loyalty to these promises.",
+      icon: CheckCircle2,
+      color: "text-monk-mint",
+      bg: "bg-monk-mint/10",
+      action: "Next Step"
+    },
+    {
+      title: "Identity Compass",
+      description: "Use the Ikigai tool to align what you love, what you're good at, and what the world needs. This provides the 'North Star' for your dashboard.",
+      icon: Compass,
+      color: "text-amber-500",
+      bg: "bg-amber-500/10",
+      action: "Next Step"
+    },
+    {
+      title: "The Mastery Ledger",
+      description: "Every reflection you write is recorded in your monthly ledger. It's the unbiased proof of your growth, exportable for your permanent records.",
+      icon: History,
+      color: "text-accent",
+      bg: "bg-accent/10",
+      action: "Enter Flow State"
+    }
+  ];
+
+  return (
+    <AnimatePresence>
+      {show && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-background/90 backdrop-blur-md">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="w-full max-w-xl monk-card p-10 md:p-14 relative overflow-hidden border-2 border-primary/20 shadow-[0_0_100px_rgba(246,193,204,0.15)]"
+          >
+            {/* Background Glow */}
+            <div className={cn("absolute -top-24 -right-24 w-64 h-64 rounded-full blur-[80px] transition-colors duration-1000", steps[step].bg)} />
+
+            <button onClick={handleClose} className="absolute top-6 right-6 p-2 hover:bg-secondary/30 rounded-full transition-all text-muted-foreground"><X className="h-5 w-5" /></button>
+
+            <div className="relative z-10 space-y-10">
+              <div className="flex items-center gap-6">
+                <motion.div 
+                  key={step}
+                  initial={{ rotate: -20, scale: 0.8 }}
+                  animate={{ rotate: 0, scale: 1 }}
+                  className={cn("h-16 w-16 md:h-20 md:w-20 rounded-[28px] flex items-center justify-center shadow-inner", steps[step].bg)}
+                >
+                  {(() => {
+                    const Icon = steps[step].icon;
+                    return <Icon className={cn("h-8 w-8 md:h-10 md:w-10", steps[step].color)} />;
+                  })()}
+                </motion.div>
+                <div className="space-y-1">
+                   <div className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Orientation {step + 1}/{steps.length}</div>
+                   <h2 className="text-3xl font-heading font-black tracking-tighter text-foreground italic">{steps[step].title}</h2>
+                </div>
+              </div>
+
+              <p className="text-lg md:text-xl text-muted-foreground font-soft leading-relaxed">
+                {steps[step].description}
+              </p>
+
+              <div className="flex items-center justify-between pt-6">
+                <div className="flex gap-1.5">
+                  {steps.map((_, i) => (
+                    <div key={i} className={cn("h-1.5 rounded-full transition-all duration-500", i === step ? "w-8 bg-primary" : "w-2 bg-secondary/40")} />
+                  ))}
+                </div>
+                <button 
+                  onClick={() => step < steps.length - 1 ? setStep(step + 1) : handleClose()}
+                  className="px-8 py-4 bg-foreground text-background font-black text-xs uppercase tracking-widest rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-foreground/10 flex items-center gap-2"
+                >
+                  {steps[step].action}
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}
