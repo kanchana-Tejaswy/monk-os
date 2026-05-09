@@ -1,4 +1,4 @@
-# 🧘 monk mode | Technical Manifesto & Architecture Manual
+# 🧘 monk os | Technical Manifesto & Architecture Manual
 
 **Version:** 0.1.0  
 **Framework:** Next.js 15+ (App Router)  
