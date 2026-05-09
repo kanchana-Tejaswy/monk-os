@@ -1,4 +1,4 @@
--- MONK OS Database Schema
+-- MONK MODE Database Schema
 
 -- 1. Profiles (Extends Supabase Auth)
 CREATE TABLE profiles (

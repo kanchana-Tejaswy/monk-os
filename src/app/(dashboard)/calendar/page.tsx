@@ -91,7 +91,7 @@ export default function CalendarPage() {
               How Sync Works
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              When you complete a **Non-Negotiable Habit** or finish a **Deep Work Session**, monk os automatically creates an event in your Google Calendar. Your calendar becomes a true history of your discipline.
+              When you complete a **Non-Negotiable Habit** or finish a **Deep Work Session**, monk mode automatically creates an event in your Google Calendar. Your calendar becomes a true history of your discipline.
             </p>
           </div>
         </div>
@@ -104,7 +104,7 @@ export default function CalendarPage() {
               <div className="absolute inset-0 z-10 bg-background/50 backdrop-blur-[2px] flex flex-col items-center justify-center rounded-[20px]">
                 <CalendarIcon className="h-12 w-12 text-muted-foreground/50 mb-4" />
                 <h3 className="text-xl font-heading font-bold text-muted-foreground mb-2">Calendar Disconnected</h3>
-                <p className="text-sm text-muted-foreground max-w-sm text-center">Connect your Google account to view your daily timeline and sync your monk os data.</p>
+                <p className="text-sm text-muted-foreground max-w-sm text-center">Connect your Google account to view your daily timeline and sync your monk mode data.</p>
               </div>
             )}
 

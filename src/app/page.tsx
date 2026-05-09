@@ -28,7 +28,7 @@ export default function LandingPage() {
             <div className="h-10 w-10 bg-primary flex items-center justify-center rounded-2xl text-primary-foreground shadow-lg shadow-primary/20">
               <Flame className="h-6 w-6" />
             </div>
-            <span className="text-2xl font-heading font-extrabold tracking-tight">monk os</span>
+            <span className="text-2xl font-heading font-extrabold tracking-tight">monk mode</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
             <NavLink href="#manifesto">Manifesto</NavLink>
@@ -117,7 +117,7 @@ export default function LandingPage() {
             </span>
           </h2>
           <p className="text-xl md:text-2xl font-soft opacity-80 leading-relaxed max-w-3xl mx-auto">
-            This isn&apos;t for everyone. Typical apps let you lie to yourself by back-filling history. Not here. In monk os, the only opponent is the version of you that wants to quit.
+            This isn&apos;t for everyone. Typical apps let you lie to yourself by back-filling history. Not here. In monk mode, the only opponent is the version of you that wants to quit.
           </p>
           <div className="inline-block border border-primary/30 rounded-2xl p-6 bg-background/5 backdrop-blur-sm">
             <p className="text-lg font-heading font-bold text-primary uppercase tracking-widest">
@@ -167,7 +167,7 @@ export default function LandingPage() {
             <p className="text-lg md:text-xl text-muted-foreground font-soft leading-relaxed">
               If you miss a day, you own it. 
               <br/><br/>
-              In <strong className="text-foreground">monk os</strong>, logs permanently lock after 48 hours. No back-filling. No lying to yourself. Real discipline requires real consequences.
+              In <strong className="text-foreground">monk mode</strong>, logs permanently lock after 48 hours. No back-filling. No lying to yourself. Real discipline requires real consequences.
             </p>
             <div className="flex items-center gap-8 pt-4">
               <div className="flex flex-col">
@@ -312,14 +312,14 @@ export default function LandingPage() {
             Your Best Life is <br/>A Click Away.
           </h2>
           <p className="text-lg md:text-xl text-background/70 font-soft max-w-2xl mx-auto leading-relaxed">
-            Stop living by accident. Start engineering your evolution with monk os today.
+            Stop living by accident. Start engineering your evolution with monk mode today.
           </p>
           <div className="pt-10">
             <Link 
               href="/login" 
               className="inline-flex items-center justify-center gap-3 px-12 py-6 bg-primary text-primary-foreground font-bold rounded-[32px] text-2xl hover:scale-105 transition-transform shadow-2xl shadow-primary/20 w-full sm:w-auto"
             >
-              Enter the Ashram
+              Enter the Battel Ground
             </Link>
           </div>
         </div>
@@ -333,7 +333,7 @@ export default function LandingPage() {
               <div className="h-10 w-10 bg-primary flex items-center justify-center rounded-xl text-primary-foreground">
                 <Flame className="h-5 w-5" />
               </div>
-              <span className="text-2xl font-heading font-bold tracking-tight">monk os</span>
+              <span className="text-2xl font-heading font-bold tracking-tight">monk mode</span>
             </div>
             <p className="text-muted-foreground font-soft max-w-sm leading-relaxed text-lg">
               Engineering the environment where self-mastery becomes automatic. Built for the disciplined few.
@@ -357,7 +357,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="max-w-7xl mx-auto pt-8 border-t border-border/50 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold text-muted-foreground uppercase tracking-widest">
-          <span>© 2026 monk os. All rights reserved.</span>
+          <span>© 2026 monk mode. All rights reserved.</span>
           <span>Peace is the Ultimate Productivity.</span>
         </div>
       </footer>

@@ -1,4 +1,4 @@
-# 🧘 monk os | Technical Manifesto & Architecture Manual
+# 🧘 monk mode | Technical Manifesto & Architecture Manual
 
 **Version:** 0.1.0  
 **Framework:** Next.js 15+ (App Router)  
@@ -7,7 +7,7 @@
 ---
 
 ## 📖 1. Executive Summary
-**monk os** is not a "productivity app." It is a **Self-Mastery System** designed to transition users from a state of "Scattered Input" to "Focused Output." The system is built around the concept of a **Digital Ashram**—a space where environment design makes discipline the path of least resistance.
+**monk mode** is not a "productivity app." It is a **Self-Mastery System** designed to transition users from a state of "Scattered Input" to "Focused Output." The system is built around the concept of a **Digital Ashram**—a space where environment design makes discipline the path of least resistance.
 
 ### The Prime Directive (For AI & Developers)
 > **"Do not allow the user to lie to themselves."**  

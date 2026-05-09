@@ -12,7 +12,8 @@ import {
   Monitor,
   LogOut,
   Trash2,
-  Download
+  Download,
+  Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -40,8 +41,27 @@ export default function SettingsPage() {
     { id: "profile", label: "Identity Profile", icon: User },
     { id: "habits", label: "Non-Negotiables", icon: CheckCircle2 },
     { id: "system", label: "System & Theme", icon: Monitor },
+    { id: "ikigai", label: "Ikigai Destiny", icon: Sparkles },
     { id: "security", label: "Security & Data", icon: Shield },
   ];
+
+  const handleResetIkigai = () => {
+    if (confirm("Are you sure you want to reset your Ikigai journey? This cannot be undone.")) {
+      localStorage.removeItem("monkos_ikigai_data");
+      alert("Ikigai data reset successfully.");
+    }
+  };
+
+  const handleExportIkigai = () => {
+    const data = localStorage.getItem("monkos_ikigai_data");
+    if (!data) return alert("No Ikigai data found.");
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ikigai-wisdom.json`;
+    a.click();
+  };
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700 pb-20">
@@ -118,7 +138,7 @@ export default function SettingsPage() {
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <Flame className="h-5 w-5 text-primary" />
-                        <h3 className="font-heading font-bold text-lg">monk os Mastery</h3>
+                        <h3 className="font-heading font-bold text-lg">monk mode Mastery</h3>
                       </div>
                       <p className="text-sm text-muted-foreground font-soft">
                         You are currently on the Initiate tier. Upgrade to unlock infinite tracking, AI analysis, and calendar auto-sync.
@@ -205,6 +225,43 @@ export default function SettingsPage() {
               </motion.div>
             )}
 
+            {activeSection === "ikigai" && (
+              <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="space-y-10">
+                <section className="space-y-6">
+                  <h2 className="text-xl font-heading font-bold">Ikigai Management</h2>
+                  <p className="text-sm text-muted-foreground font-soft">
+                    Your Ikigai is your life's compass. Manage your reflection data here.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button 
+                      onClick={handleExportIkigai}
+                      className="flex items-center justify-between p-6 bg-secondary/10 hover:bg-secondary/20 rounded-2xl transition-all group border border-secondary/20"
+                    >
+                      <div className="flex items-center gap-4">
+                        <Download className="h-6 w-6 text-secondary" />
+                        <div className="text-left">
+                          <div className="font-bold">Export Wisdom</div>
+                          <div className="text-xs text-muted-foreground">Download Ikigai JSON.</div>
+                        </div>
+                      </div>
+                    </button>
+                    <button 
+                      onClick={handleResetIkigai}
+                      className="flex items-center justify-between p-6 bg-red-50 hover:bg-red-100 rounded-2xl transition-all group border border-red-100"
+                    >
+                      <div className="flex items-center gap-4">
+                        <Trash2 className="h-6 w-6 text-red-500" />
+                        <div className="text-left">
+                          <div className="font-bold text-red-600">Reset Destiny</div>
+                          <div className="text-xs text-red-400">Clear all Ikigai data.</div>
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                </section>
+              </motion.div>
+            )}
+
             {activeSection === "security" && (
               <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="space-y-10">
                 <section className="space-y-6">
@@ -226,7 +283,7 @@ export default function SettingsPage() {
                         <Trash2 className="h-6 w-6 text-red-500" />
                         <div className="text-left">
                           <div className="font-bold text-red-600">Delete Account</div>
-                          <div className="text-xs text-red-400">Permanently wipe all data from monk os.</div>
+                          <div className="text-xs text-red-400">Permanently wipe all data from monk mode.</div>
                         </div>
                       </div>
                       <ChevronRight className="h-5 w-5 text-red-300" />

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { calculateStreak } from "@/lib/streak";
 import { 
   LayoutDashboard, 
+  Compass,
   BarChart3, 
   CheckCircle2, 
   BookText, 
@@ -18,11 +19,13 @@ import {
   Wallet,
   ListTodo,
   RotateCcw,
-  ShieldAlert
+  ShieldAlert,
+  X
 } from "lucide-react";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Ikigai", href: "/ikigai", icon: Compass },
   { name: "Analytics", href: "/analytics", icon: BarChart3 },
   { name: "Habit Tracker", href: "/habits", icon: CheckCircle2 },
   { name: "Iron Will", href: "/iron-will", icon: ShieldAlert },
@@ -35,7 +38,12 @@ const navigation = [
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const [streak, setStreak] = useState(0);
 
@@ -67,63 +75,83 @@ export function Sidebar() {
   };
 
   return (
-    <div className="flex h-full w-64 flex-col bg-card border-r border-monk-rose/20 transition-all duration-300">
-      <div className="flex h-20 items-center px-6">
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Flame className="h-5 w-5" />
-          </div>
-          <span className="text-xl font-heading font-bold tracking-tight text-foreground uppercase">
-            monk os
-          </span>
-        </div>
-      </div>
-      
-      <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto custom-scrollbar">
-        {navigation.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                "group flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
-                isActive 
-                  ? "bg-primary/10 text-primary" 
-                  : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
-              )}
-            >
-              <item.icon className={cn(
-                "mr-3 h-5 w-5 flex-shrink-0 transition-colors",
-                isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-              )} />
-              {item.name}
-            </Link>
-          );
-        })}
-      </nav>
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
+          onClick={onClose}
+        />
+      )}
 
-      <div className="p-4 border-t border-monk-rose/10 bg-background/50">
-        <div className="rounded-2xl bg-secondary/30 p-4 relative group">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-primary uppercase tracking-wider">Life Streak</span>
-            <button 
-              onClick={handleRestartStreak}
-              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 bg-background rounded-full hover:text-red-500"
-              title="Restart Streak"
-            >
-              <RotateCcw className="h-3 w-3" />
-            </button>
+      <div className={cn(
+        "fixed inset-y-0 left-0 z-50 w-64 flex-col bg-card border-r border-monk-rose/20 transition-transform duration-300 lg:static lg:flex lg:translate-x-0",
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
+        <div className="flex h-20 items-center justify-between px-6">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+              <Flame className="h-5 w-5" />
+            </div>
+            <span className="text-xl font-heading font-bold tracking-tight text-foreground uppercase">
+              monk mode
+            </span>
           </div>
-          <div className="text-2xl font-heading font-bold flex items-center gap-2">
-            {streak} Days
-            <Flame className="h-5 w-5 text-accent animate-pulse" />
-          </div>
-          <div className="mt-2 h-1.5 w-full bg-background rounded-full overflow-hidden">
-            <div className="h-full bg-accent w-[80%] rounded-full" />
+          <button 
+            onClick={onClose}
+            className="p-2 hover:bg-secondary/50 rounded-xl lg:hidden"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        
+        <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto custom-scrollbar">
+          {navigation.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => onClose?.()}
+                className={cn(
+                  "group flex items-center rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                  isActive 
+                    ? "bg-primary/10 text-primary" 
+                    : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                )}
+              >
+                <item.icon className={cn(
+                  "mr-3 h-5 w-5 flex-shrink-0 transition-colors",
+                  isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                )} />
+                {item.name}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="p-4 border-t border-monk-rose/10 bg-background/50">
+          <div className="rounded-2xl bg-secondary/30 p-4 relative group">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-primary uppercase tracking-wider">Life Streak</span>
+              <button 
+                onClick={handleRestartStreak}
+                className="opacity-0 group-hover:opacity-100 transition-opacity p-1 bg-background rounded-full hover:text-red-500"
+                title="Restart Streak"
+              >
+                <RotateCcw className="h-3 w-3" />
+              </button>
+            </div>
+            <div className="text-2xl font-heading font-bold flex items-center gap-2">
+              {streak} Days
+              <Flame className="h-5 w-5 text-accent animate-pulse" />
+            </div>
+            <div className="mt-2 h-1.5 w-full bg-background rounded-full overflow-hidden">
+              <div className="h-full bg-accent w-[80%] rounded-full" />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

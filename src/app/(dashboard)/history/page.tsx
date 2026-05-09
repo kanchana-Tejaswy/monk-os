@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Flame, History, Award, TrendingUp, Trash2 } from "lucide-react";
+import { Flame, History, Award, TrendingUp, Trash2, CheckCircle2, Clock, BookText } from "lucide-react";
+import { calculateAllTimeStats } from "@/lib/streak";
+import { cn, formatDate } from "@/lib/utils";
 
 interface HistoryRecord {
   month: string;
@@ -11,6 +13,14 @@ interface HistoryRecord {
   longestStreak: number;
 }
 
+interface Reflection {
+  habitId: string;
+  habitTitle: string;
+  content: string;
+  timestamp: number;
+  date: string;
+}
+
 export default function ProgressHistoryPage() {
   const [stats, setStats] = useState({
     totalPerfectDays: 0,
@@ -18,31 +28,47 @@ export default function ProgressHistoryPage() {
     consistency: 0
   });
   const [historyRecords, setHistoryRecords] = useState<HistoryRecord[]>([]);
+  const [allReflections, setReflections] = useState<Record<string, Reflection[]>>({});
 
   useEffect(() => {
     loadData();
+    window.addEventListener("streak_updated", loadData);
+    return () => window.removeEventListener("streak_updated", loadData);
   }, []);
 
   const loadData = () => {
-    // In a real app, this would aggregate actual logs from localStorage
-    // For now, we check if monk_os_logs exists to decide between mock data or zero
-    const hasLogs = localStorage.getItem("monk_os_logs");
+    const savedLogs = localStorage.getItem("monk_os_logs");
+    const savedHabits = localStorage.getItem("monk_os_habits");
+    const savedReflections = localStorage.getItem("monk_os_reflections");
     
-    if (hasLogs) {
+    if (savedLogs && savedHabits) {
+      const logs = JSON.parse(savedLogs);
+      const habits = JSON.parse(savedHabits);
+      const habitIds = habits.map((h: { id: string }) => h.id);
+      
+      const allTimeStats = calculateAllTimeStats(logs, habitIds);
+      
       setStats({
-        totalPerfectDays: 72,
-        longestStreak: 21,
-        consistency: 84
+        totalPerfectDays: allTimeStats.totalPerfectDays,
+        longestStreak: allTimeStats.longestStreak,
+        consistency: allTimeStats.consistency
       });
-      setHistoryRecords([
-        { month: "April", year: 2026, daysCompleted: 24, totalDays: 30, longestStreak: 12 },
-        { month: "March", year: 2026, daysCompleted: 28, totalDays: 31, longestStreak: 21 },
-        { month: "February", year: 2026, daysCompleted: 20, totalDays: 28, longestStreak: 9 },
-      ]);
-    } else {
-      setStats({ totalPerfectDays: 0, longestStreak: 0, consistency: 0 });
-      setHistoryRecords([]);
+      setHistoryRecords(allTimeStats.monthlyHistory);
     }
+
+    if (savedReflections) {
+      setReflections(JSON.parse(savedReflections));
+    }
+  };
+
+  const getMonthReflections = (month: string, year: number) => {
+    // month is "April", year is 2026
+    const monthIndex = new Date(`${month} 1, ${year}`).getMonth();
+    const prefix = `${year}-${String(monthIndex + 1).padStart(2, '0')}`;
+    
+    return Object.entries(allReflections)
+      .filter(([date]) => date.startsWith(prefix))
+      .sort((a, b) => b[0].localeCompare(a[0]));
   };
 
   const handleResetHistory = () => {
@@ -102,6 +128,58 @@ export default function ProgressHistoryPage() {
           </div>
           <div className="text-3xl font-heading font-bold text-foreground mt-2">{stats.consistency}%</div>
           <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">All-Time Consistency</div>
+        </div>
+      </div>
+
+      {/* Daily Evidence / Reflections Section */}
+      <div className="monk-card p-8 space-y-8">
+        <h2 className="text-xl font-heading font-bold flex items-center gap-2">
+          <BookText className="h-5 w-5 text-primary" /> Daily Evidence
+        </h2>
+
+        <div className="space-y-10">
+          {Object.keys(allReflections).length === 0 ? (
+            <div className="text-center py-10 bg-secondary/10 rounded-3xl border-2 border-dashed border-monk-rose/20">
+              <p className="text-sm text-muted-foreground italic">No evidence recorded yet. Complete habits to leave a trail of mastery.</p>
+            </div>
+          ) : (
+            Object.entries(allReflections)
+              .sort((a, b) => b[0].localeCompare(a[0]))
+              .map(([date, dayReflections]) => (
+                <div key={date} className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-px flex-1 bg-monk-rose/20" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground bg-background px-4 py-1 rounded-full border border-monk-rose/10">
+                      {formatDate(new Date(date))}
+                    </span>
+                    <div className="h-px flex-1 bg-monk-rose/20" />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {dayReflections.map((ref, idx) => (
+                      <div key={idx} className="bg-zinc-950 text-white p-6 rounded-[32px] border border-white/5 relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                          <CheckCircle2 className="h-12 w-12" />
+                        </div>
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="h-2 w-2 rounded-full bg-monk-mint animate-pulse" />
+                          <span className="text-[10px] font-black uppercase tracking-widest text-primary">
+                            {ref.habitTitle}
+                          </span>
+                          <span className="text-[8px] font-bold text-white/20 uppercase ml-auto">
+                            <Clock className="h-2 w-2 inline mr-1" />
+                            {new Date(ref.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                        <p className="font-soft text-sm leading-relaxed text-white/80">
+                          {ref.content}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))
+          )}
         </div>
       </div>
 

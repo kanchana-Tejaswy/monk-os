@@ -20,7 +20,7 @@ export default function PricingPage() {
           <div className="h-8 w-8 bg-primary flex items-center justify-center rounded-xl text-primary-foreground shadow-lg shadow-primary/20">
             <Flame className="h-5 w-5" />
           </div>
-          <span className="text-xl font-heading font-bold tracking-tight">monk os</span>
+          <span className="text-xl font-heading font-bold tracking-tight">monk mode</span>
         </div>
       </nav>
 

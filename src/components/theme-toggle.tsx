@@ -3,6 +3,7 @@
 import * as React from "react"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
+import { cn } from "@/lib/utils"
 
 export function ThemeToggle() {
   const { setTheme, theme } = useTheme()
@@ -16,7 +17,7 @@ export function ThemeToggle() {
   if (!mounted) return null
 
   return (
-    <div className="flex items-center gap-1 bg-secondary/20 p-1 rounded-xl border border-border/50">
+    <div className="flex items-center gap-1 bg-secondary/20 p-1 rounded-xl border border-border/50 shadow-sm">
       <button
         onClick={() => setTheme("light")}
         className={cn(
@@ -39,9 +40,4 @@ export function ThemeToggle() {
       </button>
     </div>
   )
-}
-
-// Helper for conditional classes since we are using it here
-function cn(...inputs: (string | boolean | undefined | null)[]) {
-  return inputs.filter(Boolean).join(" ")
 }

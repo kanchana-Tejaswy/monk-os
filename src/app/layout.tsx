@@ -16,7 +16,7 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "monk os | Self-Mastery System",
+  title: "monk mode | Self-Mastery System",
   description: "The all-in-one system for focus, habits, growth, and self-mastery.",
   manifest: "/manifest.json",
 };
@@ -42,8 +42,8 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="dark"
+          enableSystem={false}
           disableTransitionOnChange
         >
           {children}

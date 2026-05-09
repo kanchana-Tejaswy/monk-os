@@ -14,7 +14,7 @@ export default function LoginPage() {
             <Flame className="h-8 w-8" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-4xl font-heading font-bold tracking-tight uppercase text-foreground">monk os</h1>
+            <h1 className="text-4xl font-heading font-bold tracking-tight uppercase text-foreground">monk mode</h1>
             <p className="text-muted-foreground font-soft text-lg tracking-widest uppercase">
               Discipline • Clarity • Growth
             </p>

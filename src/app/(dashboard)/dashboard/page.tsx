@@ -80,6 +80,8 @@ export default function DashboardPage() {
     habitsCompletedToday: 0
   });
 
+  const [ikigai, setIkigai] = useState<any>(null);
+
   useEffect(() => {
     // 1. Load Data from LocalStorage
     const savedGoals = localStorage.getItem("monk_os_goals");
@@ -89,6 +91,11 @@ export default function DashboardPage() {
     const savedJournal = localStorage.getItem("monk_os_journal");
     const savedTx = localStorage.getItem("monk_os_finance");
     const savedIronWill = localStorage.getItem("monk_os_iron_will");
+    const savedIkigai = localStorage.getItem("monkos_ikigai_data");
+
+    if (savedIkigai) {
+      setIkigai(JSON.parse(savedIkigai));
+    }
 
     const g = savedGoals ? JSON.parse(savedGoals) : [];
     const h = savedHabits ? JSON.parse(savedHabits) : [];
@@ -120,11 +127,12 @@ export default function DashboardPage() {
     // --- Identity Calculations ---
     const todayStr = new Date().toISOString().split('T')[0];
     const restartDate = localStorage.getItem("monk_os_streak_restart");
-    const streak = calculateStreak(l, h.map((hab: Habit) => hab.id), restartDate);
+    const nonNegotiableHabits = h.filter((hab: Habit) => hab.isNonNegotiable);
+    const streak = calculateStreak(l, nonNegotiableHabits.map((hab: Habit) => hab.id), restartDate);
 
     const deepWorkMinutes = fs.filter((s: FocusSession) => s.timestamp.startsWith(todayStr)).reduce((acc: number, curr: FocusSession) => acc + curr.duration, 0);
-    const habitsToday = h.filter((hab: Habit) => l[`${todayStr}-${hab.id}`]).length;
-    const habitCompletionRate = h.length > 0 ? (habitsToday / h.length) : 0;
+    const habitsToday = nonNegotiableHabits.filter((hab: Habit) => l[`${todayStr}-${hab.id}`]).length;
+    const habitCompletionRate = nonNegotiableHabits.length > 0 ? (habitsToday / nonNegotiableHabits.length) : 0;
     const deepWorkRate = Math.min(deepWorkMinutes / 240, 1);
     const potential = Math.round((habitCompletionRate * 60) + (deepWorkRate * 40));
 
@@ -137,7 +145,7 @@ export default function DashboardPage() {
     for (let i = 0; i < 7; i++) {
       const d = new Date(); d.setDate(d.getDate() - i);
       const ds = d.toISOString().split('T')[0];
-      historyHabitSum += h.length > 0 ? h.filter((hab: Habit) => l[`${ds}-${hab.id}`]).length / h.length : 0;
+      historyHabitSum += nonNegotiableHabits.length > 0 ? nonNegotiableHabits.filter((hab: Habit) => l[`${ds}-${hab.id}`]).length / nonNegotiableHabits.length : 0;
     }
     const habitHistoryScore = (historyHabitSum / 7) * 20;
 
@@ -175,23 +183,30 @@ export default function DashboardPage() {
     <div className="max-w-7xl mx-auto space-y-10 pb-20 animate-in fade-in duration-700">
       
       {/* 1. Header */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-primary font-bold uppercase tracking-[0.3em] text-xs">
+      <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+        <div className="space-y-4 text-center lg:text-left">
+          <div className="flex items-center justify-center lg:justify-start gap-2 text-primary font-bold uppercase tracking-[0.3em] text-[10px] md:text-xs">
             <Sparkles className="h-4 w-4" /> Identity Evolution Active
           </div>
-          <h1 className="text-4xl md:text-5xl font-heading font-extrabold tracking-tighter">
-            Peace be with you, <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent italic">Monk.</span>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold tracking-tighter leading-tight">
+            Peace be with you, <br className="md:hidden" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent italic">Monk.</span>
           </h1>
-          <p className="text-muted-foreground font-soft text-lg">Today is a clean slate. {stats.potential}% of your potential is currently active.</p>
+          <p className="text-muted-foreground font-soft text-base md:text-lg max-w-xl mx-auto lg:mx-0">
+            Today is a clean slate. <span className="text-foreground font-bold">{stats.potential}%</span> of your potential is currently active.
+          </p>
         </div>
         
-        <div className="flex items-center gap-4 bg-white/50 backdrop-blur-md p-2 rounded-[24px] border border-monk-rose/20 shadow-sm">
-          <div className="flex -space-x-2">
-            {[1, 2, 3].map((i) => (<div key={i} className="h-10 w-10 rounded-full border-2 border-white bg-secondary/20 flex items-center justify-center text-[10px] font-bold">M{i}</div>))}
+        <div className="flex items-center justify-center lg:justify-end gap-4 bg-white/50 dark:bg-card/50 backdrop-blur-md p-3 rounded-[32px] border border-monk-rose/20 shadow-sm self-center lg:self-end">
+          <div className="flex -space-x-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-10 w-10 md:h-12 md:w-12 rounded-full border-2 border-background bg-secondary/20 flex items-center justify-center text-[10px] font-bold shadow-sm">
+                M{i}
+              </div>
+            ))}
           </div>
           <div className="pr-4">
-            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Active Peers</div>
+            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mb-1">Active Peers</div>
             <div className="text-sm font-bold">3 Monks Online</div>
           </div>
         </div>
@@ -234,7 +249,7 @@ export default function DashboardPage() {
               <Link href="/habits" className="text-xs font-bold text-primary uppercase tracking-widest hover:underline flex items-center gap-1">Tracker <ArrowRight className="h-3 w-3" /></Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {habits.slice(0, 4).map((habit) => {
+              {habits.filter(h => h.isNonNegotiable).slice(0, 4).map((habit) => {
                 const isCompleted = logs[`${new Date().toISOString().split('T')[0]}-${habit.id}`];
                 return (
                   <div key={habit.id} className={cn("flex items-center justify-between p-5 rounded-[24px] border-2 transition-all", isCompleted ? "bg-monk-mint/5 border-monk-mint/20" : "bg-background border-monk-rose/10")}>
@@ -245,6 +260,11 @@ export default function DashboardPage() {
                   </div>
                 );
               })}
+              {habits.filter(h => h.isNonNegotiable).length === 0 && (
+                <div className="col-span-full py-10 text-center border-2 border-dashed border-secondary/20 rounded-[24px]">
+                  <p className="text-sm text-muted-foreground">No non-negotiables set for today.</p>
+                </div>
+              )}
             </div>
           </section>
         </div>
@@ -300,6 +320,42 @@ export default function DashboardPage() {
                 </div>
               )}
             </div>
+          </section>
+
+          {/* Ikigai Destiny */}
+          <section className="monk-card p-8 bg-amber-500/5 border-amber-500/20 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-all">
+              <Sparkles className="h-24 w-24 text-amber-500" />
+            </div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-sm font-bold text-amber-600 uppercase tracking-[0.2em]">Life Direction</h3>
+              <Link href="/ikigai"><ArrowRight className="h-4 w-4 text-amber-600" /></Link>
+            </div>
+            
+            {ikigai ? (
+              <div className="space-y-4">
+                <p className="text-sm font-heading font-bold italic leading-relaxed text-foreground/80">
+                  "{ikigai.result?.ikigaiStatement || ikigai.dimensions?.skill?.answers?.[0] || 'Unmapped destiny'}"
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {(ikigai.result?.strengths || ikigai.dimensions?.skill?.answers || []).slice(0, 3).map((s: string, i: number) => (
+                    <span key={i} className="px-2 py-0.5 bg-amber-500/10 text-amber-700 text-[10px] font-bold uppercase rounded-md border border-amber-500/20">
+                      {s}
+                    </span>
+                  ))}
+                </div>
+                <Link href="/ikigai" className="block text-center py-2 text-[10px] font-bold text-amber-600 uppercase tracking-widest hover:bg-amber-500/5 rounded-lg border border-amber-500/10 transition-all">
+                  Recalculate Ikigai
+                </Link>
+              </div>
+            ) : (
+              <div className="text-center py-4 space-y-3">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Your purpose is unmapped</p>
+                <Link href="/ikigai" className="inline-block px-4 py-2 bg-amber-500 text-white text-[10px] font-bold uppercase rounded-xl hover:scale-105 transition-all">
+                  Begin Discovery
+                </Link>
+              </div>
+            )}
           </section>
 
           {/* Active Visions */}
