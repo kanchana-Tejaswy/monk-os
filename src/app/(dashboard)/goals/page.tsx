@@ -189,7 +189,7 @@ export default function GoalsPage() {
                         "flex items-center gap-5 p-5 rounded-[24px] border-2 transition-all cursor-pointer group/item",
                         milestone.completed 
                           ? "bg-monk-mint/5 border-monk-mint/20 shadow-inner" 
-                          : "bg-background border-monk-rose/10 hover:border-primary/40 hover:bg-white/50"
+                          : "bg-background border-border hover:border-primary/40 hover:bg-secondary dark:bg-muted"
                       )}
                     >
                       {milestone.completed ? (
@@ -212,7 +212,7 @@ export default function GoalsPage() {
                 </div>
               </div>
 
-              <div className="mt-12 pt-8 border-t border-monk-rose/10 flex items-center justify-between">
+              <div className="mt-12 pt-8 border-t border-border flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
                   <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
@@ -234,7 +234,7 @@ export default function GoalsPage() {
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="col-span-full py-32 flex flex-col items-center justify-center text-center space-y-6 bg-white/30 rounded-[40px] border-2 border-dashed border-secondary/30"
+            className="col-span-full py-32 flex flex-col items-center justify-center text-center space-y-6 bg-secondary dark:bg-muted rounded-[40px] border-2 border-dashed border-border"
           >
             <div className="h-24 w-24 bg-secondary/20 rounded-full flex items-center justify-center">
               <Target className="h-12 w-12 text-secondary/40" />
@@ -261,7 +261,7 @@ export default function GoalsPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-2xl monk-card p-10 md:p-14 shadow-2xl border-2 border-monk-rose/20 overflow-hidden relative"
+              className="w-full max-w-2xl monk-card p-10 md:p-14 shadow-2xl border-2 border-border overflow-hidden relative"
             >
               <div className="absolute top-0 right-0 h-40 w-40 bg-primary/10 rounded-full blur-3xl -mr-20 -mt-20" />
               
@@ -283,7 +283,7 @@ export default function GoalsPage() {
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="e.g. Become AI Engineer"
-                      className="w-full px-6 py-5 rounded-[24px] bg-background border border-monk-rose/20 focus:border-primary/50 focus:outline-none transition-all font-heading font-bold text-xl"
+                      className="w-full px-6 py-5 rounded-[24px] bg-background border border-border focus:border-primary/50 focus:outline-none transition-all font-heading font-bold text-xl"
                     />
                   </div>
                   <div className="space-y-3">
@@ -291,7 +291,7 @@ export default function GoalsPage() {
                     <select 
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
-                      className="w-full px-6 py-5 rounded-[24px] bg-background border border-monk-rose/20 focus:border-primary/50 focus:outline-none transition-all font-bold text-lg cursor-pointer"
+                      className="w-full px-6 py-5 rounded-[24px] bg-background border border-border focus:border-primary/50 focus:outline-none transition-all font-bold text-lg cursor-pointer"
                     >
                       <option>Career</option>
                       <option>Health</option>
@@ -311,7 +311,7 @@ export default function GoalsPage() {
                       onChange={(e) => setMilestoneInput(e.target.value)}
                       onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && (e.preventDefault(), handleAddMilestone())}
                       placeholder="Add a key milestone..."
-                      className="flex-1 px-6 py-5 rounded-[24px] bg-background border border-monk-rose/20 focus:border-primary/50 focus:outline-none transition-all font-soft text-lg"
+                      className="flex-1 px-6 py-5 rounded-[24px] bg-background border border-border focus:border-primary/50 focus:outline-none transition-all font-soft text-lg"
                     />
                     <button 
                       type="button"

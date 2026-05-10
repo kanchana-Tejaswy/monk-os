@@ -84,7 +84,7 @@ export default function SettingsPage() {
                   "flex items-center gap-3 px-6 py-4 rounded-2xl font-bold text-sm transition-all whitespace-nowrap lg:w-full",
                   activeSection === section.id 
                     ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
-                    : "bg-card text-muted-foreground hover:bg-secondary/50"
+                    : "bg-card text-muted-foreground hover:bg-secondary/30 dark:bg-secondary/50"
                 )}
               >
                 <section.icon className="h-5 w-5" />
@@ -108,12 +108,12 @@ export default function SettingsPage() {
                       <input 
                         type="text" 
                         defaultValue="Monk User"
-                        className="w-full px-4 py-3 rounded-xl bg-background border border-monk-rose/20 focus:outline-none focus:border-primary/50 transition-all font-soft"
+                        className="w-full px-4 py-3 rounded-xl bg-background border border-border focus:outline-none focus:border-primary/50 transition-all font-soft"
                       />
                     </div>
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Identity Type</label>
-                      <select className="w-full px-4 py-3 rounded-xl bg-background border border-monk-rose/20 focus:outline-none focus:border-primary/50 transition-all font-soft">
+                      <select className="w-full px-4 py-3 rounded-xl bg-background border border-border focus:outline-none focus:border-primary/50 transition-all font-soft">
                         <option>Builder</option>
                         <option>Student</option>
                         <option>Monk Mode</option>
@@ -133,22 +133,7 @@ export default function SettingsPage() {
                   </div>
                 </section>
 
-                <section className="space-y-4">
-                  <div className="p-6 bg-gradient-to-r from-primary/10 to-accent/10 rounded-2xl border-2 border-primary/20 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Flame className="h-5 w-5 text-primary" />
-                        <h3 className="font-heading font-bold text-lg">monk mode Mastery</h3>
-                      </div>
-                      <p className="text-sm text-muted-foreground font-soft">
-                        You are currently on the Initiate tier. Upgrade to unlock infinite tracking, AI analysis, and calendar auto-sync.
-                      </p>
-                    </div>
-                    <a href="/pricing" className="px-6 py-3 bg-primary text-primary-foreground font-bold rounded-xl hover:scale-105 transition-all shadow-xl shadow-primary/20 whitespace-nowrap text-center">
-                      Upgrade Status
-                    </a>
-                  </div>
-                </section>
+
               </motion.div>
             )}
 
@@ -160,7 +145,7 @@ export default function SettingsPage() {
                 </div>
                 <div className="space-y-3">
                   {["Morning Chanting", "45m Workout", "Deep Work: Coding", "Study: DBMS"].map((h, i) => (
-                    <div key={i} className="flex items-center justify-between p-4 bg-background/50 rounded-2xl border border-monk-rose/10 group">
+                    <div key={i} className="flex items-center justify-between p-4 bg-card rounded-2xl border border-border group">
                       <span className="font-bold text-sm">{h}</span>
                       <button className="p-2 text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all">
                         <Trash2 className="h-4 w-4" />
@@ -247,12 +232,12 @@ export default function SettingsPage() {
                     </button>
                     <button 
                       onClick={handleResetIkigai}
-                      className="flex items-center justify-between p-6 bg-red-50 hover:bg-red-100 rounded-2xl transition-all group border border-red-100"
+                      className="flex items-center justify-between p-6 bg-red-500/10 hover:bg-red-500/20 rounded-2xl transition-all group border border-red-500/20"
                     >
                       <div className="flex items-center gap-4">
                         <Trash2 className="h-6 w-6 text-red-500" />
                         <div className="text-left">
-                          <div className="font-bold text-red-600">Reset Destiny</div>
+                          <div className="font-bold text-red-500">Reset Destiny</div>
                           <div className="text-xs text-red-400">Clear all Ikigai data.</div>
                         </div>
                       </div>
@@ -278,11 +263,11 @@ export default function SettingsPage() {
                       <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-all" />
                     </button>
                     
-                    <button className="w-full flex items-center justify-between p-6 bg-red-50 hover:bg-red-100 rounded-2xl transition-all group border border-red-100">
+                    <button className="w-full flex items-center justify-between p-6 bg-red-500/10 hover:bg-red-500/20 rounded-2xl transition-all group border border-red-500/20">
                       <div className="flex items-center gap-4">
                         <Trash2 className="h-6 w-6 text-red-500" />
                         <div className="text-left">
-                          <div className="font-bold text-red-600">Delete Account</div>
+                          <div className="font-bold text-red-500">Delete Account</div>
                           <div className="text-xs text-red-400">Permanently wipe all data from monk mode.</div>
                         </div>
                       </div>
@@ -291,7 +276,7 @@ export default function SettingsPage() {
                   </div>
                 </section>
                 
-                <button className="flex items-center justify-center gap-2 w-full py-4 bg-foreground text-background font-bold rounded-2xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all">
+                <button className="flex items-center justify-center gap-2 w-full py-4 bg-primary dark:bg-primary text-primary-foreground dark:text-primary-foreground font-bold rounded-2xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all">
                   <LogOut className="h-5 w-5" /> Sign Out
                 </button>
               </motion.div>
@@ -309,7 +294,7 @@ function TimeInput({ label, value }: { label: string, value: string }) {
   return (
     <div className="space-y-2">
       <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">{label}</label>
-      <div className="px-4 py-3 rounded-xl bg-background border border-monk-rose/20 font-bold text-sm cursor-pointer hover:border-primary/50 transition-all">
+      <div className="px-4 py-3 rounded-xl bg-background border border-border font-bold text-sm cursor-pointer hover:border-primary/50 transition-all">
         {value}
       </div>
     </div>

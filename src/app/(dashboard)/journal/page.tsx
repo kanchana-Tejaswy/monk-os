@@ -158,13 +158,13 @@ export default function JournalPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex bg-zinc-900/5 dark:bg-zinc-100/5 p-1 rounded-xl border border-monk-rose/10">
+            <div className="flex bg-secondary/50 dark:bg-white/5 p-1 rounded-xl border border-border">
               <HeaderAction icon={<Undo2 className="h-4 w-4" />} onClick={undo} disabled={historyStep <= 0} title="Undo" />
               <HeaderAction icon={<Redo2 className="h-4 w-4" />} onClick={redo} disabled={historyStep >= history.length - 1} title="Redo" />
             </div>
             <button 
               onClick={handleNewEntry}
-              className="flex items-center gap-2 px-8 py-3 bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 font-bold rounded-2xl hover:scale-105 transition-all shadow-xl"
+              className="flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground font-bold rounded-2xl hover:scale-105 transition-all shadow-xl"
             >
               <Plus className="h-5 w-5" /> Reflect
             </button>
@@ -178,7 +178,7 @@ export default function JournalPage() {
             placeholder="Search through the silence..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white dark:bg-zinc-900 border-2 border-monk-rose/20 focus:border-primary focus:outline-none text-sm transition-all shadow-sm"
+            className="w-full pl-12 pr-4 py-4 rounded-2xl bg-card border-2 border-border focus:border-primary focus:outline-none text-sm transition-all shadow-sm"
           />
         </div>
       </div>
@@ -195,7 +195,7 @@ export default function JournalPage() {
                     "p-2.5 rounded-xl shadow-inner",
                     dom === "Ideas" ? "bg-amber-100 text-amber-600" :
                     dom === "Spiritual" ? "bg-accent/20 text-accent" :
-                    dom === "Academic" ? "bg-secondary/20 text-secondary" :
+                    dom === "Academic" ? "bg-secondary dark:bg-white/5 text-secondary" :
                     dom === "Physical" ? "bg-monk-mint/20 text-monk-mint" : "bg-primary/20 text-primary"
                   )}>
                     <DomainIcon domain={dom} size="h-5 w-5" />
@@ -204,14 +204,14 @@ export default function JournalPage() {
                     {dom === "Spiritual" ? "Daily Journal" : dom}
                   </h2>
                 </div>
-                <span className="text-[10px] font-black bg-zinc-950 text-white dark:bg-white dark:text-black px-3 py-1.5 rounded-lg uppercase tracking-widest">
+                <span className="text-[10px] font-black bg-primary text-primary-foreground px-3 py-1.5 rounded-lg uppercase tracking-widest">
                   {domainEntries.length}
                 </span>
               </div>
 
               <div className="space-y-6">
                 {domainEntries.length === 0 ? (
-                  <div className="py-12 flex flex-col items-center justify-center text-center bg-zinc-900/5 dark:bg-white/5 rounded-[32px] border-2 border-dashed border-monk-rose/20">
+                  <div className="py-12 flex flex-col items-center justify-center text-center bg-zinc-900/5 dark:bg-white/5 rounded-[32px] border-2 border-dashed border-border">
                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">The void is empty</p>
                   </div>
                 ) : (
@@ -243,13 +243,13 @@ export default function JournalPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-2xl bg-zinc-950 text-white rounded-[40px] p-8 md:p-12 shadow-2xl relative z-10 border border-white/10"
+              className="w-full max-w-2xl monk-card p-8 md:p-12 shadow-2xl relative z-10"
             >
               <div className="flex items-center justify-between mb-10">
                 <h2 className="text-3xl font-heading font-black tracking-tighter uppercase">
                   {editingId ? "Update Entry" : "New Entry"}
                 </h2>
-                <button onClick={() => setIsEditorOpen(false)} className="p-2 hover:bg-white/10 rounded-full transition-all text-white/50 hover:text-white"><X /></button>
+                <button onClick={() => setIsEditorOpen(false)} className="p-2 hover:bg-secondary dark:bg-white/5 rounded-full transition-all text-muted-foreground hover:text-foreground"><X /></button>
               </div>
 
               <div className="space-y-10">
@@ -261,7 +261,7 @@ export default function JournalPage() {
                       onClick={() => setDomain(dom)}
                       className={cn(
                         "flex flex-col items-center justify-center gap-2 p-4 rounded-[24px] border-2 transition-all",
-                        domain === dom ? "border-primary bg-primary/10 text-primary" : "border-white/5 text-white/40 hover:border-white/20"
+                        domain === dom ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground/60 hover:border-border/80"
                       )}
                     >
                       <DomainIcon domain={dom} size="h-4 w-4" />
@@ -279,7 +279,7 @@ export default function JournalPage() {
                         onClick={() => setCategory(cat)}
                         className={cn(
                           "px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap",
-                          category === cat ? "bg-white text-black" : "bg-white/5 text-white/50 hover:bg-white/10"
+                          category === cat ? "bg-primary text-primary-foreground" : "bg-secondary/50 dark:bg-white/10 text-muted-foreground hover:bg-secondary/50"
                         )}
                       >
                         {cat}
@@ -291,7 +291,7 @@ export default function JournalPage() {
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     placeholder="Capture your evolution..."
-                    className="w-full h-80 bg-transparent text-2xl font-soft leading-relaxed border-none focus:ring-0 placeholder:opacity-20 resize-none no-scrollbar"
+                    className="w-full h-80 bg-transparent text-2xl font-soft leading-relaxed border-none focus:ring-0 placeholder:opacity-20 resize-none no-scrollbar text-foreground"
                     autoFocus
                   />
                 </div>
@@ -331,12 +331,12 @@ function EntryCard({ entry, onDelete, onEdit }: { entry: JournalEntry, onDelete:
     <motion.div 
       layout
       onClick={onEdit}
-      className="bg-zinc-950 text-white p-8 rounded-[40px] border-2 border-white/5 shadow-2xl transition-all group relative overflow-hidden cursor-pointer hover:border-primary/40 active:scale-[0.99] hover:shadow-primary/5"
+      className="monk-card p-8 md:p-12 border-2 transition-all group relative overflow-hidden cursor-pointer hover:border-primary/40 active:scale-[0.99] hover:shadow-primary/5"
     >
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
           <div className={cn(
-            "h-8 w-8 rounded-full flex items-center justify-center bg-white/5",
+            "h-8 w-8 rounded-full flex items-center justify-center bg-secondary dark:bg-white/5",
             entry.domain === "Ideas" ? "text-amber-400" :
             entry.domain === "Spiritual" ? "text-accent" :
             entry.domain === "Academic" ? "text-secondary" :
@@ -346,12 +346,12 @@ function EntryCard({ entry, onDelete, onEdit }: { entry: JournalEntry, onDelete:
           </div>
           <div className="flex flex-col">
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">{entry.category}</span>
-            <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">{formatDate(new Date(entry.date))}</span>
+            <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">{formatDate(new Date(entry.date))}</span>
           </div>
         </div>
         <button 
           onClick={(e) => { e.stopPropagation(); onDelete(entry.id); }} 
-          className="p-2 text-white/10 hover:text-red-400 transition-all opacity-0 group-hover:opacity-100"
+          className="p-2 text-muted-foreground/20 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100"
         >
           <Trash2 className="h-4 w-4" />
         </button>
@@ -359,20 +359,20 @@ function EntryCard({ entry, onDelete, onEdit }: { entry: JournalEntry, onDelete:
 
       <div className="space-y-4 relative">
         <p className={cn(
-          "font-soft text-xl leading-relaxed text-white/90 whitespace-pre-wrap transition-all duration-500 overflow-hidden",
+          "font-soft text-xl leading-relaxed text-foreground/90 whitespace-pre-wrap transition-all duration-500 overflow-hidden",
           !isExpanded && shouldTruncate ? "max-h-[140px]" : "max-h-full"
         )}>
           {entry.content}
         </p>
         
         {!isExpanded && shouldTruncate && (
-          <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-zinc-950 via-zinc-950/90 to-transparent pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-card via-card/90 to-transparent pointer-events-none" />
         )}
         
         {shouldTruncate && (
           <button 
             onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
-            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary hover:text-white transition-all mt-4 relative z-10 bg-white/5 px-4 py-2 rounded-full border border-white/10"
+            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary hover:text-foreground transition-all mt-4 relative z-10 bg-secondary dark:bg-white/5 px-4 py-2 rounded-full border border-border"
           >
             {isExpanded ? (
               <><ChevronUp className="h-3 w-3" /> Show Less</>
@@ -383,14 +383,14 @@ function EntryCard({ entry, onDelete, onEdit }: { entry: JournalEntry, onDelete:
         )}
       </div>
 
-      <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between">
+      <div className="mt-8 pt-6 border-t border-border flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Clock className="h-3.5 w-3.5 text-white/20" />
-          <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">
+          <Clock className="h-3.5 w-3.5 text-muted-foreground/40" />
+          <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
             {new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </span>
         </div>
-        <div className="text-[8px] font-black uppercase tracking-widest text-white/20 px-3 py-1 bg-white/5 rounded-full">
+        <div className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/40 px-3 py-1 bg-secondary dark:bg-white/5 rounded-full">
            {entry.domain === "Spiritual" ? "DAILY JOURNAL" : entry.domain}
         </div>
       </div>
@@ -412,7 +412,7 @@ function HeaderAction({ icon, onClick, disabled, title }: { icon: React.ReactNod
   return (
     <button 
       onClick={onClick} disabled={disabled} title={title}
-      className="p-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground hover:text-primary disabled:opacity-20 transition-all"
+      className="p-3 rounded-xl hover:bg-secondary/50 dark:bg-white/10 dark:bg-white/5 text-muted-foreground hover:text-primary disabled:opacity-20 transition-all"
     >
       {icon}
     </button>

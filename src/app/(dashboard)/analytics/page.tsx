@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { 
   TrendingUp, 
   Activity, 
@@ -10,10 +10,11 @@ import {
   ShieldCheck,
   Target,
   Brain,
-  Search
+  Search,
+  Calendar
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface FocusSession {
   timestamp: string;
@@ -23,6 +24,7 @@ interface FocusSession {
 interface Transaction {
   type: "credit" | "debit";
   amount: number;
+  date: string;
 }
 
 interface Habit {
@@ -30,34 +32,38 @@ interface Habit {
   title: string;
 }
 
+type ViewType = "weekly" | "monthly" | "yearly";
+
 export default function AnalyticsPage() {
+  const [viewType, setViewType] = useState<ViewType>("weekly");
   const [metrics, setMetrics] = useState({
     lifeScore: 0,
     disciplineScore: 0,
     focusHours: 0,
     savingsMomentum: 0,
-    dailyConsistency: [0, 0, 0, 0, 0, 0, 0],
-    focusTrend: [0, 0, 0, 0, 0, 0, 0]
+    consistencyTrend: [] as number[],
+    focusTrend: [] as number[],
+    labels: [] as string[]
   });
 
-  useEffect(() => {
-    calculateAnalytics();
-    window.addEventListener("streak_updated", calculateAnalytics);
-    return () => window.removeEventListener("streak_updated", calculateAnalytics);
-  }, []);
-
-  const calculateAnalytics = () => {
-    // 1. Discipline (Real Habit Logs)
+  const calculateAnalytics = useCallback(() => {
     const logs = JSON.parse(localStorage.getItem("monk_os_logs") || "{}");
     const habits: Habit[] = JSON.parse(localStorage.getItem("monk_os_habits") || "[]");
-    
-    const last7Days = Array.from({ length: 7 }).map((_, i) => {
+    const focusHistory: FocusSession[] = JSON.parse(localStorage.getItem("monk_os_focus") || "[]");
+    const transactions: Transaction[] = JSON.parse(localStorage.getItem("monk_os_finance") || "[]");
+
+    let daysToTrack = 7;
+    if (viewType === "monthly") daysToTrack = 30;
+    if (viewType === "yearly") daysToTrack = 365;
+
+    const dates = Array.from({ length: daysToTrack }).map((_, i) => {
       const d = new Date();
-      d.setDate(d.getDate() - (6 - i));
+      d.setDate(d.getDate() - (daysToTrack - 1 - i));
       return d.toISOString().split('T')[0];
     });
 
-    const dailyConsistency = last7Days.map(date => {
+    // 1. Discipline Calculation
+    const dailyConsistency = dates.map(date => {
       if (habits.length === 0) return 0;
       let completed = 0;
       habits.forEach(h => {
@@ -66,36 +72,78 @@ export default function AnalyticsPage() {
       return (completed / habits.length) * 100;
     });
 
-    // 2. Focus (Deep Work)
-    const focusHistory: FocusSession[] = JSON.parse(localStorage.getItem("monk_os_focus") || "[]");
-    const focusTrend = last7Days.map(date => {
+    // 2. Focus Calculation
+    const dailyFocus = dates.map(date => {
       const daySessions = focusHistory.filter((s: FocusSession) => s.timestamp.startsWith(date));
       const totalMinutes = daySessions.reduce((acc: number, curr: FocusSession) => acc + curr.duration, 0);
       return totalMinutes / 60; // Hours
     });
-    const totalFocusHours = focusTrend.reduce((a, b) => a + b, 0);
 
-    // 3. Wealth (Finance)
-    const transactions: Transaction[] = JSON.parse(localStorage.getItem("monk_os_finance") || "[]");
-    const income = transactions.filter((t: Transaction) => t.type === "credit").reduce((a: number, b: Transaction) => a + b.amount, 0);
-    const spent = transactions.filter((t: Transaction) => t.type === "debit").reduce((a: number, b: Transaction) => a + b.amount, 0);
+    // 3. Wealth Calculation (Filtered by range)
+    const startDate = dates[0];
+    const rangeTransactions = transactions.filter(t => t.date >= startDate);
+    const income = rangeTransactions.filter(t => t.type === "credit").reduce((a, b) => a + b.amount, 0);
+    const spent = rangeTransactions.filter(t => t.type === "debit").reduce((a, b) => a + b.amount, 0);
     const savingsRate = income > 0 ? Math.max(0, Math.round(((income - spent) / income) * 100)) : 0;
 
-    // 4. Life Score Calculation (Balanced)
-    const disciplineAvg = dailyConsistency.length > 0 ? dailyConsistency.reduce((a, b) => a + b, 0) / 7 : 0;
-    const focusTarget = 28; // 4h per day target
+    // 4. Life Score (Dynamic weighting based on range)
+    const disciplineAvg = dailyConsistency.reduce((a, b) => a + b, 0) / daysToTrack;
+    const totalFocusHours = dailyFocus.reduce((a, b) => a + b, 0);
+    const focusTarget = daysToTrack * 4; // 4h per day target
     const focusScore = Math.min(100, (totalFocusHours / focusTarget) * 100);
     const lifeScore = Math.round((disciplineAvg * 0.4) + (focusScore * 0.3) + (Math.min(100, savingsRate) * 0.3));
+
+    // 5. Grouping for UI if needed
+    let consistencyTrend = dailyConsistency;
+    let focusTrend = dailyFocus;
+    let labels = dates.map(d => d.split('-').slice(1).join('/')); // MM/DD
+
+    if (viewType === "yearly") {
+      // Group by month
+      const months: Record<string, { discipline: number[], focus: number[] }> = {};
+      dates.forEach((date, i) => {
+        const monthKey = date.slice(0, 7); // YYYY-MM
+        if (!months[monthKey]) months[monthKey] = { discipline: [], focus: [] };
+        months[monthKey].discipline.push(dailyConsistency[i]);
+        months[monthKey].focus.push(dailyFocus[i]);
+      });
+
+      const monthKeys = Object.keys(months).sort();
+      consistencyTrend = monthKeys.map(m => months[m].discipline.reduce((a, b) => a + b, 0) / months[m].discipline.length);
+      focusTrend = monthKeys.map(m => months[m].focus.reduce((a, b) => a + b, 0));
+      labels = monthKeys.map(m => new Date(m + "-01").toLocaleString('default', { month: 'short' }));
+    } else if (viewType === "monthly") {
+      // Group by 3-day chunks to avoid 30 bars being too thin
+      const chunks = 10;
+      const chunkSize = 3;
+      consistencyTrend = [];
+      focusTrend = [];
+      labels = [];
+      for (let i = 0; i < chunks; i++) {
+        const sliceD = dailyConsistency.slice(i * chunkSize, (i + 1) * chunkSize);
+        const sliceF = dailyFocus.slice(i * chunkSize, (i + 1) * chunkSize);
+        consistencyTrend.push(sliceD.reduce((a, b) => a + b, 0) / sliceD.length);
+        focusTrend.push(sliceF.reduce((a, b) => a + b, 0));
+        labels.push(dates[i * chunkSize].split('-').slice(1).join('/'));
+      }
+    }
 
     setMetrics({
       lifeScore: lifeScore || 0,
       disciplineScore: Math.round(disciplineAvg) || 0,
       focusHours: Math.round(totalFocusHours * 10) / 10,
       savingsMomentum: savingsRate,
-      dailyConsistency,
-      focusTrend
+      consistencyTrend,
+      focusTrend,
+      labels
     });
-  };
+  }, [viewType]);
+
+  useEffect(() => {
+    calculateAnalytics();
+    window.addEventListener("streak_updated", calculateAnalytics);
+    return () => window.removeEventListener("streak_updated", calculateAnalytics);
+  }, [calculateAnalytics]);
 
   return (
     <div className="max-w-7xl mx-auto space-y-10 animate-in fade-in duration-700 pb-20 px-4 md:px-8">
@@ -107,14 +155,15 @@ export default function AnalyticsPage() {
             <Target className="h-4 w-4 text-primary" /> Hard Data. Zero Lies.
           </p>
         </div>
-        <div className="flex items-center gap-2 p-1 bg-secondary/20 dark:bg-white/5 rounded-2xl border border-primary/20">
-          <button className="px-6 md:px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest bg-foreground text-background shadow-xl transition-all">Weekly View</button>
-          <button className="px-6 md:px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-all">Monthly View</button>
+        <div className="flex items-center gap-2 p-1 bg-secondary dark:bg-white/5 rounded-2xl border border-border">
+          <ViewButton active={viewType === "weekly"} onClick={() => setViewType("weekly")} label="Weekly" />
+          <ViewButton active={viewType === "monthly"} onClick={() => setViewType("monthly")} label="Monthly" />
+          <ViewButton active={viewType === "yearly"} onClick={() => setViewType("yearly")} label="Yearly" />
         </div>
       </div>
 
       {/* Top Level Metric - Life Score */}
-      <section className="bg-card text-card-foreground p-8 md:p-16 rounded-[48px] relative overflow-hidden shadow-2xl shadow-primary/5 border-2 border-primary/10 group">
+      <section className="bg-card text-card-foreground p-8 md:p-16 rounded-[48px] relative overflow-hidden shadow-2xl shadow-sm border-2 border-border group">
         <div className="absolute top-0 right-0 p-12 opacity-[0.08] pointer-events-none group-hover:scale-110 transition-transform duration-1000">
           <ShieldCheck className="h-64 w-64 text-primary" />
         </div>
@@ -122,7 +171,7 @@ export default function AnalyticsPage() {
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="space-y-10 text-center lg:text-left">
             <div className="space-y-4">
-              <span className="text-[10px] font-black text-primary uppercase tracking-[0.5em] bg-primary/10 px-5 py-2 rounded-full border border-primary/20">Integrated Life Score</span>
+              <span className="text-[10px] font-black text-primary uppercase tracking-[0.5em] bg-primary/10 px-5 py-2 rounded-full border border-border">Integrated Life Score</span>
               <h2 className="text-7xl md:text-8xl lg:text-9xl font-heading font-black mt-8 tracking-tighter leading-[0.8] text-foreground drop-shadow-sm">
                 {metrics.lifeScore}
               </h2>
@@ -135,9 +184,9 @@ export default function AnalyticsPage() {
                 : "The path begins with a single non-negotiable. Rebuild from zero."}
             </p>
             <div className="flex flex-wrap justify-center lg:justify-start gap-2 md:gap-3">
-              <MetricPill label={`${metrics.disciplineScore}% Discipline`} color="bg-primary/10 text-primary" border="border-primary/20" />
-              <MetricPill label={`${metrics.savingsMomentum}% Savings`} color="bg-success/10 text-[#45b7a0] dark:text-success" border="border-success/20" />
-              <MetricPill label={`${metrics.focusHours}h Focus`} color="bg-secondary/30 text-secondary-foreground" border="border-secondary/30" />
+              <MetricPill label={`${metrics.disciplineScore}% Discipline`} color="bg-primary/10 text-primary" border="border-border" />
+              <MetricPill label={`${metrics.savingsMomentum}% Savings`} color="bg-success/10 text-[#45b7a0] dark:text-success" border="border-border" />
+              <MetricPill label={`${metrics.focusHours}h Focus`} color="bg-secondary/30 text-secondary-foreground" border="border-border" />
             </div>
           </div>
 
@@ -152,9 +201,10 @@ export default function AnalyticsPage() {
                 <line x1="5" y1="50" x2="95" y2="50" className="stroke-foreground/5 stroke-[0.5]" />
                 
                 <motion.polygon 
+                  key={viewType}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  points={`${50},${50 - (metrics.disciplineScore * 0.4)} ${50 + (Math.min(100, metrics.savingsMomentum) * 0.4)},${50} ${50 + (Math.min(100, metrics.focusHours * 4) * 0.4)},${50 + (metrics.focusHours * 2)} ${50 - (metrics.lifeScore * 0.4)},${50 + (metrics.lifeScore * 0.4)} ${50 - 40},${50}`}
+                  points={`${50},${50 - (metrics.disciplineScore * 0.4)} ${50 + (Math.min(100, metrics.savingsMomentum) * 0.4)},${50} ${50 + (Math.min(100, metrics.focusHours * (viewType === 'weekly' ? 4 : viewType === 'monthly' ? 1 : 0.1)) * 0.4)},${50 + (metrics.focusHours * (viewType === 'weekly' ? 2 : 0.5))} ${50 - (metrics.lifeScore * 0.4)},${50 + (metrics.lifeScore * 0.4)} ${50 - 40},${50}`}
                   className="fill-primary/20 stroke-primary stroke-2"
                 />
               </svg>
@@ -172,76 +222,83 @@ export default function AnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Habit Completion Trend */}
-        <section className="bg-card p-10 rounded-[40px] border-2 border-primary/10 flex flex-col shadow-xl shadow-accent/5">
+        <section className="monk-card p-10 border-2 flex flex-col shadow-xl shadow-sm">
           <div className="flex items-center justify-between mb-12">
             <h3 className="font-heading font-black text-xl flex items-center gap-3 uppercase tracking-tighter text-foreground">
               <Flame className="h-6 w-6 text-accent" />
               Momentum
             </h3>
-            <span className="text-sm font-black text-accent bg-accent/10 px-4 py-1.5 rounded-xl border border-accent/20">{metrics.disciplineScore}%</span>
+            <span className="text-sm font-black text-accent bg-accent/10 px-4 py-1.5 rounded-xl border border-border">{metrics.disciplineScore}%</span>
           </div>
-          <div className="flex-1 flex items-end justify-between gap-3 h-48">
-            {metrics.dailyConsistency.map((val, i) => (
+          <div className="flex-1 flex items-end justify-between gap-2 h-48">
+            {metrics.consistencyTrend.map((val, i) => (
               <div key={i} className="flex-1 group relative">
                 <motion.div 
                   initial={{ height: 0 }}
                   animate={{ height: `${Math.max(8, val)}%` }}
                   className={cn(
                     "w-full rounded-2xl transition-all duration-500",
-                    i === 6 ? "bg-accent shadow-lg shadow-accent/20" : "bg-accent/20 group-hover:bg-accent/40"
+                    i === metrics.consistencyTrend.length - 1 ? "bg-accent shadow-lg shadow-accent/20" : "bg-accent/20 group-hover:bg-accent/40"
                   )}
                 />
+                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-black text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                   {metrics.labels[i]}
+                </div>
               </div>
             ))}
           </div>
           <div className="mt-8 flex justify-between text-[10px] font-black text-muted-foreground uppercase tracking-[0.4em]">
-            <span>-7 Days</span>
+            <span>Past</span>
             <span>Present</span>
           </div>
         </section>
 
         {/* Deep Work Hours */}
-        <section className="bg-card p-10 rounded-[40px] border-2 border-primary/10 flex flex-col shadow-xl shadow-primary/5">
+        <section className="monk-card p-10 border-2 flex flex-col shadow-xl shadow-sm">
           <div className="flex items-center justify-between mb-12">
             <h3 className="font-heading font-black text-xl flex items-center gap-3 uppercase tracking-tighter text-foreground">
               <Zap className="h-6 w-6 text-primary" />
               Focus Depth
             </h3>
-            <span className="text-sm font-black text-primary bg-primary/10 px-4 py-1.5 rounded-xl border border-primary/20">{metrics.focusHours}h</span>
+            <span className="text-sm font-black text-primary bg-primary/10 px-4 py-1.5 rounded-xl border border-border">{metrics.focusHours}h</span>
           </div>
-          <div className="flex-1 flex items-end justify-between gap-3 h-48">
+          <div className="flex-1 flex items-end justify-between gap-2 h-48">
             {metrics.focusTrend.map((val, i) => (
               <div key={i} className="flex-1 group relative">
                 <motion.div 
                   initial={{ height: 0 }}
-                  animate={{ height: `${Math.min(100, (val / 6) * 100)}%` }}
+                  animate={{ height: `${Math.min(100, (val / (viewType === 'yearly' ? 100 : 6)) * 100)}%` }}
                   className={cn(
                     "w-full rounded-2xl transition-all duration-500",
-                    i === 6 ? "bg-primary shadow-lg shadow-primary/20" : "bg-primary/20 group-hover:bg-primary/40"
+                    i === metrics.focusTrend.length - 1 ? "bg-primary shadow-lg shadow-primary/20" : "bg-primary/20 group-hover:bg-primary/40"
                   )}
                 />
+                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-black text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                   {metrics.labels[i]}
+                </div>
               </div>
             ))}
           </div>
           <div className="mt-8 flex justify-between text-[10px] font-black text-muted-foreground uppercase tracking-[0.4em]">
-            <span>-7 Days</span>
+            <span>Past</span>
             <span>Present</span>
           </div>
         </section>
 
         {/* Wealth Chart */}
-        <section className="bg-card p-10 rounded-[40px] border-2 border-primary/10 flex flex-col shadow-xl shadow-success/5">
+        <section className="monk-card p-10 border-2 flex flex-col shadow-xl shadow-sm">
           <div className="flex items-center justify-between mb-12">
             <h3 className="font-heading font-black text-xl flex items-center gap-3 uppercase tracking-tighter text-foreground">
               <TrendingUp className="h-6 w-6 text-success" />
               Capital
             </h3>
-            <span className="text-sm font-black text-success bg-success/10 px-4 py-1.5 rounded-xl border border-success/20">{metrics.savingsMomentum}%</span>
+            <span className="text-sm font-black text-success bg-success/10 px-4 py-1.5 rounded-xl border border-border">{metrics.savingsMomentum}%</span>
           </div>
           <div className="flex-1 flex flex-col items-center justify-center">
             <div className="relative h-32 w-full flex items-end gap-1">
                <svg viewBox="0 0 100 40" className="w-full overflow-visible">
                  <motion.path 
+                    key={viewType}
                     initial={{ pathLength: 0 }}
                     animate={{ pathLength: 1 }}
                     d="M 0 35 L 20 30 L 40 38 L 60 20 L 80 25 L 100 10" 
@@ -254,7 +311,7 @@ export default function AnalyticsPage() {
                  <motion.circle cx="100" cy="10" r="5" className="fill-success shadow-lg shadow-success/20" />
                </svg>
             </div>
-            <p className="mt-8 text-[10px] font-black text-success uppercase tracking-[0.3em] text-center py-4 px-6 bg-success/5 rounded-2xl border border-success/10 w-full italic">
+            <p className="mt-8 text-[10px] font-black text-success uppercase tracking-[0.3em] text-center py-4 px-6 bg-success/5 rounded-2xl border border-border w-full italic">
               {metrics.savingsMomentum > 30 ? "Economic Mastery Active" : "Financial Defense Required"}
             </p>
           </div>
@@ -264,12 +321,28 @@ export default function AnalyticsPage() {
 
       {/* Insights Grid */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <InsightCard label="Discipline" status={metrics.disciplineScore > 80 ? "ELITE" : "VOLATILE"} color="text-accent" bg="bg-accent/10" border="border-accent/10" />
-        <InsightCard label="Cognition" status={metrics.focusHours > 15 ? "SHARP" : "DULLED"} color="text-primary" bg="bg-primary/10" border="border-primary/10" />
-        <InsightCard label="Resilience" status={metrics.lifeScore > 60 ? "UNBREAKABLE" : "FRAGILE"} color="text-secondary-foreground" bg="bg-secondary/20" border="border-secondary/30" />
-        <InsightCard label="Economy" status={metrics.savingsMomentum > 40 ? "PROPLUS" : "DEFICIT"} color="text-success" bg="bg-success/10" border="border-success/10" />
+        <InsightCard label="Discipline" status={metrics.disciplineScore > 80 ? "ELITE" : "VOLATILE"} color="text-accent" bg="bg-accent/10" border="border-border" />
+        <InsightCard label="Cognition" status={metrics.focusHours > (viewType === 'weekly' ? 15 : viewType === 'monthly' ? 60 : 700) ? "SHARP" : "DULLED"} color="text-primary" bg="bg-primary/10" border="border-border" />
+        <InsightCard label="Resilience" status={metrics.lifeScore > 60 ? "UNBREAKABLE" : "FRAGILE"} color="text-secondary-foreground" bg="bg-secondary/20" border="border-border" />
+        <InsightCard label="Economy" status={metrics.savingsMomentum > 40 ? "PROPLUS" : "DEFICIT"} color="text-success" bg="bg-success/10" border="border-border" />
       </section>
     </div>
+  );
+}
+
+function ViewButton({ active, onClick, label }: { active: boolean, onClick: () => void, label: string }) {
+  return (
+    <button 
+      onClick={onClick}
+      className={cn(
+        "px-6 md:px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
+        active 
+          ? "bg-primary dark:bg-primary text-primary-foreground dark:text-primary-foreground shadow-xl" 
+          : "text-muted-foreground hover:text-foreground"
+      )}
+    >
+      {label} View
+    </button>
   );
 }
 

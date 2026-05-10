@@ -231,24 +231,24 @@ export default function HabitTrackerPage() {
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-heading font-bold text-foreground">Discipline Engine</h1>
-          <p className="text-muted-foreground mt-1">Identity is built through non-negotiable actions.</p>
+          <h1 className="text-3xl font-heading font-black tracking-tight text-text-primary italic">Discipline Engine</h1>
+          <p className="text-text-secondary font-soft mt-1">Identity is built through non-negotiable actions.</p>
         </div>
         
-        <div className="flex items-center gap-3 bg-card p-2 rounded-2xl border border-monk-rose/10 shadow-sm">
+        <div className="flex items-center gap-3 bg-card p-2 rounded-2xl border border-border shadow-sm transition-all duration-300">
           <button 
             onClick={() => setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() - 1)))}
-            className="p-2 hover:bg-secondary/50 rounded-xl transition-colors"
+            className="p-2 hover:bg-secondary/50 dark:bg-white/5 rounded-xl transition-all duration-200"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
-          <div className="px-4 font-semibold text-sm min-w-[140px] text-center">
+          <div className="px-4 font-semibold text-sm min-w-[140px] text-center tracking-wide">
             {isToday ? "Today" : formatDate(selectedDate)}
           </div>
           <button 
             onClick={() => setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() + 1)))}
             disabled={isToday}
-            className="p-2 hover:bg-secondary/50 rounded-xl transition-colors disabled:opacity-30"
+            className="p-2 hover:bg-secondary/50 dark:bg-white/5 rounded-xl transition-all duration-200 disabled:opacity-20"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
@@ -257,57 +257,57 @@ export default function HabitTrackerPage() {
 
       {/* Progress Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 monk-card p-6 md:p-8 relative overflow-hidden">
+        <div className="lg:col-span-2 monk-card p-8 relative overflow-hidden">
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-heading font-bold text-lg md:text-xl">Integrity Score</h2>
-              <span className="text-sm md:text-base font-bold text-primary">{Math.round(progress)}%</span>
+              <h2 className="font-semibold text-lg tracking-wide">Integrity Score</h2>
+              <span className="text-base font-black text-primary">{Math.round(progress)}%</span>
             </div>
-            <div className="h-4 w-full bg-secondary/30 rounded-full overflow-hidden">
+            <div className="h-3 w-full bg-secondary/50 dark:bg-white/5 rounded-full overflow-hidden">
               <div 
                 className={cn(
-                  "h-full transition-all duration-700 ease-out rounded-full",
-                  isPerfectDay ? "bg-monk-mint" : "bg-primary"
+                  "h-full transition-all duration-1000 ease-out rounded-full",
+                  isPerfectDay ? "bg-monk-mint shadow-[0_0_15px_rgba(142,217,204,0.3)]" : "bg-primary shadow-[0_0_15px_rgba(217,167,167,0.3)]"
                 )} 
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[10px] md:text-xs text-muted-foreground font-medium uppercase tracking-wider">
+            <div className="mt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[10px] text-text-secondary font-bold uppercase tracking-[0.15em]">
               <span>{nnCompletedCount} of {nonNegotiableHabits.length} Non-Negotiables</span>
-              {isPerfectDay && <span className="text-monk-mint flex items-center gap-1 font-bold"><Flame className="h-3 w-3" /> Integrity Maintained</span>}
+              {isPerfectDay && <span className="text-monk-mint flex items-center gap-1.5 font-black"><Flame className="h-3.5 w-3.5" /> Integrity Maintained</span>}
             </div>
           </div>
-          {isPerfectDay && <div className="absolute -right-20 -top-20 h-64 w-64 bg-monk-mint/10 rounded-full blur-3xl animate-pulse" />}
+          {isPerfectDay && <div className="absolute -right-20 -top-20 h-64 w-64 bg-monk-mint/5 rounded-full blur-3xl animate-pulse" />}
         </div>
 
-        <div className="monk-card p-6 flex flex-row lg:flex-col items-center justify-center lg:justify-center text-left lg:text-center gap-4 lg:space-y-2 border-2 border-accent/20">
-          <div className="h-12 w-12 md:h-14 md:w-14 rounded-2xl bg-accent/10 flex items-center justify-center shrink-0">
-            <Flame className="h-8 w-8 md:h-9 md:w-9 text-accent" />
+        <div className="monk-card p-8 flex flex-row lg:flex-col items-center justify-center lg:justify-center text-left lg:text-center gap-5 lg:space-y-2 border-2 border-accent/10">
+          <div className="h-14 w-14 rounded-2xl bg-accent/5 flex items-center justify-center shrink-0">
+            <Flame className="h-9 w-9 text-accent drop-shadow-[0_0_8px_rgba(232,197,71,0.2)]" />
           </div>
           <div>
-            <div className="text-3xl md:text-4xl font-heading font-bold">{currentStreak}</div>
-            <div className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest">Day Streak</div>
+            <div className="text-4xl font-heading font-black tracking-tight">{currentStreak}</div>
+            <div className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em]">Day Streak</div>
           </div>
         </div>
       </div>
 
       {/* Habits List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-heading font-bold flex items-center gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <section className="space-y-6">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="font-semibold text-lg tracking-wide flex items-center gap-2.5">
               Non-Negotiables
-              {isLocked && <Lock className="h-4 w-4 text-muted-foreground" />}
+              {isLocked && <Lock className="h-4 w-4 text-text-secondary" />}
             </h2>
             <button 
               onClick={() => { setNewHabitIsNonNegotiable(true); setIsAddModalOpen(true); }}
-              className="text-sm font-bold text-primary flex items-center gap-1 hover:underline"
+              className="text-xs font-black text-primary flex items-center gap-1.5 hover:opacity-80 transition-all uppercase tracking-widest"
             >
-              <Plus className="h-4 w-4" /> Add
+              <Plus className="h-3.5 w-3.5" /> Add
             </button>
           </div>
 
-          <div className="grid grid-cols-1 gap-3">
+          <div className="grid grid-cols-1 gap-4">
             <AnimatePresence mode="popLayout">
             {nonNegotiableHabits.map((habit) => (
               <HabitItem 
@@ -326,28 +326,28 @@ export default function HabitTrackerPage() {
               />
             ))}
             {nonNegotiableHabits.length === 0 && (
-              <div className="p-8 border-2 border-dashed border-secondary/30 rounded-[24px] text-center">
-                <p className="text-sm text-muted-foreground">No non-negotiables defined.</p>
+              <div className="p-10 border-2 border-dashed border-border rounded-[24px] text-center bg-secondary/20 dark:bg-white/[0.02]">
+                <p className="text-sm text-text-secondary italic">No non-negotiables defined.</p>
               </div>
             )}
             </AnimatePresence>
           </div>
         </section>
 
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-heading font-bold flex items-center gap-2 text-muted-foreground">
+        <section className="space-y-6">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="font-semibold text-lg tracking-wide flex items-center gap-2.5 text-text-secondary">
               Maintenance
             </h2>
             <button 
               onClick={() => { setNewHabitIsNonNegotiable(false); setIsAddModalOpen(true); }}
-              className="text-sm font-bold text-muted-foreground flex items-center gap-1 hover:underline"
+              className="text-xs font-black text-text-secondary flex items-center gap-1.5 hover:text-text-primary transition-all uppercase tracking-widest"
             >
-              <Plus className="h-4 w-4" /> Add
+              <Plus className="h-3.5 w-3.5" /> Add
             </button>
           </div>
 
-          <div className="grid grid-cols-1 gap-3">
+          <div className="grid grid-cols-1 gap-4">
             <AnimatePresence mode="popLayout">
             {normalHabits.map((habit) => (
               <HabitItem 
@@ -366,8 +366,8 @@ export default function HabitTrackerPage() {
               />
             ))}
             {normalHabits.length === 0 && (
-              <div className="p-8 border-2 border-dashed border-secondary/30 rounded-[24px] text-center">
-                <p className="text-sm text-muted-foreground">No maintenance habits.</p>
+              <div className="p-10 border-2 border-dashed border-border rounded-[24px] text-center bg-secondary/20 dark:bg-white/[0.02]">
+                <p className="text-sm text-text-secondary italic">No maintenance habits.</p>
               </div>
             )}
             </AnimatePresence>
@@ -376,44 +376,52 @@ export default function HabitTrackerPage() {
       </div>
 
       {isLocked && (
-        <div className="bg-secondary/20 p-4 rounded-2xl flex items-start gap-3 border border-secondary/30">
-          <Info className="h-5 w-5 text-muted-foreground mt-0.5" />
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            This day is locked. **monk mode** maintains integrity by preventing back-filling habits older than 48 hours.
+        <div className="bg-card p-5 rounded-2xl flex items-start gap-3.5 border border-border shadow-sm">
+          <Info className="h-5 w-5 text-text-secondary mt-0.5" />
+          <p className="text-sm text-text-secondary leading-relaxed font-soft">
+            This day is locked. <strong className="text-text-primary">monk mode</strong> maintains integrity by preventing back-filling habits older than 48 hours.
           </p>
         </div>
       )}
 
       {/* Heatmap Section */}
-      <section className="bg-card p-8 rounded-[40px] border-2 border-primary/10 shadow-lg relative overflow-hidden group">
-        <div className="absolute -right-20 -bottom-20 h-64 w-64 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors duration-1000" />
+      <section className="monk-card p-6 md:p-10 relative overflow-hidden group border-border shadow-sm">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/[0.04] via-transparent to-transparent opacity-0 transition-opacity duration-700 group-hover:opacity-100 pointer-events-none" />
         
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 relative z-10">
-          <h2 className="font-heading font-black text-xl flex items-center gap-3 uppercase tracking-tighter text-foreground">
-            <Calendar className="h-6 w-6 text-primary" />
-            Consistency Heatmap
-          </h2>
-          <div className="flex items-center gap-3 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] bg-secondary/20 px-4 py-2 rounded-2xl border border-primary/10">
-            <span>Less</span>
-            <div className="flex gap-1.5">
-              <div className="h-3.5 w-3.5 rounded-sm bg-secondary/30" />
-              <div className="h-3.5 w-3.5 rounded-sm bg-primary/20" />
-              <div className="h-3.5 w-3.5 rounded-sm bg-primary/40" />
-              <div className="h-3.5 w-3.5 rounded-sm bg-primary/70" />
-              <div className="h-3.5 w-3.5 rounded-sm bg-primary shadow-[0_0_8px_rgba(246,193,204,0.3)]" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10 relative z-10">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+              <Calendar className="h-5 w-5" />
             </div>
-            <span>More</span>
+            <div>
+              <h2 className="font-semibold text-lg tracking-wide text-text-primary">Consistency Heatmap</h2>
+              <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] opacity-60">Visualizing Identity Growth</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3 self-end sm:self-auto">
+            <div className="flex items-center gap-3 text-[9px] font-black text-text-secondary uppercase tracking-[0.15em] bg-secondary/30 dark:bg-white/[0.02] px-4 py-2 rounded-xl border border-border">
+              <span>Less</span>
+              <div className="flex gap-1">
+                <div className="h-3 w-3 rounded-sm bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/5" />
+                <div className="h-3 w-3 rounded-sm bg-primary/20 border border-primary/5" />
+                <div className="h-3 w-3 rounded-sm bg-primary/40 border border-primary/5" />
+                <div className="h-3 w-3 rounded-sm bg-primary/70 border border-primary/5" />
+                <div className="h-3 w-3 rounded-sm bg-primary shadow-[0_0_10px_rgba(217,167,167,0.4)]" />
+              </div>
+              <span>More</span>
+            </div>
           </div>
         </div>
 
-        <div className="flex flex-col relative z-10 w-full overflow-hidden">
+        <div className="flex flex-col relative z-10 w-full">
           {/* Months - Perfectly aligned to grid columns */}
-          <div className="flex w-full mb-4 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] relative h-5" style={{ paddingLeft: '48px' }}>
+          <div className="flex w-full mb-3 text-[10px] font-bold text-text-secondary uppercase tracking-[0.1em] relative h-4 overflow-hidden" style={{ paddingLeft: '40px' }}>
             {filteredMonthLabels.map((ml, i) => (
               <div 
                 key={i} 
-                className="absolute transition-all" 
-                style={{ left: `${48 + (ml.index * 20)}px` }}
+                className="absolute transition-all opacity-40 group-hover:opacity-80" 
+                style={{ left: `${40 + (ml.index * 17)}px` }}
               >
                 {ml.label}
               </div>
@@ -422,28 +430,28 @@ export default function HabitTrackerPage() {
 
           <div className="flex gap-2">
             {/* Days of week - Fixed width for perfect alignment */}
-            <div className="flex flex-col justify-between py-1 text-[9px] font-black text-muted-foreground/60 uppercase tracking-widest w-10 shrink-0">
-              <span className="h-3.5 flex items-center">Mon</span>
-              <span className="h-3.5 flex items-center invisible">Tue</span>
-              <span className="h-3.5 flex items-center">Wed</span>
-              <span className="h-3.5 flex items-center invisible">Thu</span>
-              <span className="h-3.5 flex items-center">Fri</span>
-              <span className="h-3.5 flex items-center invisible">Sat</span>
-              <span className="h-3.5 flex items-center">Sun</span>
+            <div className="flex flex-col justify-between py-1 text-[9px] font-black text-text-secondary opacity-30 uppercase tracking-tighter w-8 shrink-0">
+              <span className="h-3 flex items-center">Mon</span>
+              <span className="h-3 flex items-center invisible">Tue</span>
+              <span className="h-3 flex items-center">Wed</span>
+              <span className="h-3 flex items-center invisible">Thu</span>
+              <span className="h-3 flex items-center">Fri</span>
+              <span className="h-3 flex items-center invisible">Sat</span>
+              <span className="h-3 flex items-center">Sun</span>
             </div>
 
-            <div className="grid grid-flow-col grid-rows-7 gap-1.5 overflow-x-auto pb-4 custom-scrollbar">
+            <div className="grid grid-flow-col grid-rows-7 gap-1 overflow-x-auto pb-4 custom-scrollbar scroll-smooth">
               {heatmapDays.map((day) => (
                 <div 
                   key={day.date}
                   title={`${day.date}: ${Math.round(day.completionRate * 100)}%`}
                   className={cn(
-                    "h-3.5 w-3.5 rounded-sm transition-all hover:scale-125 hover:z-10 cursor-help border",
-                    day.completionRate === 0 && "bg-secondary/20 border-secondary/10",
-                    day.completionRate > 0 && day.completionRate < 0.4 && "bg-primary/20 border-primary/10",
-                    day.completionRate >= 0.4 && day.completionRate < 0.7 && "bg-primary/40 border-primary/10",
-                    day.completionRate >= 0.7 && day.completionRate < 1 && "bg-primary/70 border-primary/10",
-                    day.completionRate === 1 && "bg-primary border-primary shadow-[0_0_10px_rgba(246,193,204,0.4)]"
+                    "h-3.2 w-3.2 md:h-3.5 md:w-3.5 rounded-[2px] transition-all duration-300 hover:scale-125 hover:z-20 cursor-help border",
+                    day.completionRate === 0 && "bg-zinc-100 dark:bg-white/5 border-zinc-200/50 dark:border-white/5",
+                    day.completionRate > 0 && day.completionRate < 0.4 && "bg-primary/20 border-primary/5",
+                    day.completionRate >= 0.4 && day.completionRate < 0.7 && "bg-primary/40 border-primary/5",
+                    day.completionRate >= 0.7 && day.completionRate < 1 && "bg-primary/70 border-primary/5",
+                    day.completionRate === 1 && "bg-primary border-primary shadow-[0_0_12px_rgba(217,167,167,0.3)]"
                   )}
                 />
               ))}
@@ -519,35 +527,35 @@ function HabitItem({
   habit: Habit; isCompleted: boolean; isLocked: boolean; isEditing: boolean; editValue: string; setEditValue: (v: string) => void; startEditing: () => void; saveEdit: () => void; cancelEditing: () => void; deleteHabit: () => void; toggleHabit: () => void;
 }) {
   return (
-    <motion.div layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className={cn("group flex items-center justify-between p-4 rounded-[24px] border-2 transition-all duration-300", isLocked ? "opacity-75" : "cursor-pointer", isCompleted ? "bg-monk-mint/5 border-monk-mint/20" : "bg-card border-monk-rose/10 hover:border-primary/30")} onClick={() => !isEditing && toggleHabit()}>
-      <div className="flex items-center gap-4 flex-1">
-        <div className={cn("h-8 w-8 rounded-xl flex items-center justify-center transition-all duration-500", isCompleted ? "bg-monk-mint text-white scale-110 shadow-lg shadow-monk-mint/20" : "bg-secondary/30 text-muted-foreground group-hover:scale-105")}>
-          {isCompleted ? <CheckCircle2 className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
+    <motion.div layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className={cn("group flex items-center justify-between p-5 rounded-[24px] border-2 transition-all duration-300", isLocked ? "opacity-60" : "cursor-pointer", isCompleted ? "bg-monk-mint/[0.03] border-monk-mint/20 shadow-lg shadow-monk-mint/[0.02]" : "bg-card border-border hover:border-primary/40 hover:translate-y-[-1px]")} onClick={() => !isEditing && toggleHabit()}>
+      <div className="flex items-center gap-5 flex-1">
+        <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center transition-all duration-500", isCompleted ? "bg-monk-mint text-white scale-110 shadow-lg shadow-monk-mint/20" : "bg-secondary/30 dark:bg-white/[0.03] text-text-secondary group-hover:bg-white/[0.05] group-hover:scale-105")}>
+          {isCompleted ? <CheckCircle2 className="h-6 w-6" /> : <Plus className="h-6 w-6" />}
         </div>
         <div className="flex-1">
           {isEditing ? (
-            <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
-              <input autoFocus value={editValue} onChange={e => setEditValue(e.target.value)} onKeyDown={e => e.key === 'Enter' && saveEdit()} className="bg-background border border-primary/30 px-3 py-1 rounded-lg text-sm font-bold focus:outline-none w-full max-w-xs" />
-              <button onClick={saveEdit} className="p-1 text-monk-mint hover:bg-monk-mint/10 rounded"><Check className="h-4 w-4"/></button>
-              <button onClick={cancelEditing} className="p-1 text-primary hover:bg-primary/10 rounded"><X className="h-4 w-4"/></button>
+            <div className="flex items-center gap-3" onClick={e => e.stopPropagation()}>
+              <input autoFocus value={editValue} onChange={e => setEditValue(e.target.value)} onKeyDown={e => e.key === 'Enter' && saveEdit()} className="bg-background border border-primary/30 px-4 py-1.5 rounded-xl text-sm font-bold focus:outline-none w-full max-w-xs transition-all" />
+              <button onClick={saveEdit} className="p-1.5 text-monk-mint hover:bg-monk-mint/10 rounded-lg transition-colors"><Check className="h-4 w-4"/></button>
+              <button onClick={cancelEditing} className="p-1.5 text-primary hover:bg-primary/10 rounded-lg transition-colors"><X className="h-4 w-4"/></button>
             </div>
           ) : (
             <>
-              <h3 className={cn("font-bold text-sm transition-all", isCompleted ? "text-foreground" : "text-muted-foreground")}>{habit.title}</h3>
-              <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest">{habit.category}</p>
+              <h3 className={cn("font-bold text-sm tracking-tight transition-all", isCompleted ? "text-foreground" : "text-text-primary")}>{habit.title}</h3>
+              <p className="text-[10px] text-text-secondary font-bold uppercase tracking-[0.15em] mt-0.5">{habit.category}</p>
             </>
           )}
         </div>
       </div>
-      <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+      <div className="flex items-center gap-3" onClick={e => e.stopPropagation()}>
         {!isEditing && !isLocked && (
-          <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">
-            <button onClick={startEditing} className="p-2 text-muted-foreground hover:text-primary transition-colors"><Edit2 className="h-3.5 w-3.5"/></button>
-            <button onClick={deleteHabit} className="p-2 text-muted-foreground hover:text-red-500 transition-colors"><Trash2 className="h-3.5 w-3.5"/></button>
+          <div className="flex opacity-0 group-hover:opacity-100 transition-all duration-200">
+            <button onClick={startEditing} className="p-2.5 text-text-secondary hover:text-primary transition-colors"><Edit2 className="h-4 w-4"/></button>
+            <button onClick={deleteHabit} className="p-2.5 text-text-secondary hover:text-red-500 transition-colors"><Trash2 className="h-4 w-4"/></button>
           </div>
         )}
-        {isLocked ? <Lock className="h-4 w-4 text-muted-foreground/50" /> : (
-          <div className={cn("text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-widest", isCompleted ? "bg-monk-mint/20 text-monk-mint" : "bg-secondary/20 text-muted-foreground")}>
+        {isLocked ? <Lock className="h-4 w-4 text-text-secondary/50" /> : (
+          <div className={cn("text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest transition-all", isCompleted ? "bg-monk-mint/10 text-monk-mint" : "bg-secondary/30 dark:bg-white/[0.03] text-text-secondary")}>
             {isCompleted ? "Done" : "Pending"}
           </div>
         )}

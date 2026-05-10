@@ -119,7 +119,7 @@ export default function TodoPage() {
             value={newTodo}
             onChange={(e) => setNewTodo(e.target.value)}
             placeholder="Add a new task..."
-            className="flex-1 px-4 py-3 bg-background border border-monk-rose/20 rounded-xl focus:outline-none focus:border-primary/50 transition-all font-soft"
+            className="flex-1 px-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:border-primary/50 transition-all font-soft"
           />
           <button 
             type="submit"
@@ -134,7 +134,7 @@ export default function TodoPage() {
             {activeTodos.map(todo => (
               <div 
                 key={todo.id}
-                className="flex items-center justify-between p-4 bg-background/50 rounded-xl border border-monk-rose/10 group hover:border-primary/30 transition-all cursor-pointer"
+                className="flex items-center justify-between p-4 bg-muted/50 rounded-xl border border-border group hover:border-primary/30 transition-all cursor-pointer"
                 onClick={() => toggleTodo(todo.id)}
               >
                 <div className="flex items-center gap-3">
@@ -155,12 +155,12 @@ export default function TodoPage() {
           </div>
 
           {completedTodos.length > 0 && (
-            <div className="pt-6 border-t border-monk-rose/10 space-y-3">
+            <div className="pt-6 border-t border-border space-y-3">
               <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4">Completed Objectives</h3>
               {completedTodos.map(todo => (
                 <div 
                   key={todo.id}
-                  className="flex items-center justify-between p-4 bg-background/20 rounded-xl border border-monk-rose/5 group opacity-60 hover:opacity-100 transition-all cursor-pointer"
+                  className="flex items-center justify-between p-4 bg-muted/30 rounded-xl border border-border/50 group opacity-60 hover:opacity-100 transition-all cursor-pointer"
                   onClick={() => toggleTodo(todo.id)}
                 >
                   <div className="flex items-center gap-3">

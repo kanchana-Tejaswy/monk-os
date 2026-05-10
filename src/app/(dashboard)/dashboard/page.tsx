@@ -183,43 +183,29 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-10 pb-20 animate-in fade-in duration-700">
+    <div className="max-w-7xl mx-auto space-y-8 md:space-y-10 pb-20 animate-in fade-in duration-700">
       
       {/* 0. Onboarding Tutorial */}
       <OnboardingTutorial />
       
       {/* 1. Header */}
-      <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-        <div className="space-y-4 text-center lg:text-left">
-          <div className="flex items-center justify-center lg:justify-start gap-2 text-primary font-bold uppercase tracking-[0.3em] text-[10px] md:text-xs">
-            <Sparkles className="h-4 w-4" /> Identity Evolution Active
+      <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 md:gap-8">
+        <div className="space-y-3 md:space-y-4 text-center lg:text-left">
+          <div className="flex items-center justify-center lg:justify-start gap-2 text-primary font-bold uppercase tracking-[0.3em] text-[9px] md:text-xs">
+            <Sparkles className="h-3.5 md:h-4 w-3.5 md:w-4" /> Identity Evolution Active
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold tracking-tighter leading-tight">
-            Peace be with you, <br className="md:hidden" />
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-heading font-extrabold tracking-tighter leading-tight">
+            Peace be with you, <br className="sm:hidden" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent italic">Monk.</span>
           </h1>
-          <p className="text-muted-foreground font-soft text-base md:text-lg max-w-xl mx-auto lg:mx-0">
+          <p className="text-text-secondary font-soft text-sm md:text-lg max-w-xl mx-auto lg:mx-0">
             Today is a clean slate. <span className="text-foreground font-bold">{stats.potential}%</span> of your potential is currently active.
           </p>
-        </div>
-        
-        <div className="flex items-center justify-center lg:justify-end gap-4 bg-white/50 dark:bg-card/50 backdrop-blur-md p-3 rounded-[32px] border border-monk-rose/20 shadow-sm self-center lg:self-end">
-          <div className="flex -space-x-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-10 w-10 md:h-12 md:w-12 rounded-full border-2 border-background bg-secondary/20 flex items-center justify-center text-[10px] font-bold shadow-sm">
-                M{i}
-              </div>
-            ))}
-          </div>
-          <div className="pr-4">
-            <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mb-1">Active Peers</div>
-            <div className="text-sm font-bold">3 Monks Online</div>
-          </div>
         </div>
       </header>
 
       {/* 2. Aura Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <AuraCard label="Life Score" value={stats.lifeScore.toString()} sub="Identity Strength" icon={Sparkles} color="text-accent" glow="shadow-accent/20" bg="bg-accent/10" />
         <AuraCard label="Current Streak" value={`${stats.streak} Days`} sub={stats.streak > 0 ? "Momentum High" : "Start Today"} icon={Flame} color="text-primary" glow="shadow-primary/20" bg="bg-primary/10" />
         <AuraCard label="Deep Work" value={formatDeepWork(stats.deepWorkToday)} sub="Goal: 4h" icon={Zap} color="text-secondary" glow="shadow-secondary/20" bg="bg-secondary/10" />
@@ -227,48 +213,68 @@ export default function DashboardPage() {
       </div>
 
       {/* 3. Main Dashboard */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
         
-        <div className="lg:col-span-8 space-y-8">
+        <div className="lg:col-span-8 space-y-6 md:space-y-8">
           {/* Deep Work Portal */}
-          <section className="relative overflow-hidden rounded-[32px] bg-[#2E2E2E] p-8 text-white shadow-2xl shadow-primary/20">
-            <div className="absolute top-0 right-0 h-64 w-64 bg-primary/20 rounded-full blur-[100px] -mr-32 -mt-32" />
+          <section className="monk-card relative overflow-hidden p-6 md:p-10 transition-all duration-500">
+            <div className="absolute top-0 right-0 h-64 md:h-80 w-64 md:w-80 bg-primary/10 dark:bg-primary/[0.05] rounded-full blur-[80px] md:blur-[100px] -mr-32 -mt-32 pointer-events-none" />
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="space-y-4 text-center md:text-left">
-                <h2 className="text-3xl font-heading font-bold tracking-tight">Enter Flow State.</h2>
-                <p className="text-white/60 font-soft max-w-sm">Focus sessions boost your Life Score and reinforce discipline.</p>
+                <h2 className="text-3xl md:text-4xl font-heading font-black tracking-tight text-text-primary">Enter Flow State.</h2>
+                <p className="text-text-secondary font-soft text-base md:text-lg max-w-sm leading-relaxed">
+                  Focus sessions boost your Life Score and reinforce discipline.
+                </p>
                 <div className="flex flex-wrap justify-center md:justify-start gap-3">
-                  <span className="px-3 py-1 bg-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest border border-white/10">Coding</span>
-                  <span className="px-3 py-1 bg-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest border border-white/10">Academic</span>
+                  <span className="px-4 py-1.5 bg-zinc-100 dark:bg-secondary text-text-primary rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-border shadow-sm">Coding</span>
+                  <span className="px-4 py-1.5 bg-zinc-100 dark:bg-secondary text-text-primary rounded-full text-[10px] font-black uppercase tracking-[0.2em] border border-border shadow-sm">Academic</span>
                 </div>
               </div>
-              <Link href="/focus" className="h-24 w-24 bg-primary text-primary-foreground rounded-full flex items-center justify-center hover:scale-110 transition-all shadow-xl group">
+              <Link href="/focus" className="h-24 w-24 bg-primary text-primary-foreground rounded-full flex items-center justify-center hover:scale-110 transition-all shadow-xl group shrink-0">
                 <Play className="h-10 w-10 fill-current ml-1" />
               </Link>
             </div>
           </section>
 
           {/* Today's Habits */}
-          <section className="monk-card p-8">
+          <section className="monk-card p-6 md:p-8 shadow-sm">
             <div className="flex items-center justify-between mb-8">
-              <div className="space-y-1"><h2 className="text-2xl font-heading font-bold">Non-Negotiables</h2><p className="text-sm text-muted-foreground">Foundation of your identity today.</p></div>
-              <Link href="/habits" className="text-xs font-bold text-primary uppercase tracking-widest hover:underline flex items-center gap-1">Tracker <ArrowRight className="h-3 w-3" /></Link>
+              <div className="space-y-1">
+                <h2 className="text-2xl font-heading font-bold text-text-primary">Non-Negotiables</h2>
+                <p className="text-sm text-text-secondary">Foundation of your identity today.</p>
+              </div>
+              <Link href="/habits" className="text-xs font-black text-primary uppercase tracking-widest hover:opacity-80 flex items-center gap-1 transition-all">
+                Tracker <ArrowRight className="h-3 w-3" />
+              </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {habits.filter(h => h.isNonNegotiable).slice(0, 4).map((habit) => {
                 const isCompleted = logs[`${new Date().toISOString().split('T')[0]}-${habit.id}`];
                 return (
-                  <div key={habit.id} className={cn("flex items-center justify-between p-5 rounded-[24px] border-2 transition-all", isCompleted ? "bg-monk-mint/5 border-monk-mint/20" : "bg-background border-monk-rose/10")}>
+                  <div key={habit.id} className={cn(
+                    "flex items-center justify-between p-5 rounded-[24px] border-2 transition-all", 
+                    isCompleted 
+                      ? "bg-monk-mint/10 border-monk-mint/30 dark:bg-monk-mint/5 dark:border-monk-mint/20" 
+                      : "bg-zinc-50 dark:bg-background border-border"
+                  )}>
                     <div className="flex items-center gap-4">
-                      <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center", isCompleted ? "bg-monk-mint text-white" : "bg-secondary/20 text-muted-foreground")}>{isCompleted ? <CheckCircle2 className="h-6 w-6" /> : <Circle className="h-6 w-6" />}</div>
-                      <div><div className="font-bold text-sm">{habit.title}</div><div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{habit.category}</div></div>
+                      <div className={cn(
+                        "h-10 w-10 rounded-xl flex items-center justify-center transition-all", 
+                        isCompleted ? "bg-monk-mint text-white shadow-lg shadow-monk-mint/20" : "bg-white dark:bg-secondary/20 text-text-secondary shadow-sm border border-border"
+                      )}>
+                        {isCompleted ? <CheckCircle2 className="h-6 w-6" /> : <Circle className="h-6 w-6" />}
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm text-text-primary">{habit.title}</div>
+                        <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest opacity-60">{habit.category}</div>
+                      </div>
                     </div>
                   </div>
                 );
               })}
               {habits.filter(h => h.isNonNegotiable).length === 0 && (
-                <div className="col-span-full py-10 text-center border-2 border-dashed border-secondary/20 rounded-[24px]">
-                  <p className="text-sm text-muted-foreground">No non-negotiables set for today.</p>
+                <div className="col-span-full py-12 text-center border-2 border-dashed border-border rounded-[24px] bg-zinc-50 dark:bg-secondary/20">
+                  <p className="text-sm text-text-secondary italic">No non-negotiables set for today.</p>
                 </div>
               )}
             </div>
@@ -276,33 +282,36 @@ export default function DashboardPage() {
         </div>
 
         {/* Right Column */}
-        <div className="lg:col-span-4 space-y-8">
+        <div className="lg:col-span-4 space-y-6 md:space-y-8">
           {/* Financial Snapshot */}
-          <section className="monk-card p-8 bg-secondary/10 border-secondary/20">
-            <h3 className="text-sm font-bold text-secondary uppercase tracking-[0.2em] mb-6">Financial Pulse</h3>
+          <section className="monk-card p-8 shadow-sm transition-all duration-500">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em]">Financial Pulse</h3>
+              <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
+            </div>
             <div className="space-y-6">
               <div className="flex items-end justify-between">
                 <div>
-                  <div className="text-3xl font-heading font-bold">{formatCurrency(financeData.monthlySpent)}</div>
-                  <div className="text-xs font-bold text-muted-foreground uppercase mt-1">Spent this month</div>
+                  <div className="text-3xl font-heading font-black tracking-tight text-text-primary">{formatCurrency(financeData.monthlySpent)}</div>
+                  <div className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mt-1">Spent this month</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs font-bold text-monk-mint uppercase mb-1">Earned: {formatCurrency(financeData.monthlyEarned)}</div>
-                  <div className="text-xs font-bold text-muted-foreground uppercase">{Math.round(100 - financeData.spendingProgress)}% Surplus</div>
+                  <div className="text-[10px] font-bold text-monk-mint uppercase tracking-widest mb-1">Earned: {formatCurrency(financeData.monthlyEarned)}</div>
+                  <div className="text-[10px] font-bold text-text-secondary uppercase tracking-widest opacity-60">{Math.round(100 - financeData.spendingProgress)}% Surplus</div>
                 </div>
               </div>
-              <div className="h-2 w-full bg-secondary/20 rounded-full overflow-hidden">
-                <motion.div initial={{ width: 0 }} animate={{ width: `${financeData.spendingProgress}%` }} transition={{ duration: 1 }} className="h-full bg-secondary rounded-full" />
+              <div className="h-2 w-full bg-zinc-100 dark:bg-white/10 rounded-full overflow-hidden border border-border">
+                <motion.div initial={{ width: 0 }} animate={{ width: `${financeData.spendingProgress}%` }} transition={{ duration: 1 }} className="h-full bg-primary rounded-full shadow-[0_0_10px_rgba(246,193,204,0.3)]" />
               </div>
-              <Link href="/finance" className="block text-center py-3 bg-white/50 hover:bg-white rounded-xl text-xs font-bold transition-all border border-monk-rose/10">Manage Ledger</Link>
+              <Link href="/finance" className="block text-center py-3.5 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-xl text-[10px] font-black uppercase tracking-widest transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-zinc-900/10 dark:shadow-white/5">Manage Ledger</Link>
             </div>
           </section>
 
           {/* Iron Will Summary */}
-          <section className="monk-card p-8 bg-primary/5 border-primary/10">
+          <section className="monk-card p-8 bg-white dark:bg-primary/5 border-border dark:border-primary/10 shadow-sm">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-sm font-bold text-primary uppercase tracking-[0.2em]">Iron Will</h3>
-              <Link href="/iron-will"><ChevronRight className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" /></Link>
+              <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Iron Will</h3>
+              <Link href="/iron-will"><ChevronRight className="h-5 w-5 text-text-secondary hover:text-primary transition-colors" /></Link>
             </div>
             <div className="space-y-6">
               {ironWillChallenges.length > 0 ? ironWillChallenges.map((challenge) => {
@@ -310,54 +319,54 @@ export default function DashboardPage() {
                 return (
                   <div key={challenge.id} className="flex items-center justify-between">
                     <div className="space-y-1">
-                      <div className="text-xs font-bold uppercase tracking-wider">{challenge.title}</div>
-                      <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Mastery Active</div>
+                      <div className="text-xs font-black uppercase tracking-wider text-text-primary">{challenge.title}</div>
+                      <div className="text-[9px] font-bold text-text-secondary uppercase tracking-widest opacity-60">Mastery Active</div>
                     </div>
                     <div className="flex items-center gap-2">
-                       <span className="text-2xl font-heading font-black">{days}</span>
-                       <span className="text-[10px] font-bold text-muted-foreground uppercase">Days</span>
+                       <span className="text-2xl font-heading font-black text-text-primary">{days}</span>
+                       <span className="text-[9px] font-bold text-text-secondary uppercase">Days</span>
                     </div>
                   </div>
                 );
               }) : (
                 <div className="py-4 text-center">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">No Active Shields</p>
-                  <Link href="/iron-will" className="text-[10px] font-bold text-primary uppercase hover:underline mt-1 block">Forge Discipline</Link>
+                  <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">No Active Shields</p>
+                  <Link href="/iron-will" className="text-[10px] font-bold text-primary uppercase hover:underline mt-2 block tracking-widest">Forge Discipline</Link>
                 </div>
               )}
             </div>
           </section>
 
           {/* Ikigai Destiny */}
-          <section className="monk-card p-8 bg-amber-500/5 border-amber-500/20 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-all">
+          <section className="monk-card p-8 bg-amber-50 dark:bg-amber-500/5 border-amber-200 dark:border-amber-500/20 relative overflow-hidden group shadow-sm">
+            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-all pointer-events-none">
               <Sparkles className="h-24 w-24 text-amber-500" />
             </div>
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-sm font-bold text-amber-600 uppercase tracking-[0.2em]">Life Direction</h3>
+              <h3 className="text-[10px] font-black text-amber-600 uppercase tracking-[0.3em]">Life Direction</h3>
               <Link href="/ikigai"><ArrowRight className="h-4 w-4 text-amber-600" /></Link>
             </div>
             
             {ikigai ? (
-              <div className="space-y-4">
-                <p className="text-sm font-heading font-bold italic leading-relaxed text-foreground/80">
+              <div className="space-y-5">
+                <p className="text-sm font-heading font-bold italic leading-relaxed text-zinc-800 dark:text-foreground/80">
                   "{ikigai.result?.ikigaiStatement || ikigai.dimensions?.skill?.answers?.[0] || 'Unmapped destiny'}"
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {(ikigai.result?.strengths || ikigai.dimensions?.skill?.answers || []).slice(0, 3).map((s: string, i: number) => (
-                    <span key={i} className="px-2 py-0.5 bg-amber-500/10 text-amber-700 text-[10px] font-bold uppercase rounded-md border border-amber-500/20">
+                    <span key={i} className="px-2 py-0.5 bg-amber-500/10 text-amber-700 dark:text-amber-500 text-[9px] font-black uppercase rounded-md border border-amber-500/20">
                       {s}
                     </span>
                   ))}
                 </div>
-                <Link href="/ikigai" className="block text-center py-2 text-[10px] font-bold text-amber-600 uppercase tracking-widest hover:bg-amber-500/5 rounded-lg border border-amber-500/10 transition-all">
+                <Link href="/ikigai" className="block text-center py-2.5 text-[9px] font-black text-amber-600 uppercase tracking-widest hover:bg-amber-500/10 rounded-xl border border-amber-500/10 transition-all">
                   Recalculate Ikigai
                 </Link>
               </div>
             ) : (
               <div className="text-center py-4 space-y-3">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Your purpose is unmapped</p>
-                <Link href="/ikigai" className="inline-block px-4 py-2 bg-amber-500 text-white text-[10px] font-bold uppercase rounded-xl hover:scale-105 transition-all">
+                <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">Your purpose is unmapped</p>
+                <Link href="/ikigai" className="inline-block px-5 py-2.5 bg-amber-500 text-white text-[9px] font-black uppercase tracking-widest rounded-xl hover:scale-105 transition-all shadow-lg shadow-amber-500/20">
                   Begin Discovery
                 </Link>
               </div>
@@ -365,20 +374,27 @@ export default function DashboardPage() {
           </section>
 
           {/* Active Visions */}
-          <section className="monk-card p-8">
+          <section className="monk-card p-8 bg-white dark:bg-card border-border shadow-sm">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-[0.2em]">Active Visions</h3>
-              <Link href="/goals"><ChevronRight className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" /></Link>
+              <h3 className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em]">Active Visions</h3>
+              <Link href="/goals"><ChevronRight className="h-5 w-5 text-text-secondary hover:text-primary transition-colors" /></Link>
             </div>
             <div className="space-y-6">
               {goals.length > 0 ? goals.map((goal) => (
                 <div key={goal.id} className="space-y-2">
-                  <div className="flex justify-between text-xs font-bold uppercase tracking-wider"><span>{goal.title}</span><span className="text-primary">{goal.progress}%</span></div>
-                  <div className="h-1.5 w-full bg-secondary/20 rounded-full overflow-hidden">
+                  <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
+                    <span className="text-text-primary">{goal.title}</span>
+                    <span className="text-primary">{goal.progress}%</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-secondary dark:bg-white/5 rounded-full overflow-hidden">
                     <motion.div initial={{ width: 0 }} animate={{ width: `${goal.progress}%` }} transition={{ duration: 1 }} className="h-full bg-primary rounded-full shadow-[0_0_10px_rgba(246,193,204,0.4)]" />
                   </div>
                 </div>
-              )) : <div className="py-4 text-center text-xs font-bold text-muted-foreground uppercase tracking-widest">No Active Visions</div>}
+              )) : (
+                <div className="py-4 text-center">
+                  <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">No Active Visions</p>
+                </div>
+              )}
             </div>
           </section>
         </div>
@@ -400,7 +416,7 @@ interface AuraCardProps {
 
 function AuraCard({ label, value, sub, icon: Icon, color, glow, bg }: AuraCardProps) {
   return (
-    <motion.div whileHover={{ y: -5 }} className={cn("monk-card p-6 flex flex-col justify-between h-40 shadow-xl border border-monk-rose/10 relative overflow-hidden group", glow)}>
+    <motion.div whileHover={{ y: -5 }} className={cn("monk-card p-6 flex flex-col justify-between h-40 shadow-xl border border-border relative overflow-hidden group", glow)}>
       <div className={cn("absolute -right-4 -top-4 p-8 rounded-full opacity-0 group-hover:opacity-10 transition-all", bg)}><Icon className="h-20 w-20" /></div>
       <div className="flex items-center justify-between relative z-10">
         <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">{label}</span>
@@ -510,7 +526,7 @@ function OnboardingTutorial() {
                 </div>
                 <button 
                   onClick={() => step < steps.length - 1 ? setStep(step + 1) : handleClose()}
-                  className="px-8 py-4 bg-foreground text-background font-black text-xs uppercase tracking-widest rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-foreground/10 flex items-center gap-2"
+                  className="px-8 py-4 bg-primary dark:bg-primary text-primary-foreground dark:text-primary-foreground font-black text-xs uppercase tracking-widest rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-foreground/10 flex items-center gap-2"
                 >
                   {steps[step].action}
                   <ArrowRight className="h-4 w-4" />

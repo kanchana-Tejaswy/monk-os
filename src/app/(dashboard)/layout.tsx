@@ -22,7 +22,7 @@ export default function DashboardLayout({
 
       <div className="flex flex-1 flex-col overflow-hidden relative z-10">
         {/* Top Header with Glassmorphism */}
-        <header className="flex h-20 items-center justify-between glass-panel sticky top-0 z-30 px-6 md:px-10 border-b border-primary/10">
+        <header className="flex h-20 items-center justify-between glass-panel sticky top-0 z-30 px-6 md:px-10 border-b border-border transition-colors duration-500">
           <div className="flex items-center gap-3 lg:hidden">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
               <Flame className="h-5 w-5" />
@@ -38,7 +38,7 @@ export default function DashboardLayout({
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="p-1 bg-secondary/10 rounded-2xl border border-secondary/20">
+            <div className="p-1 bg-secondary/50 dark:bg-secondary/10 rounded-2xl border border-border transition-colors duration-500">
               <ThemeToggle />
             </div>
             <button 
