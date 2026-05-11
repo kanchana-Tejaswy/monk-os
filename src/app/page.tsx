@@ -17,6 +17,7 @@ import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 
+
 export default function LandingPage() {
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
