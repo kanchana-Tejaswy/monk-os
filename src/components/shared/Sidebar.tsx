@@ -118,10 +118,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       )}
 
       <div className={cn(
-        "fixed inset-y-0 left-0 z-50 w-72 flex-col glass-panel border-r border-border transition-transform duration-500 ease-out lg:static lg:flex lg:translate-x-0",
+        "fixed inset-y-0 left-0 z-50 w-72 flex-col glass-panel border-r border-border transition-transform duration-500 ease-out lg:static lg:flex lg:translate-x-0 h-[100dvh] overflow-y-auto custom-scrollbar",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <div className="flex h-20 items-center justify-between px-6 shrink-0 border-b border-border">
+        <div className="flex h-20 items-center justify-between px-6 shrink-0 border-b border-border bg-background/50 backdrop-blur-md sticky top-0 z-20">
           <div className="flex items-center gap-3 overflow-hidden">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shrink-0 shadow-lg shadow-primary/20 transition-transform duration-300 hover:scale-110">
               <Flame className="h-6 w-6" />

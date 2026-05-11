@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
   Flame, 
@@ -12,17 +13,36 @@ import {
   Heart,
   Dumbbell
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-
 export default function LandingPage() {
+  const { scrollY } = useScroll();
+  const [hidden, setHidden] = useState(false);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    if (latest > previous && latest > 150) {
+      setHidden(true);
+    } else {
+      setHidden(false);
+    }
+  });
+
   return (
     <div className="min-h-screen bg-white dark:bg-[#0B0D10] font-sans text-zinc-900 dark:text-zinc-100 selection:bg-primary/30 overflow-x-hidden flex flex-col transition-colors duration-500">
       
       {/* Navbar */}
-      <nav className="fixed top-0 w-full z-50 bg-white/90 dark:bg-[#0B0D10]/90 backdrop-blur-xl border-b border-zinc-200 dark:border-[#1F242B] transition-colors duration-300">
+      <motion.nav 
+        variants={{
+          visible: { y: 0 },
+          hidden: { y: "-100%" },
+        }}
+        animate={hidden ? "hidden" : "visible"}
+        transition={{ duration: 0.35, ease: "easeInOut" }}
+        className="fixed top-0 w-full z-50 bg-white/90 dark:bg-[#0B0D10]/90 backdrop-blur-xl border-b border-zinc-200 dark:border-[#1F242B] transition-colors duration-300"
+      >
         <div className="flex items-center justify-between px-6 md:px-12 py-4 max-w-7xl mx-auto">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 bg-primary flex items-center justify-center rounded-2xl text-primary-foreground shadow-lg shadow-primary/20">
@@ -47,7 +67,7 @@ export default function LandingPage() {
             </Link>
           </div>
         </div>
-      </nav>
+      </motion.nav>
 
       {/* Hero Section */}
       <main className="flex-1 w-full pt-24 md:pt-40 pb-16 md:pb-20 px-4 md:px-8 relative bg-white dark:bg-[#0B0D10]">
@@ -106,20 +126,20 @@ export default function LandingPage() {
       </main>
 
       {/* Manifesto Section */}
-      <section id="manifesto" className="py-24 md:py-40 px-6 bg-zinc-50 dark:bg-[#0F1115] text-zinc-900 dark:text-zinc-100 border-y border-zinc-200 dark:border-[#1F242B] transition-colors duration-500 relative overflow-hidden text-center">
+      <section id="manifesto" className="py-20 md:py-40 px-6 bg-zinc-50 dark:bg-[#0F1115] text-zinc-900 dark:text-zinc-100 border-y border-zinc-200 dark:border-[#1F242B] transition-colors duration-500 relative overflow-hidden text-center">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 dark:from-primary/5 via-transparent to-transparent opacity-50 pointer-events-none" />
-        <div className="max-w-4xl mx-auto space-y-12 relative z-10">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold tracking-tighter uppercase leading-tight text-zinc-900 dark:text-white">
+        <div className="max-w-4xl mx-auto space-y-8 md:space-y-12 relative z-10">
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-heading font-extrabold tracking-tighter uppercase leading-tight text-zinc-900 dark:text-white">
             You vs. You. <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary italic drop-shadow-sm">
               The Ultimate Battleground.
             </span>
           </h2>
-          <p className="text-lg md:text-xl font-soft text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-base md:text-xl font-soft text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-2xl mx-auto">
             This isn&apos;t for everyone. Typical apps let you lie to yourself by back-filling history. Not here. In monk mode, the only opponent is the version of you that wants to quit.
           </p>
-          <div className="inline-block border border-primary/30 dark:border-primary/20 rounded-2xl p-8 bg-white dark:bg-white/5 backdrop-blur-sm shadow-xl shadow-zinc-200/50 dark:shadow-none">
-            <p className="text-lg md:text-xl font-heading font-bold text-primary uppercase tracking-widest text-center">
+          <div className="inline-block border border-primary/30 dark:border-primary/20 rounded-2xl p-6 md:p-8 bg-white dark:bg-white/5 backdrop-blur-sm shadow-xl shadow-zinc-200/50 dark:shadow-none">
+            <p className="text-base md:text-xl font-heading font-bold text-primary uppercase tracking-widest text-center">
               &quot;Discipline is choosing between what you want now, and what you want most.&quot;
             </p>
           </div>
@@ -203,11 +223,11 @@ export default function LandingPage() {
       </section>
 
       {/* Identity Domains */}
-      <section id="system" className="py-24 md:py-40 bg-zinc-50 dark:bg-[#0F1115] px-4 md:px-8 border-y border-zinc-200 dark:border-[#1F242B] transition-colors duration-500">
+      <section id="system" className="py-20 md:py-40 bg-zinc-50 dark:bg-[#0F1115] px-4 md:px-8 border-y border-zinc-200 dark:border-[#1F242B] transition-colors duration-500">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 md:mb-24 space-y-6">
-            <h2 className="text-4xl md:text-5xl lg:text-7xl font-heading font-extrabold tracking-tight text-zinc-900 dark:text-white">Identity-Driven Domains.</h2>
-            <p className="text-lg md:text-xl text-zinc-600 dark:text-zinc-400 font-soft max-w-2xl mx-auto">
+          <div className="text-center mb-12 md:mb-24 space-y-4 md:space-y-6">
+            <h2 className="text-3xl md:text-5xl lg:text-7xl font-heading font-extrabold tracking-tight text-zinc-900 dark:text-white">Identity-Driven Domains.</h2>
+            <p className="text-base md:text-xl text-zinc-600 dark:text-zinc-400 font-soft max-w-2xl mx-auto">
               Life is holistic. We don&apos;t just track tasks; we track the evolution of your identity across four core pillars.
             </p>
           </div>
@@ -242,7 +262,7 @@ export default function LandingPage() {
               title="Financial" 
               desc="Money discipline through conscious spending logs." 
               color="text-amber-600 dark:text-amber-400" 
-              bg="bg-amber-50 dark:bg-amber-500/10" 
+              bg="bg-amber-50 dark:bg-accent/10" 
               borderColor="border-zinc-200 dark:border-amber-500/20"
             />
           </div>
