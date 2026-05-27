@@ -83,19 +83,28 @@ interface SidebarProps {
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const [streak, setStreak] = useState(0);
+  const supabase = createClient();
 
   useEffect(() => {
-    const updateStreak = () => {
-      const savedLogs = localStorage.getItem("monk_os_logs");
-      const restartDate = localStorage.getItem("monk_os_streak_restart");
-      const logs = savedLogs ? JSON.parse(savedLogs) : {};
+    async function updateStreak() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: dbHabits } = await supabase.from('habits').select('id').eq('is_non_negotiable', true);
+      const { data: dbLogs } = await supabase.from('habit_logs').select('completed_at, habit_id');
+
+      if (!dbHabits || !dbLogs) return;
+
+      const habitIds = dbHabits.map(h => h.id);
+      const logs: Record<string, boolean> = {};
+      dbLogs.forEach(log => {
+        const date = new Date(log.completed_at).toISOString().split('T')[0];
+        logs[`${date}-${log.habit_id}`] = true;
+      });
       
-      const savedHabits = localStorage.getItem("monk_os_habits");
-      const habitIds = savedHabits ? JSON.parse(savedHabits).map((h: { id: string }) => h.id) : ["1", "2", "3", "4"];
-      
-      const currentStreak = calculateStreak(logs, habitIds, restartDate);
+      const currentStreak = calculateStreak(logs, habitIds, null);
       setStreak(currentStreak);
-    };
+    }
 
     updateStreak();
     window.addEventListener("streak_updated", updateStreak);
@@ -112,7 +121,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   };
 
   const router = useRouter();
-  const supabase = createClient();
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
