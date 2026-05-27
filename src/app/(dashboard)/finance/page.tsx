@@ -80,6 +80,7 @@ export default function FinancePage() {
   const saveTransactions = (data: Transaction[]) => {
     setTransactions(data);
     localStorage.setItem("monk_os_finance", JSON.stringify(data));
+    window.dispatchEvent(new Event("finance_updated"));
   };
 
   const saveBills = (data: Bill[]) => {

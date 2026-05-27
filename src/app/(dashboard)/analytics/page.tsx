@@ -51,6 +51,7 @@ export default function AnalyticsPage() {
     const habits: Habit[] = JSON.parse(localStorage.getItem("monk_os_habits") || "[]");
     const focusHistory: FocusSession[] = JSON.parse(localStorage.getItem("monk_os_focus") || "[]");
     const transactions: Transaction[] = JSON.parse(localStorage.getItem("monk_os_finance") || "[]");
+    const ironWill = JSON.parse(localStorage.getItem("monk_os_iron_will") || "[]");
 
     let daysToTrack = 7;
     if (viewType === "monthly") daysToTrack = 30;
@@ -62,14 +63,30 @@ export default function AnalyticsPage() {
       return d.toISOString().split('T')[0];
     });
 
-    // 1. Discipline Calculation
+    // 1. Discipline Calculation (Habits + Iron Will)
     const dailyConsistency = dates.map(date => {
-      if (habits.length === 0) return 0;
-      let completed = 0;
-      habits.forEach(h => {
-        if (logs[`${date}-${h.id}`]) completed++;
-      });
-      return (completed / habits.length) * 100;
+      let habitScore = 100;
+      if (habits.length > 0) {
+        let completed = 0;
+        habits.forEach(h => {
+          if (logs[`${date}-${h.id}`]) completed++;
+        });
+        habitScore = (completed / habits.length) * 100;
+      }
+
+      // Iron Will contribution: Check if any relapses happened on this day
+      let ironWillScore = 100;
+      if (ironWill.length > 0) {
+        let relapsesOnDay = 0;
+        ironWill.forEach((iw: any) => {
+          if (iw.history?.some((h: any) => h.date.startsWith(date))) {
+            relapsesOnDay++;
+          }
+        });
+        ironWillScore = Math.max(0, 100 - (relapsesOnDay * 50));
+      }
+
+      return (habitScore * 0.7) + (ironWillScore * 0.3);
     });
 
     // 2. Focus Calculation
@@ -79,41 +96,43 @@ export default function AnalyticsPage() {
       return totalMinutes / 60; // Hours
     });
 
-    // 3. Wealth Calculation (Filtered by range)
+    // 3. Wealth Calculation (Stability over range)
     const startDate = dates[0];
     const rangeTransactions = transactions.filter(t => t.date >= startDate);
     const income = rangeTransactions.filter(t => t.type === "credit").reduce((a, b) => a + b.amount, 0);
     const spent = rangeTransactions.filter(t => t.type === "debit").reduce((a, b) => a + b.amount, 0);
-    const savingsRate = income > 0 ? Math.max(0, Math.round(((income - spent) / income) * 100)) : 0;
-
-    // 4. Life Score (Dynamic weighting based on range)
+    
+    // Savings rate is volatile for small ranges, so we use a blended stability score
+    const savingsRate = income > 0 ? Math.max(0, Math.min(100, Math.round(((income - spent) / income) * 100))) : (spent > 0 ? 0 : 100);
+    
+    // 4. Integrated Life Score
     const disciplineAvg = dailyConsistency.reduce((a, b) => a + b, 0) / daysToTrack;
     const totalFocusHours = dailyFocus.reduce((a, b) => a + b, 0);
-    const focusTarget = daysToTrack * 4; // 4h per day target
+    
+    // Target focus: 4h/day for weekly, slightly less aggressive for month/year average
+    const focusTarget = daysToTrack * (viewType === "weekly" ? 4 : 3); 
     const focusScore = Math.min(100, (totalFocusHours / focusTarget) * 100);
-    const lifeScore = Math.round((disciplineAvg * 0.4) + (focusScore * 0.3) + (Math.min(100, savingsRate) * 0.3));
+    
+    const lifeScore = Math.round((disciplineAvg * 0.4) + (focusScore * 0.3) + (savingsRate * 0.3));
 
-    // 5. Grouping for UI if needed
+    // 5. Grouping for UI
     let consistencyTrend = dailyConsistency;
     let focusTrend = dailyFocus;
-    let labels = dates.map(d => d.split('-').slice(1).join('/')); // MM/DD
+    let labels = dates.map(d => d.split('-').slice(1).join('/'));
 
     if (viewType === "yearly") {
-      // Group by month
       const months: Record<string, { discipline: number[], focus: number[] }> = {};
       dates.forEach((date, i) => {
-        const monthKey = date.slice(0, 7); // YYYY-MM
+        const monthKey = date.slice(0, 7);
         if (!months[monthKey]) months[monthKey] = { discipline: [], focus: [] };
         months[monthKey].discipline.push(dailyConsistency[i]);
         months[monthKey].focus.push(dailyFocus[i]);
       });
-
       const monthKeys = Object.keys(months).sort();
       consistencyTrend = monthKeys.map(m => months[m].discipline.reduce((a, b) => a + b, 0) / months[m].discipline.length);
       focusTrend = monthKeys.map(m => months[m].focus.reduce((a, b) => a + b, 0));
       labels = monthKeys.map(m => new Date(m + "-01").toLocaleString('default', { month: 'short' }));
     } else if (viewType === "monthly") {
-      // Group by 3-day chunks to avoid 30 bars being too thin
       const chunks = 10;
       const chunkSize = 3;
       consistencyTrend = [];
@@ -122,9 +141,9 @@ export default function AnalyticsPage() {
       for (let i = 0; i < chunks; i++) {
         const sliceD = dailyConsistency.slice(i * chunkSize, (i + 1) * chunkSize);
         const sliceF = dailyFocus.slice(i * chunkSize, (i + 1) * chunkSize);
-        consistencyTrend.push(sliceD.reduce((a, b) => a + b, 0) / sliceD.length);
+        consistencyTrend.push(sliceD.reduce((a, b) => a + b, 0) / (sliceD.length || 1));
         focusTrend.push(sliceF.reduce((a, b) => a + b, 0));
-        labels.push(dates[i * chunkSize].split('-').slice(1).join('/'));
+        labels.push(dates[Math.min(dates.length-1, i * chunkSize)].split('-').slice(1).join('/'));
       }
     }
 
@@ -141,8 +160,15 @@ export default function AnalyticsPage() {
 
   useEffect(() => {
     calculateAnalytics();
-    window.addEventListener("streak_updated", calculateAnalytics);
-    return () => window.removeEventListener("streak_updated", calculateAnalytics);
+    const handleUpdate = () => calculateAnalytics();
+    window.addEventListener("streak_updated", handleUpdate);
+    window.addEventListener("focus_updated", handleUpdate);
+    window.addEventListener("finance_updated", handleUpdate);
+    return () => {
+      window.removeEventListener("streak_updated", handleUpdate);
+      window.removeEventListener("focus_updated", handleUpdate);
+      window.removeEventListener("finance_updated", handleUpdate);
+    };
   }, [calculateAnalytics]);
 
   return (
@@ -185,7 +211,7 @@ export default function AnalyticsPage() {
             </p>
             <div className="flex flex-wrap justify-center lg:justify-start gap-2 md:gap-3">
               <MetricPill label={`${metrics.disciplineScore}% Discipline`} color="bg-primary/10 text-primary" border="border-border" />
-              <MetricPill label={`${metrics.savingsMomentum}% Savings`} color="bg-success/10 text-[#45b7a0] dark:text-success" border="border-border" />
+              <MetricPill label={`${metrics.savingsMomentum}% Wealth`} color="bg-success/10 text-[#45b7a0] dark:text-success" border="border-border" />
               <MetricPill label={`${metrics.focusHours}h Focus`} color="bg-secondary/30 text-secondary-foreground" border="border-border" />
             </div>
           </div>
@@ -194,25 +220,38 @@ export default function AnalyticsPage() {
           <div className="flex items-center justify-center pt-8 lg:pt-0">
             <div className="relative h-64 w-64 md:h-80 md:w-80 lg:h-96 lg:w-96">
               <svg viewBox="0 0 100 100" className="h-full w-full drop-shadow-[0_0_30px_rgba(246,193,204,0.15)] overflow-visible">
-                <circle cx="50" cy="50" r="45" className="fill-none stroke-foreground/5 stroke-[0.5]" />
+                {/* Background Circles */}
+                <circle cx="50" cy="50" r="40" className="fill-none stroke-foreground/5 stroke-[0.5]" />
                 <circle cx="50" cy="50" r="30" className="fill-none stroke-foreground/5 stroke-[0.5]" />
-                <circle cx="50" cy="50" r="15" className="fill-none stroke-foreground/5 stroke-[0.5]" />
-                <line x1="50" y1="5" x2="50" y2="95" className="stroke-foreground/5 stroke-[0.5]" />
-                <line x1="5" y1="50" x2="95" y2="50" className="stroke-foreground/5 stroke-[0.5]" />
+                <circle cx="50" cy="50" r="20" className="fill-none stroke-foreground/5 stroke-[0.5]" />
+                <circle cx="50" cy="50" r="10" className="fill-none stroke-foreground/5 stroke-[0.5]" />
                 
+                {/* Axis Lines */}
+                <line x1="50" y1="10" x2="50" y2="90" className="stroke-foreground/5 stroke-[0.5]" />
+                <line x1="10" y1="50" x2="90" y2="50" className="stroke-foreground/5 stroke-[0.5]" />
+                <line x1="21.7" y1="21.7" x2="78.3" y2="78.3" className="stroke-foreground/5 stroke-[0.5]" />
+                <line x1="21.7" y1="78.3" x2="78.3" y2="21.7" className="stroke-foreground/5 stroke-[0.5]" />
+                
+                {/* Radar Polygon */}
+                {/* Points: Discipline (Top), Focus (Right), Wealth (Bottom), Potential (Left) */}
+                {/* Using only 4 points for better clarity since we have 3 core scores + 1 blended */}
                 <motion.polygon 
                   key={viewType}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  points={`${50},${50 - (metrics.disciplineScore * 0.4)} ${50 + (Math.min(100, metrics.savingsMomentum) * 0.4)},${50} ${50 + (Math.min(100, metrics.focusHours * (viewType === 'weekly' ? 4 : viewType === 'monthly' ? 1 : 0.1)) * 0.4)},${50 + (metrics.focusHours * (viewType === 'weekly' ? 2 : 0.5))} ${50 - (metrics.lifeScore * 0.4)},${50 + (metrics.lifeScore * 0.4)} ${50 - 40},${50}`}
+                  points={`
+                    50,${50 - (metrics.disciplineScore * 0.4)} 
+                    ${50 + (Math.min(100, (metrics.focusHours / (viewType === 'weekly' ? 28 : 120)) * 100) * 0.4)},50 
+                    50,${50 + (metrics.savingsMomentum * 0.4)} 
+                    ${50 - (metrics.lifeScore * 0.4)},50
+                  `}
                   className="fill-primary/20 stroke-primary stroke-2"
                 />
               </svg>
-              <RadarLabel label="Discipline" top="-10%" left="50%" transform="translateX(-50%)" />
-              <RadarLabel label="Wealth" top="50%" left="115%" transform="translateY(-50%)" />
-              <RadarLabel label="Focus" top="105%" left="80%" transform="translateX(-50%)" />
-              <RadarLabel label="Identity" top="105%" left="20%" transform="translateX(-50%)" />
-              <RadarLabel label="Spirit" top="50%" left="-15%" transform="translateY(-50%)" />
+              <RadarLabel label="Discipline" top="-5%" left="50%" transform="translateX(-50%)" />
+              <RadarLabel label="Focus" top="50%" left="110%" transform="translateY(-50%)" />
+              <RadarLabel label="Wealth" top="105%" left="50%" transform="translateX(-50%)" />
+              <RadarLabel label="Identity" top="50%" left="-10%" transform="translateY(-50%)" />
             </div>
           </div>
         </div>

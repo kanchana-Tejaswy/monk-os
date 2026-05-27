@@ -19,6 +19,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { calculateStreak } from "@/lib/streak";
+import { createClient } from "@/utils/supabase/client";
+import { User } from "@supabase/supabase-js";
 
 interface Goal {
   id: string;
@@ -84,8 +86,28 @@ export default function DashboardPage() {
   });
 
   const [ikigai, setIkigai] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [dbStatus, setDbStatus] = useState<"connecting" | "connected" | "error">("connecting");
 
   useEffect(() => {
+    const supabase = createClient();
+    
+    // Check User Session
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+    });
+
+    // Test DB Connection
+    supabase.from('profiles').select('count', { count: 'exact', head: true })
+      .then(({ error }) => {
+        if (error) {
+          console.error("DB Connection Error:", error);
+          setDbStatus("error");
+        } else {
+          setDbStatus("connected");
+        }
+      });
+
     // 1. Load Data from LocalStorage
     const savedGoals = localStorage.getItem("monk_os_goals");
     const savedHabits = localStorage.getItem("monk_os_habits");
@@ -133,36 +155,50 @@ export default function DashboardPage() {
     const nonNegotiableHabits = h.filter((hab: Habit) => hab.isNonNegotiable);
     const streak = calculateStreak(l, nonNegotiableHabits.map((hab: Habit) => hab.id), restartDate);
 
-    const deepWorkMinutes = fs.filter((s: FocusSession) => s.timestamp.startsWith(todayStr)).reduce((acc: number, curr: FocusSession) => acc + curr.duration, 0);
+    const deepWorkMinutesToday = fs.filter((s: FocusSession) => s.timestamp.startsWith(todayStr)).reduce((acc: number, curr: FocusSession) => acc + curr.duration, 0);
     const habitsToday = nonNegotiableHabits.filter((hab: Habit) => l[`${todayStr}-${hab.id}`]).length;
-    const habitCompletionRate = nonNegotiableHabits.length > 0 ? (habitsToday / nonNegotiableHabits.length) : 0;
-    const deepWorkRate = Math.min(deepWorkMinutes / 240, 1);
-    const potential = Math.round((habitCompletionRate * 60) + (deepWorkRate * 40));
+    const habitCompletionRateToday = nonNegotiableHabits.length > 0 ? (habitsToday / nonNegotiableHabits.length) : 1;
+    const deepWorkRateToday = Math.min(deepWorkMinutesToday / 240, 1);
+    const potential = Math.round((habitCompletionRateToday * 60) + (deepWorkRateToday * 40));
 
-    // Life Score (Long term consistency)
-    const streakScore = Math.min(streak / 30, 1) * 30;
-    const totalGoalProgress = g.length > 0 ? g.reduce((acc: number, cur: Goal) => acc + cur.progress, 0) / g.length : 0;
-    const goalScore = (totalGoalProgress / 100) * 40;
-    
-    let historyHabitSum = 0;
+    // Unified Life Score (40% Discipline, 30% Focus, 30% Wealth)
+    // 1. Discipline (7-day Average)
+    let totalDiscipline = 0;
     for (let i = 0; i < 7; i++) {
       const d = new Date(); d.setDate(d.getDate() - i);
       const ds = d.toISOString().split('T')[0];
-      historyHabitSum += nonNegotiableHabits.length > 0 ? nonNegotiableHabits.filter((hab: Habit) => l[`${ds}-${hab.id}`]).length / nonNegotiableHabits.length : 0;
+      
+      let dayHabitScore = 100;
+      if (nonNegotiableHabits.length > 0) {
+        dayHabitScore = (nonNegotiableHabits.filter((hab: Habit) => l[`${ds}-${hab.id}`]).length / nonNegotiableHabits.length) * 100;
+      }
+      
+      let dayIronWillScore = 100;
+      if (iw.length > 0) {
+        const relapses = iw.filter((challenge: any) => challenge.history?.some((entry: any) => entry.date.startsWith(ds))).length;
+        dayIronWillScore = Math.max(0, 100 - (relapses * 50));
+      }
+      
+      totalDiscipline += (dayHabitScore * 0.7) + (dayIronWillScore * 0.3);
     }
-    const habitHistoryScore = (historyHabitSum / 7) * 20;
+    const disciplineScore = totalDiscipline / 7;
 
-    const recentJournals = je.filter((j: JournalEntry) => {
-      const jDate = new Date(j.date);
-      const sevenDaysAgo = new Date(); sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      return jDate >= sevenDaysAgo;
-    }).length;
-    const journalScore = Math.min(recentJournals / 3, 1) * 10;
+    // 2. Focus (7-day total vs target)
+    const sevenDaysAgo = new Date(); sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const weeklyFocusMinutes = fs
+      .filter((s: FocusSession) => new Date(s.timestamp) >= sevenDaysAgo)
+      .reduce((acc: number, curr: FocusSession) => acc + curr.duration, 0);
+    const focusScore = Math.min(100, (weeklyFocusMinutes / (4 * 60 * 7)) * 100);
+
+    // 3. Wealth (Monthly stability)
+    const wealthScore = Math.max(0, 100 - progress); // Inverting spending progress as a stability measure
+
+    const lifeScore = Math.round((disciplineScore * 0.4) + (focusScore * 0.3) + (wealthScore * 0.3));
 
     setStats({
       streak,
-      deepWorkToday: deepWorkMinutes,
-      lifeScore: Math.round(streakScore + goalScore + habitHistoryScore + journalScore) || 0,
+      deepWorkToday: deepWorkMinutesToday,
+      lifeScore: lifeScore || 0,
       potential: potential || 0,
       habitsCompletedToday: habitsToday
     });
@@ -191,12 +227,27 @@ export default function DashboardPage() {
       {/* 1. Header */}
       <header className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 md:gap-8">
         <div className="space-y-3 md:space-y-4 text-center lg:text-left">
-          <div className="flex items-center justify-center lg:justify-start gap-2 text-primary font-bold uppercase tracking-[0.3em] text-[9px] md:text-xs">
-            <Sparkles className="h-3.5 md:h-4 w-3.5 md:w-4" /> Identity Evolution Active
+          <div className="flex items-center justify-center lg:justify-start gap-4">
+            <div className="flex items-center gap-2 text-primary font-bold uppercase tracking-[0.3em] text-[9px] md:text-xs">
+              <Sparkles className="h-3.5 md:h-4 w-3.5 md:w-4" /> Identity Evolution Active
+            </div>
+            <div className={cn(
+              "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5",
+              dbStatus === "connected" ? "bg-emerald-500/10 text-emerald-500" : 
+              dbStatus === "error" ? "bg-red-500/10 text-red-500" : "bg-zinc-500/10 text-zinc-500"
+            )}>
+              <div className={cn("h-1.5 w-1.5 rounded-full", 
+                dbStatus === "connected" ? "bg-emerald-500 animate-pulse" : 
+                dbStatus === "error" ? "bg-red-500" : "bg-zinc-500"
+              )} />
+              {dbStatus === "connected" ? "Cloud Sync Active" : dbStatus === "error" ? "Sync Error" : "Connecting..."}
+            </div>
           </div>
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-heading font-extrabold tracking-tighter leading-tight">
             Peace be with you, <br className="sm:hidden" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent italic">Monk.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent italic">
+              {user?.user_metadata?.full_name?.split(' ')[0] || "Monk"}.
+            </span>
           </h1>
           <p className="text-text-secondary font-soft text-sm md:text-lg max-w-xl mx-auto lg:mx-0">
             Today is a clean slate. <span className="text-foreground font-bold">{stats.potential}%</span> of your potential is currently active.

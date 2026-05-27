@@ -39,9 +39,6 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // BYPASS AUTH FOR LOCAL DEV
-  return supabaseResponse;
-
   // Protect dashboard routes
   if (
     !user &&

@@ -22,8 +22,12 @@ import {
   ListTodo,
   RotateCcw,
   ShieldAlert,
-  X
+  X,
+  LogOut
 } from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const navigation = [
   {
@@ -107,6 +111,19 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     }
   };
 
+  const router = useRouter();
+  const supabase = createClient();
+
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error signing out:", error);
+    } else {
+      router.push("/login");
+      router.refresh();
+    }
+  };
+
   return (
     <>
       {/* Mobile Overlay */}
@@ -123,8 +140,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       )}>
         <div className="flex h-20 items-center justify-between px-6 shrink-0 border-b border-border bg-background/50 backdrop-blur-md sticky top-0 z-20">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shrink-0 shadow-lg shadow-primary/20 transition-transform duration-300 hover:scale-110">
-              <Flame className="h-6 w-6" />
+            <div className="flex h-10 w-10 relative rounded-xl overflow-hidden shadow-lg transition-transform duration-300 hover:scale-110">
+              <Image 
+                src="/logo.jpeg" 
+                alt="Logo" 
+                fill 
+                className="object-cover"
+              />
             </div>
             <span className="text-xl font-heading font-black tracking-tighter text-foreground uppercase truncate italic">
               monk mode
@@ -202,6 +224,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               <div className="h-full bg-accent w-[80%] rounded-full shadow-[0_0_10px_rgba(232,197,71,0.3)]" />
             </div>
           </div>
+
+          <button
+            onClick={handleSignOut}
+            className="w-full mt-4 flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-500/10 rounded-2xl transition-all duration-300"
+          >
+            <LogOut className="h-5 w-5" />
+            <span>Sign Out</span>
+          </button>
         </div>
       </div>
     </>

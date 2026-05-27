@@ -9,9 +9,19 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient()
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) {
-      const forwardedHost = request.headers.get('x-forwarded-host') // mirror forwarded host
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+    
+    if (!error && data?.user) {
+      // Create or update profile
+      const { user } = data
+      await supabase.from('profiles').upsert({
+        id: user.id,
+        full_name: user.user_metadata.full_name,
+        avatar_url: user.user_metadata.avatar_url,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'id' })
+
+      const forwardedHost = request.headers.get('x-forwarded-host')
       const isLocalEnv = process.env.NODE_ENV === 'development'
       if (isLocalEnv) {
         // we can be sure that origin is http://localhost:3000

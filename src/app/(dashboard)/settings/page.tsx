@@ -37,30 +37,40 @@ export default function SettingsPage() {
     document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
 
-  const sections = [
-    { id: "profile", label: "Identity Profile", icon: User },
-    { id: "habits", label: "Non-Negotiables", icon: CheckCircle2 },
-    { id: "system", label: "System & Theme", icon: Monitor },
-    { id: "ikigai", label: "Ikigai Destiny", icon: Sparkles },
-    { id: "security", label: "Security & Data", icon: Shield },
-  ];
+  const handleExportLifeData = () => {
+    const keys = [
+      "monk_os_habits", "monk_os_logs", "monk_os_focus", "monk_os_finance", 
+      "monk_os_iron_will", "monkos_ikigai_data", "monk_os_goals", "monk_os_journal",
+      "monk_os_bills", "monk_os_debts", "monk_os_reflections"
+    ];
+    const exportData: Record<string, any> = {};
+    keys.forEach(key => {
+      const data = localStorage.getItem(key);
+      if (data) exportData[key] = JSON.parse(data);
+    });
 
-  const handleResetIkigai = () => {
-    if (confirm("Are you sure you want to reset your Ikigai journey? This cannot be undone.")) {
-      localStorage.removeItem("monkos_ikigai_data");
-      alert("Ikigai data reset successfully.");
-    }
-  };
+    if (Object.keys(exportData).length === 0) return alert("No data found to export.");
 
-  const handleExportIkigai = () => {
-    const data = localStorage.getItem("monkos_ikigai_data");
-    if (!data) return alert("No Ikigai data found.");
-    const blob = new Blob([data], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `ikigai-wisdom.json`;
+    a.download = `monk-mode-life-data-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
+  };
+
+  const handleDeleteAccount = () => {
+    if (confirm("CRITICAL WARNING: This will permanently delete ALL your discipline logs, financial history, and identity data. This action is irreversible. Are you absolutely sure?")) {
+      const keys = [
+        "monk_os_habits", "monk_os_logs", "monk_os_focus", "monk_os_finance", 
+        "monk_os_iron_will", "monkos_ikigai_data", "monk_os_goals", "monk_os_journal",
+        "monk_os_bills", "monk_os_debts", "monk_os_reflections", "monk_os_streak_restart",
+        "monk_mode_tutorial_seen"
+      ];
+      keys.forEach(key => localStorage.removeItem(key));
+      alert("Identity purged. The slate is clean.");
+      window.location.href = "/login";
+    }
   };
 
   return (
@@ -252,9 +262,12 @@ export default function SettingsPage() {
                 <section className="space-y-6">
                   <h2 className="text-xl font-heading font-bold text-red-500">Danger Zone</h2>
                   <div className="space-y-4">
-                    <button className="w-full flex items-center justify-between p-6 bg-secondary/10 hover:bg-secondary/20 rounded-2xl transition-all group">
+                    <button 
+                      onClick={handleExportLifeData}
+                      className="w-full flex items-center justify-between p-6 bg-secondary/10 hover:bg-secondary/20 rounded-2xl transition-all group border border-transparent hover:border-primary/20"
+                    >
                       <div className="flex items-center gap-4">
-                        <Download className="h-6 w-6 text-muted-foreground" />
+                        <Download className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
                         <div className="text-left">
                           <div className="font-bold">Export Life Data</div>
                           <div className="text-xs text-muted-foreground">Download all your logs in JSON format.</div>
@@ -263,7 +276,10 @@ export default function SettingsPage() {
                       <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-all" />
                     </button>
                     
-                    <button className="w-full flex items-center justify-between p-6 bg-red-500/10 hover:bg-red-500/20 rounded-2xl transition-all group border border-red-500/20">
+                    <button 
+                      onClick={handleDeleteAccount}
+                      className="w-full flex items-center justify-between p-6 bg-red-500/10 hover:bg-red-500/20 rounded-2xl transition-all group border border-red-500/20"
+                    >
                       <div className="flex items-center gap-4">
                         <Trash2 className="h-6 w-6 text-red-500" />
                         <div className="text-left">

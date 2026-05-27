@@ -126,6 +126,7 @@ export default function FocusPage() {
       setHistory(updatedHistory);
       localStorage.setItem("monk_os_focus", JSON.stringify(updatedHistory));
       setSessionsCompleted(prev => prev + 1);
+      window.dispatchEvent(new Event("focus_updated"));
     }
 
     return () => clearInterval(interval);

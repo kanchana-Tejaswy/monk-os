@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { 
-  Flame, 
   CheckCircle2, 
   Lock, 
   ArrowRight,
@@ -11,7 +11,8 @@ import {
   Brain,
   TrendingUp,
   Heart,
-  Dumbbell
+  Dumbbell,
+  Flame
 } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -46,8 +47,13 @@ export default function LandingPage() {
       >
         <div className="flex items-center justify-between px-6 md:px-12 py-4 max-w-7xl mx-auto">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 bg-primary flex items-center justify-center rounded-2xl text-primary-foreground shadow-lg shadow-primary/20">
-              <Flame className="h-6 w-6" />
+            <div className="h-10 w-10 relative rounded-2xl overflow-hidden shadow-lg">
+              <Image 
+                src="/logo.jpeg" 
+                alt="Logo" 
+                fill 
+                className="object-cover"
+              />
             </div>
             <span className="text-2xl font-heading font-extrabold tracking-tight text-zinc-900 dark:text-white">monk mode</span>
           </div>
@@ -273,7 +279,14 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="py-24 md:py-48 px-6 text-center bg-white dark:bg-[#0B0D10] text-zinc-900 dark:text-zinc-100 border-t border-zinc-200 dark:border-[#1F242B] transition-colors duration-500">
         <div className="max-w-4xl mx-auto space-y-8 md:space-y-12">
-          <Flame className="h-16 md:h-24 w-16 md:w-24 text-primary mx-auto animate-pulse" />
+          <div className="h-24 md:h-32 w-24 md:w-32 relative mx-auto rounded-3xl overflow-hidden shadow-2xl animate-pulse">
+            <Image 
+              src="/logo.jpeg" 
+              alt="Logo" 
+              fill 
+              className="object-cover"
+            />
+          </div>
           <h2 className="text-3xl md:text-6xl lg:text-8xl font-heading font-extrabold tracking-tighter uppercase leading-tight text-zinc-900 dark:text-white">
             Your Best Life is <br/>A Click Away.
           </h2>
@@ -296,8 +309,13 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-16 mb-12 md:mb-20">
           <div className="col-span-1 md:col-span-2 space-y-6 md:space-y-8 text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start gap-3">
-              <div className="h-10 w-10 bg-primary flex items-center justify-center rounded-xl text-primary-foreground">
-                <Flame className="h-5 w-5" />
+              <div className="h-10 w-10 relative rounded-xl overflow-hidden">
+                <Image 
+                  src="/logo.jpeg" 
+                  alt="Logo" 
+                  fill 
+                  className="object-cover"
+                />
               </div>
               <span className="text-2xl font-heading font-bold tracking-tight text-zinc-900 dark:text-white">monk mode</span>
             </div>
