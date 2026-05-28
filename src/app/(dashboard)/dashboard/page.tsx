@@ -21,6 +21,7 @@ import { useState, useEffect } from "react";
 import { calculateStreak } from "@/lib/streak";
 import { createClient } from "@/utils/supabase/client";
 import { User } from "@supabase/supabase-js";
+import { migrateLocalDataToCloud } from "@/utils/supabase/migration";
 
 interface Goal {
   id: string;
@@ -88,121 +89,132 @@ export default function DashboardPage() {
   const [ikigai, setIkigai] = useState<any>(null);
   const [user, setUser] = useState<User | null>(null);
   const [dbStatus, setDbStatus] = useState<"connecting" | "connected" | "error">("connecting");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const supabase = createClient();
     
-    // Check User Session
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
-    });
+    async function initializeDashboard() {
+      setLoading(true);
+      try {
+        // 0. Migrate Local Data (One-time)
+        await migrateLocalDataToCloud();
 
-    // Test DB Connection
-    supabase.from('profiles').select('count', { count: 'exact', head: true })
-      .then(({ error }) => {
-        if (error) {
-          console.error("DB Connection Error:", error);
+        // 1. Get User
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
           setDbStatus("error");
-        } else {
-          setDbStatus("connected");
+          setLoading(false);
+          return;
         }
-      });
+        setUser(user);
 
-    // 1. Load Data from LocalStorage
-    const savedGoals = localStorage.getItem("monk_os_goals");
-    const savedHabits = localStorage.getItem("monk_os_habits");
-    const savedLogs = localStorage.getItem("monk_os_logs");
-    const savedFocus = localStorage.getItem("monk_os_focus");
-    const savedJournal = localStorage.getItem("monk_os_journal");
-    const savedTx = localStorage.getItem("monk_os_finance");
-    const savedIronWill = localStorage.getItem("monk_os_iron_will");
-    const savedIkigai = localStorage.getItem("monkos_ikigai_data");
+        // 2. Fetch Data from Supabase
+        const [
+          { data: dbHabits },
+          { data: dbLogs },
+          { data: dbTasks },
+          { data: dbFocus },
+          { data: dbFinance },
+          { data: dbIronWill },
+          { data: dbIkigai }
+        ] = await Promise.all([
+          supabase.from('habits').select('*'),
+          supabase.from('habit_logs').select('*'),
+          supabase.from('tasks').select('*').limit(3),
+          supabase.from('focus_sessions').select('*'),
+          supabase.from('finances').select('*'),
+          supabase.from('iron_will_challenges').select('*').limit(2),
+          supabase.from('ikigai_data').select('*').single()
+        ]);
 
-    if (savedIkigai) {
-      setIkigai(JSON.parse(savedIkigai));
+        setDbStatus("connected");
+
+        // 3. Map Database data to Component State
+        const h: Habit[] = (dbHabits || []).map(hab => ({
+          id: hab.id,
+          title: hab.title,
+          category: hab.category,
+          isNonNegotiable: hab.is_non_negotiable
+        }));
+
+        const l: Record<string, boolean> = {};
+        (dbLogs || []).forEach(log => {
+          const date = new Date(log.completed_at).toISOString().split('T')[0];
+          l[`${date}-${log.habit_id}`] = true;
+        });
+
+        const g: Goal[] = (dbTasks || []).map(task => ({
+          id: task.id,
+          title: task.title,
+          category: task.category || 'General',
+          progress: task.status === 'completed' ? 100 : 0 // Simplified for now
+        }));
+
+        setGoals(g);
+        setHabits(h);
+        setLogs(l);
+        setIronWillChallenges((dbIronWill || []).map(iw => ({
+          id: iw.id,
+          title: iw.title,
+          startDate: iw.start_date,
+          lastResetDate: iw.last_reset_date
+        })));
+        setIkigai(dbIkigai);
+
+        // 4. Calculations
+        // --- Finance ---
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        const txs = dbFinance || [];
+        const totalBalance = txs.reduce((acc, curr) => curr.type === "credit" ? acc + Number(curr.amount) : acc - Number(curr.amount), 0);
+        const monthlyIncome = txs.filter(t => t.type === "credit" && t.created_at.startsWith(currentMonth)).reduce((acc, curr) => acc + Number(curr.amount), 0);
+        const monthlySpent = txs.filter(t => t.type === "debit" && t.created_at.startsWith(currentMonth)).reduce((acc, curr) => acc + Number(curr.amount), 0);
+        const progress = monthlyIncome > 0 ? Math.min((monthlySpent / monthlyIncome) * 100, 100) : (monthlySpent > 0 ? 100 : 0);
+
+        setFinanceData({
+          totalBalance,
+          monthlySpent,
+          monthlyEarned: monthlyIncome,
+          spendingProgress: progress
+        });
+
+        // --- Stats & Identity ---
+        const todayStr = new Date().toISOString().split('T')[0];
+        const nonNegotiableHabits = h.filter(hab => hab.isNonNegotiable);
+        
+        // Streak (Note: need to handle restartDate if we want cloud sync for it too)
+        const streakValue = calculateStreak(l, nonNegotiableHabits.map(hab => hab.id), null);
+
+        const deepWorkMinutesToday = (dbFocus || [])
+          .filter(s => s.completed_at.startsWith(todayStr))
+          .reduce((acc, curr) => acc + curr.duration_minutes, 0);
+
+        const habitsToday = nonNegotiableHabits.filter(hab => l[`${todayStr}-${hab.id}`]).length;
+        const habitCompletionRateToday = nonNegotiableHabits.length > 0 ? (habitsToday / nonNegotiableHabits.length) : 1;
+        const deepWorkRateToday = Math.min(deepWorkMinutesToday / 240, 1);
+        const potential = Math.round((habitCompletionRateToday * 60) + (deepWorkRateToday * 40));
+
+        // Life Score (Simplified Cloud Version)
+        // In a real app, this would be a more complex aggregation or a DB view
+        const lifeScore = Math.round((habitCompletionRateToday * 50) + (Math.min(1, deepWorkMinutesToday / 480) * 50));
+
+        setStats({
+          streak: streakValue,
+          deepWorkToday: deepWorkMinutesToday,
+          lifeScore: lifeScore || 0,
+          potential: potential || 0,
+          habitsCompletedToday: habitsToday
+        });
+
+      } catch (error) {
+        console.error("Dashboard Initialization Error:", error);
+        setDbStatus("error");
+      } finally {
+        setLoading(false);
+      }
     }
 
-    const g = savedGoals ? JSON.parse(savedGoals) : [];
-    const h = savedHabits ? JSON.parse(savedHabits) : [];
-    const l = savedLogs ? JSON.parse(savedLogs) : {};
-    const fs = savedFocus ? JSON.parse(savedFocus) : [];
-    const je = savedJournal ? JSON.parse(savedJournal) : [];
-    const iw = savedIronWill ? JSON.parse(savedIronWill) : [];
-    const txs: Transaction[] = savedTx ? JSON.parse(savedTx) : [];
-
-    setGoals(g.slice(0, 3));
-    setHabits(h);
-    setLogs(l);
-    setIronWillChallenges(iw.slice(0, 2)); // Show top 2 challenges
-
-    // --- Finance Calculations (Monthly focus) ---
-    const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
-    const totalBalance = txs.reduce((acc, curr) => curr.type === "credit" ? acc + curr.amount : acc - curr.amount, 0);
-    const monthlyIncome = txs.filter(t => t.type === "credit" && t.date.startsWith(currentMonth)).reduce((acc, curr) => acc + curr.amount, 0);
-    const monthlySpent = txs.filter(t => t.type === "debit" && t.date.startsWith(currentMonth)).reduce((acc, curr) => acc + curr.amount, 0);
-    const progress = monthlyIncome > 0 ? Math.min((monthlySpent / monthlyIncome) * 100, 100) : (monthlySpent > 0 ? 100 : 0);
-
-    setFinanceData({
-      totalBalance,
-      monthlySpent,
-      monthlyEarned: monthlyIncome,
-      spendingProgress: progress
-    });
-
-    // --- Identity Calculations ---
-    const todayStr = new Date().toISOString().split('T')[0];
-    const restartDate = localStorage.getItem("monk_os_streak_restart");
-    const nonNegotiableHabits = h.filter((hab: Habit) => hab.isNonNegotiable);
-    const streak = calculateStreak(l, nonNegotiableHabits.map((hab: Habit) => hab.id), restartDate);
-
-    const deepWorkMinutesToday = fs.filter((s: FocusSession) => s.timestamp.startsWith(todayStr)).reduce((acc: number, curr: FocusSession) => acc + curr.duration, 0);
-    const habitsToday = nonNegotiableHabits.filter((hab: Habit) => l[`${todayStr}-${hab.id}`]).length;
-    const habitCompletionRateToday = nonNegotiableHabits.length > 0 ? (habitsToday / nonNegotiableHabits.length) : 1;
-    const deepWorkRateToday = Math.min(deepWorkMinutesToday / 240, 1);
-    const potential = Math.round((habitCompletionRateToday * 60) + (deepWorkRateToday * 40));
-
-    // Unified Life Score (40% Discipline, 30% Focus, 30% Wealth)
-    // 1. Discipline (7-day Average)
-    let totalDiscipline = 0;
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(); d.setDate(d.getDate() - i);
-      const ds = d.toISOString().split('T')[0];
-      
-      let dayHabitScore = 100;
-      if (nonNegotiableHabits.length > 0) {
-        dayHabitScore = (nonNegotiableHabits.filter((hab: Habit) => l[`${ds}-${hab.id}`]).length / nonNegotiableHabits.length) * 100;
-      }
-      
-      let dayIronWillScore = 100;
-      if (iw.length > 0) {
-        const relapses = iw.filter((challenge: any) => challenge.history?.some((entry: any) => entry.date.startsWith(ds))).length;
-        dayIronWillScore = Math.max(0, 100 - (relapses * 50));
-      }
-      
-      totalDiscipline += (dayHabitScore * 0.7) + (dayIronWillScore * 0.3);
-    }
-    const disciplineScore = totalDiscipline / 7;
-
-    // 2. Focus (7-day total vs target)
-    const sevenDaysAgo = new Date(); sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    const weeklyFocusMinutes = fs
-      .filter((s: FocusSession) => new Date(s.timestamp) >= sevenDaysAgo)
-      .reduce((acc: number, curr: FocusSession) => acc + curr.duration, 0);
-    const focusScore = Math.min(100, (weeklyFocusMinutes / (4 * 60 * 7)) * 100);
-
-    // 3. Wealth (Monthly stability)
-    const wealthScore = Math.max(0, 100 - progress); // Inverting spending progress as a stability measure
-
-    const lifeScore = Math.round((disciplineScore * 0.4) + (focusScore * 0.3) + (wealthScore * 0.3));
-
-    setStats({
-      streak,
-      deepWorkToday: deepWorkMinutesToday,
-      lifeScore: lifeScore || 0,
-      potential: potential || 0,
-      habitsCompletedToday: habitsToday
-    });
-
+    initializeDashboard();
   }, []);
 
   const formatDeepWork = (minutes: number) => {

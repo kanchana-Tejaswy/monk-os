@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { ThemeToggle } from "@/components/theme-toggle";
 
 
 export default function LandingPage() {
@@ -47,12 +46,12 @@ export default function LandingPage() {
       >
         <div className="flex items-center justify-between px-6 md:px-12 py-4 max-w-7xl mx-auto">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 relative rounded-2xl overflow-hidden shadow-lg">
+            <div className="h-12 w-12 relative bg-white dark:bg-white/10 rounded-2xl overflow-hidden shadow-lg p-1.5 flex items-center justify-center border border-black/5 dark:border-white/10">
               <Image 
-                src="/logo.jpeg" 
+                src="/logo.png" 
                 alt="Logo" 
                 fill 
-                className="object-cover"
+                className="object-contain"
               />
             </div>
             <span className="text-2xl font-heading font-extrabold tracking-tight text-zinc-900 dark:text-white">monk mode</span>
@@ -62,7 +61,6 @@ export default function LandingPage() {
             <NavLink href="#system">The System</NavLink>
           </div>
           <div className="flex items-center gap-4">
-            <ThemeToggle />
             <Link href="/login" className="hidden sm:block text-sm font-bold text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">
               Login
             </Link>
@@ -279,13 +277,15 @@ export default function LandingPage() {
       {/* CTA Section */}
       <section className="py-24 md:py-48 px-6 text-center bg-white dark:bg-[#0B0D10] text-zinc-900 dark:text-zinc-100 border-t border-zinc-200 dark:border-[#1F242B] transition-colors duration-500">
         <div className="max-w-4xl mx-auto space-y-8 md:space-y-12">
-          <div className="h-24 md:h-32 w-24 md:w-32 relative mx-auto rounded-3xl overflow-hidden shadow-2xl animate-pulse">
-            <Image 
-              src="/logo.jpeg" 
-              alt="Logo" 
-              fill 
-              className="object-cover"
-            />
+          <div className="h-24 md:h-32 w-24 md:w-32 relative mx-auto bg-white dark:bg-white/10 rounded-3xl overflow-hidden shadow-2xl animate-pulse p-4 border border-black/5 dark:border-white/10 flex items-center justify-center">
+            <div className="relative h-full w-full">
+              <Image 
+                src="/logo.png" 
+                alt="Logo" 
+                fill 
+                className="object-contain"
+              />
+            </div>
           </div>
           <h2 className="text-3xl md:text-6xl lg:text-8xl font-heading font-extrabold tracking-tighter uppercase leading-tight text-zinc-900 dark:text-white">
             Your Best Life is <br/>A Click Away.
@@ -309,12 +309,12 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-16 mb-12 md:mb-20">
           <div className="col-span-1 md:col-span-2 space-y-6 md:space-y-8 text-center md:text-left">
             <div className="flex items-center justify-center md:justify-start gap-3">
-              <div className="h-10 w-10 relative rounded-xl overflow-hidden">
+              <div className="h-12 w-12 relative bg-white dark:bg-white/10 rounded-xl overflow-hidden p-1.5 border border-black/5 dark:border-white/10">
                 <Image 
-                  src="/logo.jpeg" 
+                  src="/logo.png" 
                   alt="Logo" 
                   fill 
-                  className="object-cover"
+                  className="object-contain"
                 />
               </div>
               <span className="text-2xl font-heading font-bold tracking-tight text-zinc-900 dark:text-white">monk mode</span>

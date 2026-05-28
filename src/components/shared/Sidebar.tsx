@@ -148,12 +148,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       )}>
         <div className="flex h-20 items-center justify-between px-6 shrink-0 border-b border-border bg-background/50 backdrop-blur-md sticky top-0 z-20">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="flex h-10 w-10 relative rounded-xl overflow-hidden shadow-lg transition-transform duration-300 hover:scale-110">
+            <div className="flex h-12 w-12 relative bg-white dark:bg-white/10 rounded-xl overflow-hidden shadow-lg transition-transform duration-300 hover:scale-110 flex-shrink-0">
               <Image 
-                src="/logo.jpeg" 
+                src="/logo.png" 
                 alt="Logo" 
                 fill 
-                className="object-cover"
+                className="object-contain p-1"
               />
             </div>
             <span className="text-xl font-heading font-black tracking-tighter text-foreground uppercase truncate italic">
@@ -226,7 +226,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
             <div className="text-3xl font-heading font-black flex items-center gap-2 relative z-10 text-foreground">
               {streak} <span className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.15em] mt-3">Days</span>
-              <Flame className="h-6 w-6 text-accent drop-shadow-[0_0_8px_rgba(232,197,71,0.2)] ml-auto" />
+              <div className="flex h-10 w-10 relative bg-white/20 rounded-xl overflow-hidden p-1.5 ml-auto">
+              <Image src="/logo.png" alt="Logo" fill className="object-contain" />
+            </div>
             </div>
             <div className="mt-4 h-1.5 w-full bg-secondary/60 dark:bg-white/5 rounded-full overflow-hidden relative z-10">
               <div className="h-full bg-accent w-[80%] rounded-full shadow-[0_0_10px_rgba(232,197,71,0.3)]" />

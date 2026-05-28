@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { 
   CheckCircle2, 
   Lock, 
-  Flame, 
   Calendar, 
   Plus, 
   Info,
@@ -18,6 +17,7 @@ import {
 import { cn, formatDate } from "@/lib/utils";
 import { calculateStreak } from "@/lib/streak";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 interface Habit {
   id: string;
@@ -274,15 +274,27 @@ export default function HabitTrackerPage() {
             </div>
             <div className="mt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[10px] text-text-secondary font-bold uppercase tracking-[0.15em]">
               <span>{nnCompletedCount} of {nonNegotiableHabits.length} Non-Negotiables</span>
-              {isPerfectDay && <span className="text-monk-mint flex items-center gap-1.5 font-black"><Flame className="h-3.5 w-3.5" /> Integrity Maintained</span>}
+              {isPerfectDay && (
+                <span className="text-monk-mint flex items-center gap-1.5 font-black">
+                  <div className="h-3.5 w-3.5 relative bg-white dark:bg-white/10 rounded-sm overflow-hidden p-0.5 border border-black/5 dark:border-white/10">
+                    <Image src="/logo.png" alt="Logo" fill className="object-contain" />
+                  </div>
+                  Integrity Maintained
+                </span>
+              )}
             </div>
           </div>
           {isPerfectDay && <div className="absolute -right-20 -top-20 h-64 w-64 bg-monk-mint/5 rounded-full blur-3xl animate-pulse" />}
         </div>
 
         <div className="monk-card p-8 flex flex-row lg:flex-col items-center justify-center lg:justify-center text-left lg:text-center gap-5 lg:space-y-2 border-2 border-accent/10">
-          <div className="h-14 w-14 rounded-2xl bg-accent/5 flex items-center justify-center shrink-0">
-            <Flame className="h-9 w-9 text-accent drop-shadow-[0_0_8px_rgba(232,197,71,0.2)]" />
+          <div className="h-14 w-14 relative bg-white dark:bg-white/5 rounded-2xl overflow-hidden shadow-lg p-2 border border-black/5 dark:border-white/10 flex items-center justify-center shrink-0">
+            <Image 
+              src="/logo.png" 
+              alt="Logo" 
+              fill 
+              className="object-contain p-1"
+            />
           </div>
           <div>
             <div className="text-4xl font-heading font-black tracking-tight">{currentStreak}</div>

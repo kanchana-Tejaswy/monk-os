@@ -37,13 +37,16 @@ export default function LoginPage() {
         
         {/* Brand */}
         <div className="flex flex-col items-center gap-4 text-center">
-          <div className="h-20 w-20 relative rounded-2xl overflow-hidden shadow-xl">
-            <Image 
-              src="/logo.jpeg" 
-              alt="Monk Mode Logo" 
-              fill 
-              className="object-cover"
-            />
+          <div className="h-28 w-28 relative bg-white dark:bg-white/5 rounded-[32px] shadow-2xl border border-black/5 dark:border-white/10 p-4 flex items-center justify-center">
+            <div className="relative h-full w-full">
+              <Image 
+                src="/logo.png" 
+                alt="Monk Mode Logo" 
+                fill 
+                className="object-contain"
+                priority
+              />
+            </div>
           </div>
           <div className="space-y-2">
             <h1 className="text-4xl font-heading font-bold tracking-tight uppercase text-foreground">monk mode</h1>

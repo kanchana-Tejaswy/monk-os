@@ -106,6 +106,47 @@ CREATE TABLE debts (
   due_date DATE
 );
 
+-- 9. Journal (Daily Reflections)
+CREATE TABLE journal_entries (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  content TEXT NOT NULL,
+  category TEXT, -- 'Morning', 'Evening', 'General'
+  domain TEXT, -- 'Discipline', 'Gratitude', 'Vision'
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 10. Iron Will (Elimination Challenges)
+CREATE TABLE iron_will_challenges (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  title TEXT NOT NULL,
+  start_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  last_reset_date TIMESTAMP WITH TIME ZONE,
+  personal_best INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 11. Iron Will Logs (Relapse History)
+CREATE TABLE iron_will_logs (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  challenge_id UUID REFERENCES iron_will_challenges(id) ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  reason TEXT,
+  occurred_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 12. Ikigai (Life Direction)
+CREATE TABLE ikigai_data (
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE PRIMARY KEY,
+  love_answers TEXT[],
+  good_at_answers TEXT[],
+  world_needs_answers TEXT[],
+  paid_for_answers TEXT[],
+  ikigai_statement TEXT,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Enable RLS
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE habits ENABLE ROW LEVEL SECURITY;
@@ -115,3 +156,24 @@ ALTER TABLE focus_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE finances ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bills ENABLE ROW LEVEL SECURITY;
 ALTER TABLE debts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE journal_entries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE iron_will_challenges ENABLE ROW LEVEL SECURITY;
+ALTER TABLE iron_will_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ikigai_data ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies (User can only see/edit their own data)
+
+CREATE POLICY "Users can view own profile" ON profiles FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY "Users can handle own habits" ON habits FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can handle own habit logs" ON habit_logs FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can handle own tasks" ON tasks FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can handle own focus sessions" ON focus_sessions FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can handle own finances" ON finances FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can handle own bills" ON bills FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can handle own debts" ON debts FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can handle own journal entries" ON journal_entries FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can handle own iron will challenges" ON iron_will_challenges FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can handle own iron will logs" ON iron_will_logs FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can handle own ikigai data" ON ikigai_data FOR ALL USING (auth.uid() = user_id);

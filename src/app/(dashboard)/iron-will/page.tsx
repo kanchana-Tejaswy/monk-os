@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { 
   ShieldAlert, 
-  Flame, 
   Plus, 
   X, 
   RotateCcw, 
@@ -15,6 +14,7 @@ import {
   Calendar
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 interface IronWillChallenge {
   id: string;
@@ -159,7 +159,9 @@ export default function IronWillPage() {
               >
                 {/* Background Decor */}
                 <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                   <Flame className="h-40 w-40" />
+                   <div className="h-40 w-40 relative">
+                     <Image src="/logo.png" alt="Logo Decor" fill className="object-contain" />
+                   </div>
                 </div>
 
                 <div className="space-y-4 relative z-10">

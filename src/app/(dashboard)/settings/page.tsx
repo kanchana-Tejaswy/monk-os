@@ -306,6 +306,14 @@ export default function SettingsPage() {
   );
 }
 
+const sections = [
+  { id: "profile", label: "Identity", icon: User },
+  { id: "habits", label: "Habits", icon: CheckCircle2 },
+  { id: "system", label: "System", icon: Monitor },
+  { id: "ikigai", label: "Ikigai", icon: Sparkles },
+  { id: "security", label: "Security", icon: Shield },
+];
+
 function TimeInput({ label, value }: { label: string, value: string }) {
   return (
     <div className="space-y-2">

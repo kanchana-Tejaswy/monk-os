@@ -3,8 +3,9 @@
 import { useState, useRef } from "react";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Menu, Flame } from "lucide-react";
+import { Menu } from "lucide-react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
+import Image from "next/image";
 
 export default function DashboardLayout({
   children,
@@ -45,8 +46,13 @@ export default function DashboardLayout({
           className="flex h-20 items-center justify-between glass-panel fixed lg:sticky top-0 left-0 right-0 lg:left-auto lg:right-auto z-30 px-6 md:px-10 border-b border-border transition-colors duration-500"
         >
           <div className="flex items-center gap-3 lg:hidden">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-              <Flame className="h-5 w-5" />
+            <div className="flex h-10 w-10 relative bg-white dark:bg-white/10 rounded-xl overflow-hidden shadow-lg p-1 border border-black/5 dark:border-white/10">
+              <Image 
+                src="/logo.png" 
+                alt="Logo" 
+                fill 
+                className="object-contain"
+              />
             </div>
             <span className="text-xl font-heading font-black tracking-tighter text-foreground uppercase">
               monk mode
