@@ -6,11 +6,11 @@ import Image from "next/image";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
-  const supabase = createClient();
 
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
+      const supabase = createClient();
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {

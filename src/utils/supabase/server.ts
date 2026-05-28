@@ -8,6 +8,15 @@ export async function createClient() {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseAnonKey || !supabaseUrl.startsWith('http')) {
+    if (process.env.NODE_ENV === 'production' && !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+       console.warn('Supabase environment variables are missing during build. Returning a mock client.')
+       return {
+         auth: {
+           getUser: async () => ({ data: { user: null }, error: null }),
+           getSession: async () => ({ data: { session: null }, error: null }),
+         }
+       } as any
+    }
     throw new Error('Missing or invalid Supabase environment variables')
   }
 
