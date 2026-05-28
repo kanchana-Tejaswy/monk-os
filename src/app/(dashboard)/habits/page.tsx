@@ -37,7 +37,48 @@ export default function HabitTrackerPage() {
   
   const supabase = createClient();
 
-  // ... (rest of state)
+  const dateKey = selectedDate.toISOString().split('T')[0];
+  const isToday = dateKey === new Date().toISOString().split('T')[0];
+  const isLocked = new Date().getTime() - selectedDate.getTime() > 48 * 60 * 60 * 1000 && !isToday;
+
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newHabitTitle, setNewHabitTitle] = useState("");
+  const [newHabitCategory, setNewHabitCategory] = useState("General");
+  const [newHabitIsNonNegotiable, setNewHabitIsNonNegotiable] = useState(true);
+  
+  const [isReflectionModalOpen, setIsReflectionModalOpen] = useState(false);
+  const [reflectingHabitId, setReflectingHabitId] = useState<string | null>(null);
+  const [reflectionContent, setReflectionContent] = useState("");
+
+  useEffect(() => {
+    const savedHabits = localStorage.getItem("monk_os_habits");
+    if (savedHabits) {
+      setHabits(JSON.parse(savedHabits));
+    } else {
+      // Default habits
+      const defaultHabits: Habit[] = [
+        { id: "1", title: "Morning Meditation", category: "Spiritual", isNonNegotiable: true },
+        { id: "2", title: "Deep Work (4hrs)", category: "Skill", isNonNegotiable: true },
+        { id: "3", title: "Workout", category: "Health", isNonNegotiable: true },
+        { id: "4", title: "Cold Shower", category: "Health", isNonNegotiable: false },
+      ];
+      setHabits(defaultHabits);
+      localStorage.setItem("monk_os_habits", JSON.stringify(defaultHabits));
+    }
+
+    const savedLogs = localStorage.getItem("monk_os_logs");
+    if (savedLogs) setLogs(JSON.parse(savedLogs));
+
+    const savedRestart = localStorage.getItem("monk_os_restartDate");
+    if (savedRestart) setRestartDate(savedRestart);
+  }, []);
+
+  const saveHabits = (updatedHabits: Habit[]) => {
+    setHabits(updatedHabits);
+    localStorage.setItem("monk_os_habits", JSON.stringify(updatedHabits));
+  };
 
   const toggleHabit = async (habitId: string) => {
     if (isLocked) return;
@@ -221,7 +262,11 @@ export default function HabitTrackerPage() {
         
         <div className="flex items-center gap-3 bg-card p-2 rounded-2xl border border-border shadow-sm transition-all duration-300">
           <button 
-            onClick={() => setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() - 1)))}
+            onClick={() => {
+              const newDate = new Date(selectedDate);
+              newDate.setDate(newDate.getDate() - 1);
+              setSelectedDate(newDate);
+            }}
             className="p-2 hover:bg-secondary/50 dark:bg-white/5 rounded-xl transition-all duration-200"
           >
             <ChevronLeft className="h-5 w-5" />
@@ -230,7 +275,11 @@ export default function HabitTrackerPage() {
             {isToday ? "Today" : formatDate(selectedDate)}
           </div>
           <button 
-            onClick={() => setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() + 1)))}
+            onClick={() => {
+              const newDate = new Date(selectedDate);
+              newDate.setDate(newDate.getDate() + 1);
+              setSelectedDate(newDate);
+            }}
             disabled={isToday}
             className="p-2 hover:bg-secondary/50 dark:bg-white/5 rounded-xl transition-all duration-200 disabled:opacity-20"
           >
@@ -240,8 +289,8 @@ export default function HabitTrackerPage() {
       </div>
 
       {/* Progress Overview */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 monk-card p-8 relative overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="lg:col-span-3 monk-card p-8 relative overflow-hidden">
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold text-lg tracking-wide">Integrity Score</h2>
@@ -271,27 +320,26 @@ export default function HabitTrackerPage() {
           {isPerfectDay && <div className="absolute -right-20 -top-20 h-64 w-64 bg-monk-mint/5 rounded-full blur-3xl animate-pulse" />}
         </div>
 
-        <div className="monk-card p-8 flex flex-row lg:flex-col items-center justify-center lg:justify-center text-left lg:text-center gap-5 lg:space-y-2 border-2 border-accent/10">
-          <div className="h-20 w-20 items-center justify-center relative flex-shrink-0 transition-transform duration-300 hover:scale-110">
+        <div className="monk-card p-4 flex items-center justify-center gap-4 border-2 border-accent/10">
+          <div className="relative flex items-center justify-center">
             {currentStreak > 0 ? (
-              <div className="relative flex items-center justify-center">
+              <>
                 <motion.div
                   animate={{
-                    opacity: [0.3, 0.6, 0.3],
-                    scale: [1, 1.5, 1],
+                    opacity: [0.2, 0.4, 0.2],
+                    scale: [1, 1.2, 1],
                   }}
                   transition={{
-                    duration: 1.5,
+                    duration: 2,
                     repeat: Infinity,
                     ease: "easeInOut"
                   }}
-                  className="absolute inset-0 bg-orange-500 blur-3xl z-0"
+                  className="absolute inset-0 bg-orange-500 blur-2xl z-0"
                 />
                 <motion.div
                   animate={{
-                    scale: [1, 1.2, 1],
-                    rotate: [-3, 3, -3],
-                    y: [0, -4, 0]
+                    y: [0, -2, 0],
+                    rotate: [-2, 2, -2]
                   }}
                   transition={{
                     duration: 2,
@@ -299,16 +347,15 @@ export default function HabitTrackerPage() {
                     ease: "easeInOut"
                   }}
                 >
-                  <Flame className="h-12 w-12 text-orange-500 fill-orange-500 relative z-10 drop-shadow-[0_0_20px_rgba(249,115,22,0.9)]" />
+                  <Flame className="h-8 w-8 text-orange-500 fill-orange-500 relative z-10 drop-shadow-[0_0_10px_rgba(249,115,22,0.6)]" />
                 </motion.div>
-              </div>
+              </>
             ) : (
-              <Flame className="h-10 w-10 text-text-secondary/10 fill-transparent" />
+              <Flame className="h-8 w-8 text-text-secondary/10 fill-transparent" />
             )}
           </div>
-          <div>
-            <div className="text-4xl font-heading font-black tracking-tight">{currentStreak}</div>
-            <div className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em]">Day Streak</div>
+          <div className="text-3xl font-heading font-black tracking-tighter text-text-primary">
+            {currentStreak}
           </div>
         </div>
       </div>

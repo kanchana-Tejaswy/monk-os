@@ -28,16 +28,16 @@ interface FocusSession {
 }
 
 interface CustomMode {
-  name: string;
   color: string;
   bg: string;
+  icon?: any;
 }
 
 const DEFAULT_MODES: Record<string, CustomMode> = {
-  Study: { color: "text-secondary", bg: "bg-secondary dark:bg-secondary/10" },
-  Coding: { color: "text-primary", bg: "bg-primary/10" },
-  Reading: { color: "text-accent", bg: "bg-accent/10" },
-  Meditation: { color: "text-monk-mint", bg: "bg-monk-mint/10" },
+  Study: { color: "text-secondary", bg: "bg-secondary dark:bg-secondary/10", icon: Brain },
+  Coding: { color: "text-primary", bg: "bg-primary/10", icon: Code },
+  Reading: { color: "text-accent", bg: "bg-accent/10", icon: BookOpen },
+  Meditation: { color: "text-monk-mint", bg: "bg-monk-mint/10", icon: Wind },
 };
 
 export default function FocusPage() {
@@ -139,17 +139,17 @@ export default function FocusPage() {
     <div className="max-w-4xl mx-auto min-h-[calc(100vh-10rem)] py-8 md:py-12 flex flex-col items-center justify-center space-y-8 md:space-y-12 animate-in fade-in zoom-in duration-700 relative">
       
       {/* Top Header Actions */}
-      <div className="absolute top-0 right-0 p-4 md:p-0 flex gap-3 md:gap-4">
+      <div className="absolute top-0 right-0 p-4 md:p-0 flex gap-3 md:gap-4 z-20">
         <button 
           onClick={() => setShowSettings(true)}
-          className="p-3 bg-card border border-border rounded-xl text-text-secondary hover:text-primary transition-all shadow-sm"
+          className="p-3 bg-card border border-border rounded-xl text-text-secondary hover:text-primary transition-all shadow-sm active:scale-95"
           title="Focus Settings"
         >
           <Settings2 className="h-4 w-4" />
         </button>
         <button 
           onClick={() => setShowLogs(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-xl text-[10px] font-black uppercase tracking-widest text-text-secondary hover:text-primary transition-all shadow-sm"
+          className="flex items-center gap-2 px-5 py-3 md:px-4 md:py-2 bg-card border border-border rounded-xl text-xs md:text-[10px] font-black uppercase tracking-widest text-text-secondary hover:text-primary transition-all shadow-sm active:scale-95"
         >
           <History className="h-4 w-4" /> View Logs
         </button>
@@ -160,7 +160,7 @@ export default function FocusPage() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-wrap justify-center gap-3 md:gap-4 px-4 max-w-2xl"
+          className="flex flex-wrap justify-center gap-3 md:gap-4 px-4 md:px-0 max-w-2xl mt-16 md:mt-0"
         >
           {Object.keys(customModes).map((m) => {
             const Config = customModes[m];
@@ -170,20 +170,20 @@ export default function FocusPage() {
                 key={m}
                 onClick={() => setMode(m)}
                 className={cn(
-                  "flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl font-bold transition-all duration-300 border-2",
+                  "flex items-center gap-2.5 px-6 md:px-6 py-3.5 md:py-3 rounded-2xl font-bold transition-all duration-300 border-2",
                   mode === m 
-                    ? cn("border-primary bg-primary/5 text-primary scale-105 shadow-sm") 
+                    ? cn("border-primary bg-primary/5 text-primary scale-105 shadow-md shadow-primary/10") 
                     : "border-transparent bg-card text-text-secondary hover:bg-secondary dark:bg-secondary/30"
                 )}
               >
-                <Icon className="h-4 md:h-5 w-4 md:w-5" />
+                <Icon className="h-5 md:h-5 w-5 md:w-5" />
                 <span className="text-sm md:text-base">{m}</span>
               </button>
             );
           })}
           
           {isAddingMode ? (
-            <div className="flex items-center gap-2 bg-card border-2 border-primary/30 p-1 px-3 rounded-xl md:rounded-2xl animate-in zoom-in duration-300">
+            <div className="flex items-center gap-2 bg-card border-2 border-primary/30 p-1.5 px-4 rounded-xl md:rounded-2xl animate-in zoom-in duration-300 shadow-lg">
                <input 
                  autoFocus
                  value={newModeName}
@@ -192,15 +192,15 @@ export default function FocusPage() {
                  placeholder="Mode Name..."
                  className="bg-transparent border-none focus:ring-0 text-sm font-bold w-24 md:w-32"
                />
-               <button onClick={addCustomMode} className="p-1 text-primary hover:bg-primary/10 rounded-lg transition-colors"><Check className="h-4 w-4" /></button>
-               <button onClick={() => setIsAddMode(false)} className="p-1 text-text-secondary hover:bg-secondary rounded-lg transition-colors"><X className="h-4 w-4" /></button>
+               <button onClick={addCustomMode} className="p-1.5 text-primary hover:bg-primary/10 rounded-lg transition-colors"><Check className="h-5 w-5" /></button>
+               <button onClick={() => setIsAddMode(false)} className="p-1.5 text-text-secondary hover:bg-secondary rounded-lg transition-colors"><X className="h-5 w-5" /></button>
             </div>
           ) : (
             <button 
               onClick={() => setIsAddMode(true)}
-              className="flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-xl md:rounded-2xl font-bold border-2 border-dashed border-border text-text-secondary hover:border-primary/40 hover:text-primary transition-all"
+              className="flex items-center gap-2.5 px-6 md:px-6 py-3.5 md:py-3 rounded-2xl font-bold border-2 border-dashed border-border text-text-secondary hover:border-primary/40 hover:text-primary transition-all hover:bg-primary/5"
             >
-              <Plus className="h-4 w-4" /> <span className="text-sm md:text-base">Custom</span>
+              <Plus className="h-5 w-5" /> <span className="text-sm md:text-base">Custom</span>
             </button>
           )}
         </motion.div>

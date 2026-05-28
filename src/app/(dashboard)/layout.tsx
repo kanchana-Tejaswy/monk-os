@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Menu, User } from "lucide-react";
+import { Menu, User, Flame } from "lucide-react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { calculateStreak } from "@/lib/streak";
+import { cn } from "@/lib/utils";
 
 export default function DashboardLayout({
   children,
@@ -17,6 +19,37 @@ export default function DashboardLayout({
   const containerRef = useRef<HTMLElement>(null);
   const { scrollY } = useScroll({ container: containerRef });
   const [hidden, setHidden] = useState(false);
+  const [streak, setStreak] = useState(0);
+
+  useEffect(() => {
+    function updateStreak() {
+      const savedHabits = localStorage.getItem("monk_os_habits");
+      const savedLogs = localStorage.getItem("monk_os_logs");
+      const restartDate = localStorage.getItem("monk_os_streak_restart");
+
+      if (!savedHabits || !savedLogs) {
+        setStreak(0);
+        return;
+      }
+
+      try {
+        const habits = JSON.parse(savedHabits);
+        const logs = JSON.parse(savedLogs);
+        const nnHabitIds = habits
+          .filter((h: any) => h.isNonNegotiable || h.is_non_negotiable)
+          .map((h: any) => h.id);
+
+        const currentStreak = calculateStreak(logs, nnHabitIds, restartDate);
+        setStreak(currentStreak);
+      } catch (e) {
+        setStreak(0);
+      }
+    }
+
+    updateStreak();
+    window.addEventListener("streak_updated", updateStreak);
+    return () => window.removeEventListener("streak_updated", updateStreak);
+  }, []);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
@@ -56,13 +89,72 @@ export default function DashboardLayout({
               />
             </div>
             <span className="text-xl font-heading font-black tracking-tighter text-foreground uppercase">
-              monk mode
+              monk
             </span>
+            
+            {/* Mobile Streak Badge */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-secondary/30 dark:bg-white/5 rounded-xl border border-border ml-1">
+              <div className="relative flex items-center justify-center">
+                {streak > 0 ? (
+                  <motion.div
+                    animate={{ scale: [1, 1.1, 1], rotate: [-5, 5, -5] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <Flame className="h-3.5 w-3.5 text-orange-500 fill-orange-500 relative z-10" />
+                  </motion.div>
+                ) : (
+                  <Flame className="h-3.5 w-3.5 text-text-secondary/20 fill-transparent" />
+                )}
+              </div>
+              <span className="text-xs font-black text-foreground">{streak}</span>
+            </div>
           </div>
-          <div className="hidden lg:flex items-center text-sm font-bold text-muted-foreground uppercase tracking-widest">
-            <span className="flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-monk-mint animate-pulse" /> Systems Nominal
-            </span>
+
+          <div className="hidden lg:flex items-center gap-6">
+            <div className="flex items-center gap-2 px-4 py-2 bg-secondary/30 dark:bg-white/5 rounded-2xl border border-border shadow-sm group transition-all hover:bg-secondary/50">
+              <div className="relative flex items-center justify-center">
+                {streak > 0 ? (
+                  <>
+                    <motion.div
+                      animate={{
+                        opacity: [0.3, 0.6, 0.3],
+                        scale: [1, 1.4, 1],
+                      }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                      className="absolute inset-0 bg-orange-500 blur-md rounded-full"
+                    />
+                    <motion.div
+                      animate={{
+                        scale: [1, 1.1, 1],
+                        rotate: [-5, 5, -5],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    >
+                      <Flame className="h-4 w-4 text-orange-500 fill-orange-500 relative z-10 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
+                    </motion.div>
+                  </>
+                ) : (
+                  <Flame className="h-4 w-4 text-text-secondary/20 fill-transparent" />
+                )}
+              </div>
+              <span className="text-sm font-black tracking-tight text-foreground">
+                {streak}
+              </span>
+            </div>
+            
+            <div className="flex items-center text-sm font-bold text-muted-foreground uppercase tracking-widest">
+              <span className="flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-monk-mint animate-pulse" /> Systems Nominal
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center gap-4">

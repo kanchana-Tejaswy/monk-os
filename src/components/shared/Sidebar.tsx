@@ -45,7 +45,6 @@ const navigation = [
     group: "PLAN",
     items: [
       { name: "Todo List", href: "/todos", icon: ListTodo },
-      { name: "Calendar", href: "/calendar", icon: CalendarIcon },
       { name: "Goals", href: "/goals", icon: Target },
     ]
   },
