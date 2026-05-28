@@ -3,9 +3,10 @@
 import { useState, useRef } from "react";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Menu } from "lucide-react";
+import { Menu, User } from "lucide-react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function DashboardLayout({
   children,
@@ -48,7 +49,7 @@ export default function DashboardLayout({
           <div className="flex items-center gap-3 lg:hidden">
             <div className="flex h-10 w-10 relative bg-white dark:bg-white/10 rounded-xl overflow-hidden shadow-lg p-1 border border-black/5 dark:border-white/10">
               <Image 
-                src="/logo.png" 
+                src="/monk-logo.jpeg" 
                 alt="Logo" 
                 fill 
                 className="object-contain"
@@ -65,6 +66,13 @@ export default function DashboardLayout({
           </div>
 
           <div className="flex items-center gap-4">
+            <Link 
+              href="/settings"
+              className="p-2.5 hover:bg-secondary/20 rounded-xl transition-all text-muted-foreground hover:text-foreground border border-transparent hover:border-border"
+              title="Profile"
+            >
+              <User className="h-5 w-5" />
+            </Link>
             <div className="p-1 bg-secondary/50 dark:bg-secondary/10 rounded-2xl border border-border transition-colors duration-500">
               <ThemeToggle />
             </div>

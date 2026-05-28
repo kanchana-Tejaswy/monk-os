@@ -160,7 +160,7 @@ export default function IronWillPage() {
                 {/* Background Decor */}
                 <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
                    <div className="h-40 w-40 relative">
-                     <Image src="/logo.png" alt="Logo Decor" fill className="object-contain" />
+                     <Image src="/monk-logo.jpeg" alt="Logo Decor" fill className="object-contain" />
                    </div>
                 </div>
 

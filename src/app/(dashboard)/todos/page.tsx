@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Plus, Circle, CheckCircle2, Trash2, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { createClient } from "@/utils/supabase/client";
 
 interface Todo {
   id: string;
@@ -14,6 +15,8 @@ interface Todo {
 export default function TodoPage() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState("");
+  
+  const supabase = createClient();
 
   // Load Data
   useEffect(() => {
@@ -36,16 +39,46 @@ export default function TodoPage() {
     localStorage.setItem("monk_os_todos", JSON.stringify(newTodos));
   };
 
-  const addTodo = (e: React.FormEvent) => {
+  const addTodo = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTodo.trim()) return;
     
+    const taskTitle = newTodo.trim();
     const updated = [
-      { id: Math.random().toString(36).substr(2, 9), title: newTodo, completed: false },
+      { id: Math.random().toString(36).substr(2, 9), title: taskTitle, completed: false },
       ...todos
     ];
     saveTodos(updated);
     setNewTodo("");
+
+    // Auto-sync to Google if connected
+    pushToGoogle(taskTitle);
+  };
+
+  const pushToGoogle = async (title: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.provider_token) return;
+
+    try {
+      await fetch(
+        'https://www.googleapis.com/calendar/v3/calendars/primary/events',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${session.provider_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            summary: `[monk mode] Objective: ${title}`,
+            description: "Daily task from monk mode Task Execution.",
+            start: { dateTime: new Date().toISOString() },
+            end: { dateTime: new Date(new Date().getTime() + 15 * 60000).toISOString() },
+          }),
+        }
+      );
+    } catch (e) {
+      console.error("Google sync error:", e);
+    }
   };
 
   const toggleTodo = (id: string) => {

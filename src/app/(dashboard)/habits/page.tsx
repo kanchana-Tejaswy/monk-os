@@ -12,12 +12,15 @@ import {
   Edit2,
   X,
   Check,
-  Trash2
+  Trash2,
+  Flame
 } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
 import { calculateStreak } from "@/lib/streak";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+
+import { createClient } from "@/utils/supabase/client";
 
 interface Habit {
   id: string;
@@ -26,68 +29,17 @@ interface Habit {
   isNonNegotiable: boolean;
 }
 
-const DEFAULT_HABITS: Habit[] = [
-  { id: "1", title: "Morning Chanting", category: "Spiritual", isNonNegotiable: true },
-  { id: "2", title: "Deep Work: Coding", category: "Skill", isNonNegotiable: true },
-  { id: "3", title: "45m Workout", category: "Health", isNonNegotiable: true },
-];
-
 export default function HabitTrackerPage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [habits, setHabits] = useState<Habit[]>([]);
   const [logs, setLogs] = useState<Record<string, boolean>>({});
   const [restartDate, setRestartDate] = useState<string | null>(null);
   
-  // Edit State
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editValue, setEditValue] = useState("");
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [newHabitTitle, setNewHabitTitle] = useState("");
-  const [newHabitCategory, setNewHabitCategory] = useState("General");
-  const [newHabitIsNonNegotiable, setNewHabitIsNonNegotiable] = useState(true);
+  const supabase = createClient();
 
-  // Reflection Modal State
-  const [isReflectionModalOpen, setIsReflectionModalOpen] = useState(false);
-  const [reflectionContent, setReflectionContent] = useState("");
-  const [reflectingHabitId, setReflectingHabitId] = useState<string | null>(null);
+  // ... (rest of state)
 
-  useEffect(() => {
-    const savedHabits = localStorage.getItem("monk_os_habits");
-    if (savedHabits) {
-      setHabits(JSON.parse(savedHabits));
-    } else {
-      setHabits(DEFAULT_HABITS);
-      localStorage.setItem("monk_os_habits", JSON.stringify(DEFAULT_HABITS));
-    }
-
-    const savedLogs = localStorage.getItem("monk_os_logs");
-    if (savedLogs) {
-      setLogs(JSON.parse(savedLogs));
-    }
-    
-    const updateStreakData = () => {
-      setRestartDate(localStorage.getItem("monk_os_streak_restart"));
-    };
-    
-    updateStreakData();
-    window.addEventListener("streak_updated", updateStreakData);
-    return () => window.removeEventListener("streak_updated", updateStreakData);
-  }, []);
-
-  const saveHabits = (updatedHabits: Habit[]) => {
-    setHabits(updatedHabits);
-    localStorage.setItem("monk_os_habits", JSON.stringify(updatedHabits));
-  };
-
-  const dateKey = selectedDate.toISOString().split('T')[0];
-  const isToday = dateKey === new Date().toISOString().split('T')[0];
-  
-  // 48-Hour Lock Logic
-  const diffTime = Math.abs(new Date().getTime() - selectedDate.getTime());
-  const diffHours = diffTime / (1000 * 60 * 60);
-  const isLocked = diffHours > 48 && !isToday;
-
-  const toggleHabit = (habitId: string) => {
+  const toggleHabit = async (habitId: string) => {
     if (isLocked) return;
     
     const logKey = `${dateKey}-${habitId}`;
@@ -101,12 +53,44 @@ export default function HabitTrackerPage() {
       setReflectingHabitId(habitId);
       setReflectionContent("");
       setIsReflectionModalOpen(true);
+      
+      // Auto-sync to Google if connected
+      const habit = habits.find(h => h.id === habitId);
+      if (habit) {
+        pushToGoogle(habit.title);
+      }
     }
 
     // Defer the event dispatch to ensure it happens after this render cycle
     setTimeout(() => {
       window.dispatchEvent(new Event("streak_updated"));
     }, 0);
+  };
+
+  const pushToGoogle = async (title: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.provider_token) return; // Not connected or token expired
+
+    try {
+      await fetch(
+        'https://www.googleapis.com/calendar/v3/calendars/primary/events',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${session.provider_token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            summary: `[monk mode] ${title} Completed`,
+            description: "Evidence of discipline recorded in monk mode.",
+            start: { dateTime: new Date().toISOString() },
+            end: { dateTime: new Date(new Date().getTime() + 15 * 60000).toISOString() },
+          }),
+        }
+      );
+    } catch (e) {
+      console.error("Google sync error:", e);
+    }
   };
 
   const handleSaveReflection = () => {
@@ -277,7 +261,7 @@ export default function HabitTrackerPage() {
               {isPerfectDay && (
                 <span className="text-monk-mint flex items-center gap-1.5 font-black">
                   <div className="h-3.5 w-3.5 relative bg-white dark:bg-white/10 rounded-sm overflow-hidden p-0.5 border border-black/5 dark:border-white/10">
-                    <Image src="/logo.png" alt="Logo" fill className="object-contain" />
+                    <Image src="/monk-logo.jpeg" alt="Logo" fill className="object-contain" />
                   </div>
                   Integrity Maintained
                 </span>
@@ -288,13 +272,39 @@ export default function HabitTrackerPage() {
         </div>
 
         <div className="monk-card p-8 flex flex-row lg:flex-col items-center justify-center lg:justify-center text-left lg:text-center gap-5 lg:space-y-2 border-2 border-accent/10">
-          <div className="h-14 w-14 relative bg-white dark:bg-white/5 rounded-2xl overflow-hidden shadow-lg p-2 border border-black/5 dark:border-white/10 flex items-center justify-center shrink-0">
-            <Image 
-              src="/logo.png" 
-              alt="Logo" 
-              fill 
-              className="object-contain p-1"
-            />
+          <div className="h-20 w-20 items-center justify-center relative flex-shrink-0 transition-transform duration-300 hover:scale-110">
+            {currentStreak > 0 ? (
+              <div className="relative flex items-center justify-center">
+                <motion.div
+                  animate={{
+                    opacity: [0.3, 0.6, 0.3],
+                    scale: [1, 1.5, 1],
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="absolute inset-0 bg-orange-500 blur-3xl z-0"
+                />
+                <motion.div
+                  animate={{
+                    scale: [1, 1.2, 1],
+                    rotate: [-3, 3, -3],
+                    y: [0, -4, 0]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <Flame className="h-12 w-12 text-orange-500 fill-orange-500 relative z-10 drop-shadow-[0_0_20px_rgba(249,115,22,0.9)]" />
+                </motion.div>
+              </div>
+            ) : (
+              <Flame className="h-10 w-10 text-text-secondary/10 fill-transparent" />
+            )}
           </div>
           <div>
             <div className="text-4xl font-heading font-black tracking-tight">{currentStreak}</div>

@@ -48,7 +48,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 relative bg-white dark:bg-white/10 rounded-2xl overflow-hidden shadow-lg p-1.5 flex items-center justify-center border border-black/5 dark:border-white/10">
               <Image 
-                src="/logo.png" 
+                src="/monk-logo.jpeg" 
                 alt="Logo" 
                 fill 
                 className="object-contain"
@@ -280,7 +280,7 @@ export default function LandingPage() {
           <div className="h-24 md:h-32 w-24 md:w-32 relative mx-auto bg-white dark:bg-white/10 rounded-3xl overflow-hidden shadow-2xl animate-pulse p-4 border border-black/5 dark:border-white/10 flex items-center justify-center">
             <div className="relative h-full w-full">
               <Image 
-                src="/logo.png" 
+                src="/monk-logo.jpeg" 
                 alt="Logo" 
                 fill 
                 className="object-contain"
@@ -311,7 +311,7 @@ export default function LandingPage() {
             <div className="flex items-center justify-center md:justify-start gap-3">
               <div className="h-12 w-12 relative bg-white dark:bg-white/10 rounded-xl overflow-hidden p-1.5 border border-black/5 dark:border-white/10">
                 <Image 
-                  src="/logo.png" 
+                  src="/monk-logo.jpeg" 
                   alt="Logo" 
                   fill 
                   className="object-contain"

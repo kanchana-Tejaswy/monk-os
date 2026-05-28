@@ -40,7 +40,7 @@ export default function LoginPage() {
           <div className="h-28 w-28 relative bg-white dark:bg-white/5 rounded-[32px] shadow-2xl border border-black/5 dark:border-white/10 p-4 flex items-center justify-center">
             <div className="relative h-full w-full">
               <Image 
-                src="/logo.png" 
+                src="/monk-logo.jpeg" 
                 alt="Monk Mode Logo" 
                 fill 
                 className="object-contain"

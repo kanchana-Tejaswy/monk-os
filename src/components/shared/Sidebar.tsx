@@ -22,11 +22,8 @@ import {
   ListTodo,
   RotateCcw,
   ShieldAlert,
-  X,
-  LogOut
+  X
 } from "lucide-react";
-import { createClient } from "@/utils/supabase/client";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 const navigation = [
@@ -34,43 +31,37 @@ const navigation = [
     group: "OVERVIEW",
     items: [
       { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-      { name: "Ikigai", href: "/ikigai", icon: Compass },
-    ]
-  },
-  {
-    group: "PLAN",
-    items: [
-      { name: "Goals", href: "/goals", icon: Target },
-      { name: "Calendar", href: "/calendar", icon: CalendarIcon },
-      { name: "Todo List", href: "/todos", icon: ListTodo },
     ]
   },
   {
     group: "EXECUTION",
     items: [
-      { name: "Deep Work", href: "/focus", icon: Zap },
       { name: "Habit Tracker", href: "/habits", icon: CheckCircle2 },
+      { name: "Deep Work", href: "/focus", icon: Zap },
       { name: "Iron Will", href: "/iron-will", icon: ShieldAlert },
     ]
   },
   {
-    group: "INSIGHTS",
+    group: "PLAN",
     items: [
-      { name: "Analytics", href: "/analytics", icon: BarChart3 },
-      { name: "Progress", href: "/history", icon: History },
+      { name: "Todo List", href: "/todos", icon: ListTodo },
+      { name: "Calendar", href: "/calendar", icon: CalendarIcon },
+      { name: "Goals", href: "/goals", icon: Target },
     ]
   },
   {
     group: "REFLECTION",
     items: [
       { name: "Journal", href: "/journal", icon: BookText },
+      { name: "Ikigai", href: "/ikigai", icon: Compass },
     ]
   },
   {
-    group: "SYSTEM",
+    group: "INSIGHTS",
     items: [
+      { name: "Progress", href: "/history", icon: History },
+      { name: "Analytics", href: "/analytics", icon: BarChart3 },
       { name: "Finance", href: "/finance", icon: Wallet },
-      { name: "Settings", href: "/settings", icon: Settings },
     ]
   }
 ];
@@ -83,32 +74,45 @@ interface SidebarProps {
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const [streak, setStreak] = useState(0);
-  const supabase = createClient();
+  const [integrityScore, setIntegrityScore] = useState(0);
 
   useEffect(() => {
-    async function updateStreak() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+    function updateStats() {
+      const savedHabits = localStorage.getItem("monk_os_habits");
+      const savedLogs = localStorage.getItem("monk_os_logs");
+      const restartDate = localStorage.getItem("monk_os_streak_restart");
 
-      const { data: dbHabits } = await supabase.from('habits').select('id').eq('is_non_negotiable', true);
-      const { data: dbLogs } = await supabase.from('habit_logs').select('completed_at, habit_id');
+      if (!savedHabits || !savedLogs) {
+        setStreak(0);
+        setIntegrityScore(0);
+        return;
+      }
 
-      if (!dbHabits || !dbLogs) return;
+      try {
+        const habits = JSON.parse(savedHabits);
+        const logs = JSON.parse(savedLogs);
+        
+        // Streak calculation
+        const nnHabits = habits.filter((h: any) => h.isNonNegotiable || h.is_non_negotiable);
+        const nnHabitIds = nnHabits.map((h: any) => h.id);
+        const currentStreak = calculateStreak(logs, nnHabitIds, restartDate);
+        setStreak(currentStreak);
 
-      const habitIds = dbHabits.map(h => h.id);
-      const logs: Record<string, boolean> = {};
-      dbLogs.forEach(log => {
-        const date = new Date(log.completed_at).toISOString().split('T')[0];
-        logs[`${date}-${log.habit_id}`] = true;
-      });
-      
-      const currentStreak = calculateStreak(logs, habitIds, null);
-      setStreak(currentStreak);
+        // Integrity Score (Today's Progress)
+        const todayStr = new Date().toISOString().split('T')[0];
+        const nnCompletedToday = nnHabitIds.filter((id: string) => logs[`${todayStr}-${id}`]).length;
+        const score = nnHabitIds.length > 0 ? (nnCompletedToday / nnHabitIds.length) * 100 : 0;
+        setIntegrityScore(score);
+      } catch (e) {
+        console.error("Error parsing streak data:", e);
+        setStreak(0);
+        setIntegrityScore(0);
+      }
     }
 
-    updateStreak();
-    window.addEventListener("streak_updated", updateStreak);
-    return () => window.removeEventListener("streak_updated", updateStreak);
+    updateStats();
+    window.addEventListener("streak_updated", updateStats);
+    return () => window.removeEventListener("streak_updated", updateStats);
   }, []);
 
   const handleRestartStreak = () => {
@@ -117,18 +121,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       localStorage.setItem("monk_os_streak_restart", today);
       window.dispatchEvent(new Event("streak_updated"));
       alert("Streak restarted. Begin anew, Monk.");
-    }
-  };
-
-  const router = useRouter();
-
-  const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error("Error signing out:", error);
-    } else {
-      router.push("/login");
-      router.refresh();
     }
   };
 
@@ -148,15 +140,31 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       )}>
         <div className="flex h-20 items-center justify-between px-6 shrink-0 border-b border-border bg-background/50 backdrop-blur-md sticky top-0 z-20">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="flex h-12 w-12 relative bg-white dark:bg-white/10 rounded-xl overflow-hidden shadow-lg transition-transform duration-300 hover:scale-110 flex-shrink-0">
-              <Image 
-                src="/logo.png" 
-                alt="Logo" 
-                fill 
-                className="object-contain p-1"
-              />
+            <div className="flex h-12 w-12 items-center justify-center relative bg-white dark:bg-white/10 rounded-xl transition-transform duration-300 hover:scale-110 flex-shrink-0 shadow-lg overflow-hidden">
+              {streak > 0 && (
+                <motion.div
+                  animate={{
+                    opacity: [0.2, 0.5, 0.2],
+                    scale: [1, 1.2, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="absolute inset-0 bg-orange-500 blur-md z-0"
+                />
+              )}
+              <div className="relative z-10 w-full h-full p-1">
+                <Image 
+                  src="/monk-logo.jpeg" 
+                  alt="Logo" 
+                  fill 
+                  className="object-contain"
+                />
+              </div>
             </div>
-            <span className="text-xl font-heading font-black tracking-tighter text-foreground uppercase truncate italic">
+            <span className="text-xl font-heading font-black tracking-tighter text-foreground uppercase italic truncate">
               monk mode
             </span>
           </div>
@@ -211,10 +219,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           ))}
         </nav>
 
-        <div className="p-6 border-t border-border bg-background transition-colors duration-500">
-          <div className="rounded-[24px] bg-secondary/40 dark:bg-white/[0.02] border border-border p-5 relative group overflow-hidden transition-all duration-300 hover:bg-secondary/60 dark:hover:bg-white/[0.04]">
+        <div className="p-4 border-t border-border bg-background transition-colors duration-500">
+          <div className="rounded-[20px] bg-secondary/40 dark:bg-white/[0.02] border border-border p-4 relative group overflow-hidden transition-all duration-300 hover:bg-secondary/60 dark:hover:bg-white/[0.04]">
             <div className="absolute -right-4 -top-4 w-20 h-20 bg-accent/[0.05] rounded-full blur-2xl group-hover:bg-accent/10 transition-colors" />
-            <div className="flex items-center justify-between mb-3 relative z-10">
+            <div className="flex items-center justify-between mb-2 relative z-10">
               <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] opacity-80">Life Streak</span>
               <button 
                 onClick={handleRestartStreak}
@@ -224,24 +232,32 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 <RotateCcw className="h-3 w-3" />
               </button>
             </div>
-            <div className="text-3xl font-heading font-black flex items-center gap-2 relative z-10 text-foreground">
-              {streak} <span className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.15em] mt-3">Days</span>
-              <div className="flex h-10 w-10 relative bg-white/20 rounded-xl overflow-hidden p-1.5 ml-auto">
-              <Image src="/logo.png" alt="Logo" fill className="object-contain" />
+            <div className="text-2xl font-heading font-black flex items-center gap-2 relative z-10 text-foreground">
+              {streak} <span className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.15em] mt-2">Days</span>
+              <div className={cn(
+                "flex h-10 w-10 items-center justify-center rounded-xl ml-auto transition-all duration-500",
+                streak > 0 
+                  ? "bg-orange-500/20 text-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.3)]" 
+                  : "bg-zinc-500/5 text-zinc-500/10"
+              )}>
+                <Flame className={cn(
+                  "h-5 w-5 transition-all duration-500",
+                  streak > 0 ? "fill-orange-500 animate-pulse" : "fill-transparent"
+                )} />
+              </div>
             </div>
+            <div className="mt-3 h-1 w-full bg-secondary/60 dark:bg-white/5 rounded-full overflow-hidden relative z-10" title={`Integrity Score: ${Math.round(integrityScore)}%`}>
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: `${integrityScore}%` }}
+                className="h-full bg-accent rounded-full shadow-[0_0_10px_rgba(232,197,71,0.3)]" 
+              />
             </div>
-            <div className="mt-4 h-1.5 w-full bg-secondary/60 dark:bg-white/5 rounded-full overflow-hidden relative z-10">
-              <div className="h-full bg-accent w-[80%] rounded-full shadow-[0_0_10px_rgba(232,197,71,0.3)]" />
+            <div className="mt-1 flex justify-between items-center relative z-10">
+              <span className="text-[8px] font-bold text-text-secondary uppercase tracking-[0.1em]">Integrity</span>
+              <span className="text-[8px] font-black text-accent uppercase tracking-[0.1em]">{Math.round(integrityScore)}%</span>
             </div>
           </div>
-
-          <button
-            onClick={handleSignOut}
-            className="w-full mt-4 flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-500/10 rounded-2xl transition-all duration-300"
-          >
-            <LogOut className="h-5 w-5" />
-            <span>Sign Out</span>
-          </button>
         </div>
       </div>
     </>
