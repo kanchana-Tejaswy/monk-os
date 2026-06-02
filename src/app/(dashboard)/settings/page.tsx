@@ -95,14 +95,14 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700 pb-20">
+    <div className="max-w-6xl mx-auto space-y-5 md:space-y-8 animate-in fade-in duration-700 pb-8 md:pb-20">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-heading font-black tracking-tight text-foreground italic">System Settings</h1>
         <p className="text-text-secondary font-soft mt-1">Configure your environment for maximum self-mastery.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8">
         
         {/* Navigation */}
         <div className="lg:col-span-3">
@@ -137,15 +137,15 @@ export default function SettingsPage() {
                   exit={{ opacity: 0, y: -10 }}
                   className="space-y-12"
                 >
-                  <section className="space-y-8">
+                  <section className="space-y-5 md:space-y-8">
                     <div className="flex items-center gap-3 border-b border-border pb-4">
-                      <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                      <div className="h-11 w-11 md:h-10 md:w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                         <User className="h-5 w-5" />
                       </div>
                       <h2 className="text-xl font-heading font-black italic tracking-tight">Identity Setup</h2>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                       <div className="space-y-3">
                         <label className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em]">Full Name</label>
                         <input 
@@ -167,9 +167,9 @@ export default function SettingsPage() {
                     </div>
                   </section>
 
-                  <section className="space-y-8">
+                  <section className="space-y-5 md:space-y-8">
                     <div className="flex items-center gap-3 border-b border-border pb-4">
-                      <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                      <div className="h-11 w-11 md:h-10 md:w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                         <Clock className="h-5 w-5" />
                       </div>
                       <h2 className="text-xl font-heading font-black italic tracking-tight">Daily Structure</h2>
@@ -189,10 +189,10 @@ export default function SettingsPage() {
                   initial={{ opacity: 0, y: 10 }} 
                   animate={{ opacity: 1, y: 0 }} 
                   exit={{ opacity: 0, y: -10 }}
-                  className="space-y-8"
+                  className="space-y-5 md:space-y-8"
                 >
                   <div className="flex items-center gap-3 border-b border-border pb-4">
-                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                    <div className="h-11 w-11 md:h-10 md:w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                       <CheckCircle2 className="h-5 w-5" />
                     </div>
                     <h2 className="text-xl font-heading font-black italic tracking-tight">Habit Governance</h2>
@@ -207,7 +207,7 @@ export default function SettingsPage() {
                             <div className="h-2 w-2 rounded-full bg-primary" />
                             <span className="font-bold text-sm">{h}</span>
                           </div>
-                          <button className="p-2 text-text-secondary hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all">
+                          <button className="p-2 text-text-secondary hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex">
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
@@ -228,9 +228,9 @@ export default function SettingsPage() {
                   exit={{ opacity: 0, y: -10 }}
                   className="space-y-12"
                 >
-                  <section className="space-y-8">
+                  <section className="space-y-5 md:space-y-8">
                     <div className="flex items-center gap-3 border-b border-border pb-4">
-                      <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                      <div className="h-11 w-11 md:h-10 md:w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                         <Monitor className="h-5 w-5" />
                       </div>
                       <h2 className="text-xl font-heading font-black italic tracking-tight">System Interface</h2>
@@ -279,9 +279,9 @@ export default function SettingsPage() {
                     </div>
                   </section>
 
-                  <section className="space-y-8">
+                  <section className="space-y-5 md:space-y-8">
                     <div className="flex items-center gap-3 border-b border-border pb-4">
-                      <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                      <div className="h-11 w-11 md:h-10 md:w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                         <Sparkles className="h-5 w-5" />
                       </div>
                       <h2 className="text-xl font-heading font-black italic tracking-tight">Feedback Signals</h2>
@@ -303,9 +303,9 @@ export default function SettingsPage() {
                   exit={{ opacity: 0, y: -10 }}
                   className="space-y-12"
                 >
-                  <section className="space-y-8">
+                  <section className="space-y-5 md:space-y-8">
                     <div className="flex items-center gap-3 border-b border-border pb-4">
-                      <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                      <div className="h-11 w-11 md:h-10 md:w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                         <Compass className="h-5 w-5" />
                       </div>
                       <h2 className="text-xl font-heading font-black italic tracking-tight">Ikigai Governance</h2>
@@ -351,9 +351,9 @@ export default function SettingsPage() {
                   exit={{ opacity: 0, y: -10 }}
                   className="space-y-12"
                 >
-                  <section className="space-y-8">
+                  <section className="space-y-5 md:space-y-8">
                     <div className="flex items-center gap-3 border-b border-border pb-4">
-                      <div className="h-10 w-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500">
+                      <div className="h-11 w-11 md:h-10 md:w-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500">
                         <Lock className="h-5 w-5" />
                       </div>
                       <h2 className="text-xl font-heading font-black italic tracking-tight text-red-500 uppercase">Danger Zone</h2>

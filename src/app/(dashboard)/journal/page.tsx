@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { syncManager } from "@/lib/sync/syncManager";
+import { useAuth } from "@/lib/contexts/AuthContext";
 
 interface JournalEntry {
   id: string;
@@ -36,6 +38,7 @@ interface JournalEntry {
 const DOMAINS: JournalEntry["domain"][] = ["Ideas", "Academic", "Physical", "Emotional", "Spiritual"];
 
 export default function JournalPage() {
+  const { user } = useAuth();
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [content, setContent] = useState("");
   const [category, setCategory] = useState<JournalEntry["category"]>("Reflection");
@@ -93,6 +96,14 @@ export default function JournalPage() {
           : e
       );
       updateState(updatedEntries);
+      if (user) {
+        syncManager.save('journal_entries', 'UPDATE', {
+          id: editingId,
+          content,
+          category,
+          domain
+        });
+      }
     } else {
       const newEntry: JournalEntry = {
         id: Math.random().toString(36).substr(2, 9),
@@ -103,6 +114,16 @@ export default function JournalPage() {
         timestamp: Date.now(),
       };
       updateState([newEntry, ...entries]);
+      if (user) {
+        syncManager.save('journal_entries', 'INSERT', {
+          id: newEntry.id,
+          user_id: user.id,
+          content: newEntry.content,
+          category: newEntry.category,
+          domain: newEntry.domain,
+          created_at: newEntry.date
+        });
+      }
     }
     
     setContent("");
@@ -113,6 +134,9 @@ export default function JournalPage() {
   const handleDelete = (id: string) => {
     if (confirm("Permanently erase this reflection?")) {
       updateState(entries.filter(e => e.id !== id));
+      if (user) {
+        syncManager.save('journal_entries', 'DELETE', { id });
+      }
       if (editingId === id) {
         setIsEditorOpen(false);
         setEditingId(null);
@@ -145,13 +169,13 @@ export default function JournalPage() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto space-y-10 animate-in fade-in duration-500 pb-20 px-4 sm:px-0">
+    <div className="max-w-7xl mx-auto space-y-6 md:space-y-10 animate-in fade-in duration-500 pb-8 md:pb-20 px-4 sm:px-0">
       
       {/* --- HEADER --- */}
       <div className="flex flex-col gap-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-1">
-            <h1 className="text-4xl font-heading font-black tracking-tighter italic text-foreground">The Digital Ashram</h1>
+            <h1 className="text-3xl md:text-4xl font-heading font-black tracking-tighter italic text-foreground">The Digital Ashram</h1>
             <p className="text-xs font-bold text-muted-foreground uppercase tracking-[0.3em] flex items-center gap-2">
               <Sparkles className="h-3 w-3 text-primary animate-pulse" /> Categorised Wisdom
             </p>
@@ -164,7 +188,7 @@ export default function JournalPage() {
             </div>
             <button 
               onClick={handleNewEntry}
-              className="flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground font-bold rounded-2xl hover:scale-105 transition-all shadow-xl"
+              className="flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground font-bold rounded-2xl hover:scale-105 transition-all shadow-xl min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"
             >
               <Plus className="h-5 w-5" /> Reflect
             </button>
@@ -184,7 +208,7 @@ export default function JournalPage() {
       </div>
 
       {/* --- GRID --- */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
         {DOMAINS.map((dom) => {
           const domainEntries = filteredEntries.filter(e => e.domain === dom);
           return (
@@ -243,16 +267,16 @@ export default function JournalPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-2xl monk-card p-8 md:p-12 shadow-2xl relative z-10"
+              className="w-full max-w-2xl monk-card p-5 md:p-6 md:p-12 shadow-2xl relative z-10"
             >
               <div className="flex items-center justify-between mb-10">
                 <h2 className="text-3xl font-heading font-black tracking-tighter uppercase">
                   {editingId ? "Update Entry" : "New Entry"}
                 </h2>
-                <button onClick={() => setIsEditorOpen(false)} className="p-2 hover:bg-secondary dark:bg-white/5 rounded-full transition-all text-muted-foreground hover:text-foreground"><X /></button>
+                <button onClick={() => setIsEditorOpen(false)} className="p-3 md:p-2 hover:bg-secondary dark:bg-white/5 rounded-full transition-all text-muted-foreground hover:text-foreground"><X /></button>
               </div>
 
-              <div className="space-y-10">
+              <div className="space-y-6 md:space-y-10">
                 {/* Domain Picker */}
                 <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
                   {DOMAINS.map((dom) => (
@@ -307,7 +331,7 @@ export default function JournalPage() {
                    )}
                    <button 
                     onClick={handleSave}
-                    className="flex-1 py-6 bg-primary text-primary-foreground font-heading font-black text-xl rounded-3xl hover:scale-[1.01] transition-all shadow-2xl shadow-primary/20 flex items-center justify-center gap-3"
+                    className="flex-1 py-6 bg-primary text-primary-foreground font-heading font-black text-xl rounded-3xl hover:scale-[1.01] transition-all shadow-2xl shadow-primary/20 flex items-center justify-center gap-3 min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"
                   >
                     <Save className="h-6 w-6" /> SAVE ENTRY
                   </button>
@@ -331,7 +355,7 @@ function EntryCard({ entry, onDelete, onEdit }: { entry: JournalEntry, onDelete:
     <motion.div 
       layout
       onClick={onEdit}
-      className="monk-card p-8 md:p-12 border-2 transition-all group relative overflow-hidden cursor-pointer hover:border-primary/40 active:scale-[0.99] hover:shadow-primary/5"
+      className="monk-card p-5 md:p-6 md:p-12 border-2 transition-all group relative overflow-hidden cursor-pointer hover:border-primary/40 active:scale-[0.99] hover:shadow-primary/5"
     >
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
@@ -372,7 +396,7 @@ function EntryCard({ entry, onDelete, onEdit }: { entry: JournalEntry, onDelete:
         {shouldTruncate && (
           <button 
             onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
-            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary hover:text-foreground transition-all mt-4 relative z-10 bg-secondary dark:bg-white/5 px-4 py-2 rounded-full border border-border"
+            className="flex items-center gap-3 md:p-2 text-[10px] font-black uppercase tracking-widest text-primary hover:text-foreground transition-all mt-4 relative z-10 bg-secondary dark:bg-white/5 px-4 py-2 rounded-full border border-border"
           >
             {isExpanded ? (
               <><ChevronUp className="h-3 w-3" /> Show Less</>
@@ -412,7 +436,7 @@ function HeaderAction({ icon, onClick, disabled, title }: { icon: React.ReactNod
   return (
     <button 
       onClick={onClick} disabled={disabled} title={title}
-      className="p-3 rounded-xl hover:bg-secondary/50 dark:bg-white/10 dark:bg-white/5 text-muted-foreground hover:text-primary disabled:opacity-20 transition-all"
+      className="p-3 rounded-xl hover:bg-secondary/50 dark:bg-white/10 dark:bg-white/5 text-muted-foreground hover:text-primary disabled:opacity-20 transition-all min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"
     >
       {icon}
     </button>

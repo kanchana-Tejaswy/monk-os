@@ -24,6 +24,8 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/contexts/AuthContext";
+import { syncManager } from "@/lib/sync/syncManager";
 
 // --- Types ---
 
@@ -145,19 +147,19 @@ function ReflectionModal({ isOpen, onClose, onComplete }: { isOpen: boolean, onC
       <motion.div 
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="w-full max-w-2xl bg-card border border-border rounded-[40px] p-8 md:p-12 shadow-2xl relative overflow-hidden"
+        className="w-full max-w-2xl bg-card border border-border rounded-[40px] p-6 md:p-12 shadow-2xl relative overflow-hidden"
       >
         <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
           <Compass className="h-64 w-64 text-primary" />
         </div>
 
-        <div className="relative z-10 space-y-10">
+        <div className="relative z-10 space-y-6 md:space-y-10">
           <div className="flex justify-between items-center">
             <div className="space-y-1">
               <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">Evolution Guide</span>
               <h2 className="text-2xl font-heading font-black tracking-tighter uppercase italic">Monthly Reflection</h2>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-secondary rounded-full transition-all text-muted-foreground"><X /></button>
+            <button onClick={onClose} className="p-3 md:p-2 hover:bg-secondary rounded-full transition-all text-muted-foreground min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"><X /></button>
           </div>
 
           {step === -1 ? (
@@ -165,7 +167,7 @@ function ReflectionModal({ isOpen, onClose, onComplete }: { isOpen: boolean, onC
               key="caution"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="space-y-8 py-4 text-center"
+              className="space-y-5 md:space-y-8 py-4 text-center"
             >
               <div className="flex flex-col items-center gap-4 text-amber-500">
                 <div className="h-16 w-16 rounded-full bg-amber-500/10 flex items-center justify-center">
@@ -238,7 +240,7 @@ function ReflectionModal({ isOpen, onClose, onComplete }: { isOpen: boolean, onC
 
 function AlignmentGraph({ data }: { data: IkigaiEntry['alignmentData'] }) {
   return (
-    <div className="relative w-full aspect-square md:aspect-video bg-secondary/10 rounded-[32px] border border-border overflow-hidden p-8 md:p-12">
+    <div className="relative w-full aspect-square md:aspect-video bg-secondary/10 rounded-[32px] border border-border overflow-hidden p-6 md:p-12">
       <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
         <div className="border-r border-b border-border/50 flex items-center justify-center"><span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-20 rotate-[-45deg]">Exploration</span></div>
         <div className="border-b border-border/50 flex items-center justify-center bg-primary/[0.02]"><span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-20 rotate-[-45deg]">Growth</span></div>
@@ -294,6 +296,17 @@ export default function IkigaiPage() {
   const activeEntry = useMemo(() => evolution.entries[0], [evolution]);
   const handleCompleteReevaluation = (newEntry: IkigaiEntry) => {
     const updatedEvolution = { entries: [newEntry, ...evolution.entries], lastUpdated: new Date().toISOString() };
+    
+    // Cloud Sync
+    syncManager.save('ikigai_data', 'UPSERT', {
+      ikigai_statement: newEntry.purposeStatement,
+      love_answers: newEntry.reflections.filter(r => r.question.includes('energized')).map(r => r.answer),
+      good_at_answers: newEntry.reflections.filter(r => r.question.includes('skills')).map(r => r.answer),
+      world_needs_answers: newEntry.reflections.filter(r => r.question.includes('impact')).map(r => r.answer),
+      paid_for_answers: newEntry.reflections.filter(r => r.question.includes('meaning')).map(r => r.answer),
+      updated_at: new Date().toISOString()
+    });
+
     setEvolution(updatedEvolution);
     localStorage.setItem("monkos_ikigai_evolution", JSON.stringify(updatedEvolution));
     setShowReevaluation(false);
@@ -308,10 +321,10 @@ export default function IkigaiPage() {
       <section className="relative overflow-hidden rounded-[48px] bg-card border-2 border-border p-8 md:p-16 shadow-2xl group transition-all duration-700">
         <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.2, 0.1] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary via-transparent to-transparent pointer-events-none" />
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-8 space-y-8 text-center lg:text-left">
+          <div className="lg:col-span-8 space-y-5 md:space-y-8 text-center lg:text-left">
             <div className="space-y-4">
               <span className="text-[10px] font-black text-primary uppercase tracking-[0.5em] bg-primary/10 px-5 py-2 rounded-full border border-border inline-block">Living Purpose</span>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-black tracking-tighter leading-tight text-text-primary">{activeEntry ? `"${activeEntry.purposeStatement}"` : "Define Your Direction."}</h1>
+              <h1 className="text-3xl md:text-4xl md:text-5xl lg:text-6xl font-heading font-black tracking-tighter leading-tight text-text-primary">{activeEntry ? `"${activeEntry.purposeStatement}"` : "Define Your Direction."}</h1>
               <p className="text-lg md:text-xl text-text-secondary font-soft italic">"Your purpose becomes clearer through action."</p>
             </div>
             <div className="pt-4"><button onClick={() => setShowReevaluation(true)} className="px-10 py-5 bg-zinc-900 dark:bg-white text-white dark:text-black font-black text-[10px] uppercase tracking-[0.3em] rounded-[24px] hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-primary/20 flex items-center gap-3 mx-auto lg:mx-0"><RotateCcw className="h-4 w-4" /> {activeEntry ? "Re-evaluate My Ikigai" : "Start First Reflection"}</button></div>
@@ -322,15 +335,15 @@ export default function IkigaiPage() {
                    <circle cx="50" cy="50" r="45" className="fill-none stroke-secondary stroke-[4]" />
                    <motion.circle cx="50" cy="50" r="45" className={cn("fill-none stroke-[6] stroke-linecap-round transition-colors duration-1000", (activeEntry?.clarityScore || 0) > 70 ? "stroke-primary" : "stroke-text-secondary/40")} strokeDasharray="283" initial={{ strokeDashoffset: 283 }} animate={{ strokeDashoffset: 283 - (283 * (activeEntry?.clarityScore || 0)) / 100 }} transition={{ duration: 2, ease: "easeOut" }} />
                 </svg>
-                <div className="absolute flex flex-col items-center text-center"><span className="text-5xl font-heading font-black text-text-primary tracking-tighter">{activeEntry?.clarityScore || 0}</span><span className="text-[8px] font-black text-text-secondary uppercase tracking-widest mt-1">Clarity Score</span></div>
+                <div className="absolute flex flex-col items-center text-center"><span className="text-4xl md:text-5xl font-heading font-black text-text-primary tracking-tighter">{activeEntry?.clarityScore || 0}</span><span className="text-[8px] font-black text-text-secondary uppercase tracking-widest mt-1">Clarity Score</span></div>
              </div>
              <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest max-w-[140px] text-center leading-relaxed">Clarity grows when actions align with values.</p>
           </div>
         </div>
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-7 space-y-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10">
+        <div className="lg:col-span-7 space-y-6 md:space-y-10">
            <section className="space-y-6">
               <div className="flex items-center justify-between"><h3 className="text-xl font-heading font-black tracking-tighter uppercase italic flex items-center gap-3"><TrendingUp className="h-6 w-6 text-primary" /> Passion vs Skill Alignment</h3></div>
               <AlignmentGraph data={activeEntry?.alignmentData || []} />
@@ -339,8 +352,8 @@ export default function IkigaiPage() {
               <h3 className="text-xl font-heading font-black tracking-tighter uppercase italic flex items-center gap-3 text-text-primary"><Sparkles className="h-6 w-6 text-accent" /> Next Small Steps</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                  {recommendations.map((rec, i) => (
-                   <div key={i} className="monk-card p-6 border-2 border-border/50 hover:border-primary/30 transition-all space-y-4 group">
-                      <div className="h-10 w-10 rounded-xl bg-secondary/50 flex items-center justify-center text-primary group-hover:scale-110 transition-transform"><rec.icon className="h-5 w-5" /></div>
+                   <div key={i} className="monk-card p-4 md:p-6 border-2 border-border/50 hover:border-primary/30 transition-all space-y-4 group">
+                      <div className="h-11 w-11 md:h-10 md:w-10 rounded-xl bg-secondary/50 flex items-center justify-center text-primary group-hover:scale-110 transition-transform"><rec.icon className="h-5 w-5" /></div>
                       <div className="space-y-1"><h4 className="font-bold text-sm text-text-primary uppercase tracking-tight">{rec.title}</h4><p className="text-xs text-text-secondary font-soft leading-relaxed">{rec.desc}</p></div>
                    </div>
                  ))}

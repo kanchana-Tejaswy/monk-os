@@ -5,6 +5,8 @@ import { Plus, Circle, CheckCircle2, Trash2, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { createClient } from "@/utils/supabase/client";
+import { syncManager } from "@/lib/sync/syncManager";
+import { useAuth } from "@/lib/contexts/AuthContext";
 
 interface Todo {
   id: string;
@@ -13,6 +15,7 @@ interface Todo {
 }
 
 export default function TodoPage() {
+  const { user } = useAuth();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState("");
   
@@ -24,13 +27,7 @@ export default function TodoPage() {
     if (saved) {
       setTodos(JSON.parse(saved));
     } else {
-      // Default sample data for first time
-      const defaults = [
-        { id: "1", title: "Buy groceries", completed: false },
-        { id: "2", title: "Reply to emails", completed: true },
-      ];
-      setTodos(defaults);
-      localStorage.setItem("monk_os_todos", JSON.stringify(defaults));
+      setTodos([]);
     }
   }, []);
 
@@ -44,12 +41,23 @@ export default function TodoPage() {
     if (!newTodo.trim()) return;
     
     const taskTitle = newTodo.trim();
+    const newTask = { id: Math.random().toString(36).substr(2, 9), title: taskTitle, completed: false };
     const updated = [
-      { id: Math.random().toString(36).substr(2, 9), title: taskTitle, completed: false },
+      newTask,
       ...todos
     ];
     saveTodos(updated);
     setNewTodo("");
+
+    if (user) {
+      syncManager.save('tasks', 'INSERT', {
+        id: newTask.id,
+        user_id: user.id,
+        title: newTask.title,
+        status: 'pending',
+        due_date: new Date().toISOString().split('T')[0]
+      });
+    }
 
     // Auto-sync to Google if connected
     pushToGoogle(taskTitle);
@@ -82,20 +90,42 @@ export default function TodoPage() {
   };
 
   const toggleTodo = (id: string) => {
+    const todo = todos.find(t => t.id === id);
+    if (!todo) return;
+
+    const updatedStatus = !todo.completed;
     const updated = todos.map(t => 
-      t.id === id ? { ...t, completed: !t.completed } : t
+      t.id === id ? { ...t, completed: updatedStatus } : t
     );
     saveTodos(updated);
+
+    if (user) {
+      syncManager.save('tasks', 'UPDATE', {
+        id,
+        status: updatedStatus ? 'completed' : 'pending'
+      });
+    }
   };
 
   const deleteTodo = (id: string) => {
     const updated = todos.filter(t => t.id !== id);
     saveTodos(updated);
+
+    if (user) {
+      syncManager.save('tasks', 'DELETE', { id });
+    }
   };
 
   const clearAll = () => {
     if (confirm("Clear all tasks?")) {
+      const currentTodos = [...todos];
       saveTodos([]);
+      
+      if (user) {
+        currentTodos.forEach(t => {
+          syncManager.save('tasks', 'DELETE', { id: t.id });
+        });
+      }
     }
   };
 
@@ -107,7 +137,7 @@ export default function TodoPage() {
   const completedTodos = todos.filter(t => t.completed);
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20">
+    <div className="max-w-3xl mx-auto space-y-5 md:space-y-8 animate-in fade-in duration-500 pb-8 md:pb-20">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -116,7 +146,7 @@ export default function TodoPage() {
         </div>
         <button 
           onClick={clearAll}
-          className="p-3 bg-secondary/10 text-muted-foreground hover:text-red-500 rounded-2xl transition-all"
+          className="p-3 bg-secondary/10 text-muted-foreground hover:text-red-500 rounded-2xl transition-all min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"
           title="Clear All"
         >
           <RotateCcw className="h-5 w-5" />
@@ -124,7 +154,7 @@ export default function TodoPage() {
       </div>
 
       {/* Progress Bar Section */}
-      <section className="monk-card p-6 bg-primary/5 border-primary/10">
+      <section className="monk-card p-4 md:p-6 bg-primary/5 border-primary/10">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-5 w-5 text-primary" />
@@ -145,7 +175,7 @@ export default function TodoPage() {
         </p>
       </section>
 
-      <div className="monk-card p-6">
+      <div className="monk-card p-4 md:p-6">
         <form onSubmit={addTodo} className="flex items-center gap-4 mb-8">
           <input
             type="text"
@@ -156,7 +186,7 @@ export default function TodoPage() {
           />
           <button 
             type="submit"
-            className="p-3 bg-primary text-primary-foreground rounded-xl hover:scale-105 transition-all shadow-md"
+            className="p-3 bg-primary text-primary-foreground rounded-xl hover:scale-105 transition-all shadow-md min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"
           >
             <Plus className="h-5 w-5" />
           </button>

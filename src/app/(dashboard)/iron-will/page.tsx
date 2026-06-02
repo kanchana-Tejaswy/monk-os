@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { syncManager } from "@/lib/sync/syncManager";
+import { useAuth } from "@/lib/contexts/AuthContext";
 
 interface IronWillChallenge {
   id: string;
@@ -26,6 +28,7 @@ interface IronWillChallenge {
 }
 
 export default function IronWillPage() {
+  const { user } = useAuth();
   const [challenges, setChallenges] = useState<IronWillChallenge[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [historyModalId, setHistoryModalId] = useState<string | null>(null);
@@ -43,12 +46,7 @@ export default function IronWillPage() {
       }));
       setChallenges(migrated);
     } else {
-      const defaults: IronWillChallenge[] = [
-        { id: "1", title: "No Processed Sugar", startDate: new Date().toISOString(), lastResetDate: null, history: [], personalBest: 0 },
-        { id: "2", title: "No Social Media Scrolling", startDate: new Date().toISOString(), lastResetDate: null, history: [], personalBest: 0 }
-      ];
-      setChallenges(defaults);
-      localStorage.setItem("monk_os_iron_will", JSON.stringify(defaults));
+      setChallenges([]);
     }
   }, []);
 
@@ -69,6 +67,15 @@ export default function IronWillPage() {
       personalBest: 0
     };
     save([nc, ...challenges]);
+    if (user) {
+      syncManager.save('iron_will_challenges', 'INSERT', {
+        id: nc.id,
+        user_id: user.id,
+        title: nc.title,
+        start_date: nc.startDate,
+        personal_best: nc.personalBest
+      });
+    }
     setNewTitle("");
     setIsModalOpen(false);
   };
@@ -80,11 +87,28 @@ export default function IronWillPage() {
     const updated = challenges.map(c => {
       if (c.id === id) {
         const currentStreak = calculateDays(c.startDate, c.lastResetDate);
+        const now = new Date().toISOString();
+        const updatedPb = Math.max(c.personalBest, currentStreak);
+        
+        if (user) {
+          syncManager.save('iron_will_challenges', 'UPDATE', {
+            id: c.id,
+            last_reset_date: now,
+            personal_best: updatedPb
+          });
+          syncManager.save('iron_will_logs', 'INSERT', {
+            challenge_id: c.id,
+            user_id: user.id,
+            reason: reason || "No reason provided",
+            occurred_at: now
+          });
+        }
+
         return {
           ...c,
-          lastResetDate: new Date().toISOString(),
-          history: [{ date: new Date().toISOString(), reason: reason || "No reason provided" }, ...c.history].slice(0, 50),
-          personalBest: Math.max(c.personalBest, currentStreak)
+          lastResetDate: now,
+          history: [{ date: now, reason: reason || "No reason provided" }, ...c.history].slice(0, 50),
+          personalBest: updatedPb
         };
       }
       return c;
@@ -95,6 +119,9 @@ export default function IronWillPage() {
   const deleteChallenge = (id: string) => {
     if (confirm("Delete this Iron Will challenge?")) {
       save(challenges.filter(c => c.id !== id));
+      if (user) {
+        syncManager.save('iron_will_challenges', 'DELETE', { id });
+      }
     }
   };
 
@@ -109,12 +136,12 @@ export default function IronWillPage() {
   const viewingChallenge = challenges.find(c => c.id === historyModalId);
 
   return (
-    <div className="max-w-5xl mx-auto space-y-10 animate-in fade-in duration-700 pb-20">
+    <div className="max-w-5xl mx-auto space-y-6 md:space-y-10 animate-in fade-in duration-700 pb-8 md:pb-20">
       
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1">
-          <h1 className="text-4xl font-heading font-bold text-foreground flex items-center gap-3">
+          <h1 className="text-3xl md:text-4xl font-heading font-bold text-foreground flex items-center gap-3">
             <ShieldAlert className="h-10 w-10 text-primary" /> Iron Will
           </h1>
           <p className="text-muted-foreground font-soft text-lg italic">&quot;You are the master of your impulses, not their slave.&quot;</p>
@@ -142,7 +169,7 @@ export default function IronWillPage() {
       </div>
 
       {/* Challenges Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
         <AnimatePresence mode="popLayout">
           {challenges.map((c) => {
             const currentStreak = calculateDays(c.startDate, c.lastResetDate);
@@ -155,7 +182,7 @@ export default function IronWillPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 key={c.id} 
-                className="monk-card p-8 group relative overflow-hidden flex flex-col justify-between min-h-[400px]"
+                className="monk-card p-5 md:p-8 group relative overflow-hidden flex flex-col justify-between min-h-[400px]"
               >
                 {/* Background Decor */}
                 <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -242,14 +269,14 @@ export default function IronWillPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="w-full max-w-md monk-card p-10 shadow-2xl border-2 border-primary/20"
+              className="w-full max-w-md monk-card p-6 md:p-10 shadow-2xl border-2 border-primary/20"
             >
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-heading font-bold">New Iron Will</h2>
-                <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-secondary/20 rounded-full transition-all"><X /></button>
+                <button onClick={() => setIsModalOpen(false)} className="p-3 md:p-2 hover:bg-secondary/20 rounded-full transition-all"><X /></button>
               </div>
 
-              <form onSubmit={addChallenge} className="space-y-8">
+              <form onSubmit={addChallenge} className="space-y-5 md:space-y-8">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">The Impulse to Slay</label>
                   <input 
@@ -287,14 +314,14 @@ export default function IronWillPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-lg monk-card p-10 shadow-2xl border-2 border-primary/20 max-h-[80vh] flex flex-col"
+              className="w-full max-w-lg monk-card p-6 md:p-10 shadow-2xl border-2 border-primary/20 max-h-[80vh] flex flex-col"
             >
               <div className="flex items-center justify-between mb-6 shrink-0">
                 <div>
                   <h2 className="text-2xl font-heading font-bold">{viewingChallenge.title}</h2>
                   <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">Relapse History Log</p>
                 </div>
-                <button onClick={() => setHistoryModalId(null)} className="p-2 hover:bg-secondary/20 rounded-full transition-all"><X /></button>
+                <button onClick={() => setHistoryModalId(null)} className="p-3 md:p-2 hover:bg-secondary/20 rounded-full transition-all"><X /></button>
               </div>
 
               <div className="flex-1 overflow-y-auto space-y-6 pr-4 custom-scrollbar">
@@ -306,7 +333,7 @@ export default function IronWillPage() {
                 ) : (
                   viewingChallenge.history.map((h, i) => (
                     <div key={i} className="relative pl-8 border-l-2 border-red-500/20 py-1">
-                      <div className="absolute left-[-9px] top-2 h-4 w-4 rounded-full bg-red-500/20 border-2 border-red-500 flex items-center justify-center">
+                      <div className="absolute left-[-9px] top-3 md:p-2 h-4 w-4 rounded-full bg-red-500/20 border-2 border-red-500 flex items-center justify-center">
                         <div className="h-1.5 w-1.5 rounded-full bg-red-500" />
                       </div>
                       <div className="flex items-center gap-2 text-[10px] font-black text-red-500 uppercase tracking-widest mb-1">

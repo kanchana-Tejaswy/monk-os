@@ -89,7 +89,7 @@ export default function HistoryPage() {
   );
 
   return (
-    <div className="max-w-full space-y-8 animate-in fade-in duration-700 pb-20">
+    <div className="max-w-full space-y-5 md:space-y-8 animate-in fade-in duration-700 pb-8 md:pb-20">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
         <div className="space-y-2">
@@ -102,9 +102,9 @@ export default function HistoryPage() {
 
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2 bg-card p-1.5 rounded-2xl border border-primary/10 shadow-sm">
-            <button onClick={handlePrevMonth} className="p-2 hover:bg-secondary/50 rounded-xl transition-all"><ChevronLeft className="h-4 w-4" /></button>
+            <button onClick={handlePrevMonth} className="p-2 hover:bg-secondary/50 rounded-xl transition-all min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"><ChevronLeft className="h-4 w-4" /></button>
             <span className="px-4 font-black text-xs uppercase tracking-widest min-w-[140px] text-center">{monthName} {year}</span>
-            <button onClick={handleNextMonth} className="p-2 hover:bg-secondary/50 rounded-xl transition-all"><ChevronRight className="h-4 w-4" /></button>
+            <button onClick={handleNextMonth} className="p-2 hover:bg-secondary/50 rounded-xl transition-all min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"><ChevronRight className="h-4 w-4" /></button>
           </div>
           <button 
             onClick={exportToCSV}
@@ -196,7 +196,7 @@ export default function HistoryPage() {
       </div>
 
       {/* Insight Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
         <section className="p-10 rounded-[40px] bg-primary/5 border-2 border-primary/10 relative overflow-hidden group">
            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-all">
               <Calendar className="h-32 w-32" />
@@ -207,7 +207,7 @@ export default function HistoryPage() {
            </p>
         </section>
         
-        <div className="monk-card p-10 flex flex-col justify-center items-center text-center space-y-6">
+        <div className="monk-card p-6 md:p-10 flex flex-col justify-center items-center text-center space-y-6">
            <div className="h-16 w-16 rounded-3xl bg-secondary/20 flex items-center justify-center">
               <Download className="h-8 w-8 text-secondary-foreground" />
            </div>

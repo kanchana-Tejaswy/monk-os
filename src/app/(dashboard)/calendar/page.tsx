@@ -182,7 +182,7 @@ export default function CalendarPage() {
   const integrityScore = nnTotal > 0 ? Math.round((nnCompleted / nnTotal) * 100) : 0;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700 pb-20">
+    <div className="max-w-6xl mx-auto space-y-5 md:space-y-8 animate-in fade-in duration-700 pb-8 md:pb-20">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
@@ -206,20 +206,20 @@ export default function CalendarPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8">
         
         {/* Calendar Grid (Left) */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="monk-card p-8">
+          <div className="monk-card p-5 md:p-8">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-xl font-heading font-black italic uppercase tracking-tight">
                 {currentMonth.toLocaleString('default', { month: 'long' })} {year}
               </h2>
               <div className="flex gap-2">
-                <button onClick={prevMonth} className="p-2 hover:bg-secondary/50 dark:bg-white/5 rounded-xl transition-all">
+                <button onClick={prevMonth} className="p-2 hover:bg-secondary/50 dark:bg-white/5 rounded-xl transition-all min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex">
                   <ChevronLeft className="h-5 w-5" />
                 </button>
-                <button onClick={nextMonth} className="p-2 hover:bg-secondary/50 dark:bg-white/5 rounded-xl transition-all">
+                <button onClick={nextMonth} className="p-2 hover:bg-secondary/50 dark:bg-white/5 rounded-xl transition-all min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex">
                   <ChevronRight className="h-5 w-5" />
                 </button>
               </div>
@@ -275,7 +275,7 @@ export default function CalendarPage() {
           </div>
           
           <div className="grid grid-cols-2 gap-4">
-            <div className="monk-card p-6 border-l-4 border-l-monk-mint">
+            <div className="monk-card p-4 md:p-6 border-l-4 border-l-monk-mint">
               <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1">Status Legend</div>
               <div className="space-y-3 mt-4">
                 <div className="flex items-center gap-3">
@@ -289,7 +289,7 @@ export default function CalendarPage() {
               </div>
             </div>
             
-            <div className="monk-card p-6 border-l-4 border-l-primary">
+            <div className="monk-card p-4 md:p-6 border-l-4 border-l-primary">
               <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1">Selected Date</div>
               <div className="text-lg font-heading font-black italic mt-2">
                 {selectedDate.getDate()} {selectedDate.toLocaleString('default', { month: 'short' })}
@@ -303,7 +303,7 @@ export default function CalendarPage() {
 
         {/* Day Details (Right) */}
         <div className="lg:col-span-5">
-          <div className="monk-card p-8 min-h-[500px] flex flex-col h-full">
+          <div className="monk-card p-5 md:p-8 min-h-[500px] flex flex-col h-full">
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h2 className="text-xl font-heading font-black italic uppercase tracking-tight">Daily Evidence</h2>
@@ -349,7 +349,7 @@ export default function CalendarPage() {
                             <div className="flex items-center gap-4">
                               <div className={cn(
                                 "h-8 w-8 rounded-lg flex items-center justify-center transition-all",
-                                habit.completed ? "bg-monk-mint text-white" : "bg-secondary text-text-secondary opacity-40"
+                                habit.completed ? "bg-monk-mint text-zinc-900" : "bg-secondary text-text-secondary opacity-40"
                               )}>
                                 {habit.completed ? <CheckCircle2 className="h-5 w-5" /> : <Circle className="h-5 w-5" />}
                               </div>

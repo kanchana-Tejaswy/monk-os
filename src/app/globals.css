@@ -107,11 +107,19 @@
     border-color: var(--border);
     border-width: 0px;
     border-style: solid;
+    -webkit-tap-highlight-color: transparent;
   }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     background-color: var(--background);
     color: var(--foreground);
     font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
   }
 }
 

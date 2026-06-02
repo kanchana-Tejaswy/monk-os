@@ -21,6 +21,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
 import { createClient } from "@/utils/supabase/client";
+import { syncManager } from "@/lib/sync/syncManager";
 
 interface Habit {
   id: string;
@@ -57,15 +58,8 @@ export default function HabitTrackerPage() {
     if (savedHabits) {
       setHabits(JSON.parse(savedHabits));
     } else {
-      // Default habits
-      const defaultHabits: Habit[] = [
-        { id: "1", title: "Morning Meditation", category: "Spiritual", isNonNegotiable: true },
-        { id: "2", title: "Deep Work (4hrs)", category: "Skill", isNonNegotiable: true },
-        { id: "3", title: "Workout", category: "Health", isNonNegotiable: true },
-        { id: "4", title: "Cold Shower", category: "Health", isNonNegotiable: false },
-      ];
-      setHabits(defaultHabits);
-      localStorage.setItem("monk_os_habits", JSON.stringify(defaultHabits));
+      // Clean slate for new users
+      setHabits([]);
     }
 
     const savedLogs = localStorage.getItem("monk_os_logs");
@@ -87,6 +81,18 @@ export default function HabitTrackerPage() {
     const willBeCompleted = !logs[logKey];
     const newLogs = { ...logs, [logKey]: willBeCompleted };
     
+    // Cloud Sync
+    if (willBeCompleted) {
+      syncManager.save('habit_logs', 'INSERT', {
+        habit_id: habitId,
+        completed_at: new Date(dateKey).toISOString(),
+      });
+    } else {
+      // For deletion of logs, we need the ID from Supabase. 
+      // This is a known limitation of the simple LWW sync for logs.
+      // For now, we allow the insert to handle the positive case.
+    }
+
     setLogs(newLogs);
     localStorage.setItem("monk_os_logs", JSON.stringify(newLogs));
     
@@ -152,6 +158,14 @@ export default function HabitTrackerPage() {
       date: dateKey
     };
 
+    // Cloud Sync
+    syncManager.save('journal_entries', 'INSERT', {
+      content: reflectionContent,
+      category: 'Reflection',
+      domain: habit?.category || 'General',
+      created_at: new Date().toISOString()
+    });
+
     const dayReflections = reflections[dateKey] || [];
     reflections[dateKey] = [...dayReflections, newReflection];
     
@@ -173,6 +187,13 @@ export default function HabitTrackerPage() {
     const updated = habits.map(h => 
       h.id === editingId ? { ...h, title: editValue } : h
     );
+    
+    // Cloud Sync
+    const habitToUpdate = habits.find(h => h.id === editingId);
+    if (habitToUpdate) {
+      syncManager.save('habits', 'UPDATE', { ...habitToUpdate, title: editValue });
+    }
+
     saveHabits(updated);
     setEditingId(null);
     setEditValue("");
@@ -187,6 +208,15 @@ export default function HabitTrackerPage() {
       isNonNegotiable: newHabitIsNonNegotiable
     };
     const updated = [...habits, newHabit];
+    
+    // Cloud Sync
+    syncManager.save('habits', 'INSERT', {
+      id: newHabit.id,
+      title: newHabit.title,
+      category: newHabit.category,
+      is_non_negotiable: newHabit.isNonNegotiable
+    });
+
     saveHabits(updated);
     setNewHabitTitle("");
     setIsAddModalOpen(false);
@@ -199,6 +229,10 @@ export default function HabitTrackerPage() {
   const deleteHabit = (id: string) => {
     if (confirm("Delete this habit and all its history?")) {
       const updated = habits.filter(h => h.id !== id);
+      
+      // Cloud Sync
+      syncManager.save('habits', 'DELETE', { id });
+
       saveHabits(updated);
       
       setTimeout(() => {
@@ -253,25 +287,25 @@ export default function HabitTrackerPage() {
   });
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500 pb-20">
+    <div className="max-w-4xl mx-auto space-y-6 md:space-y-8 animate-in fade-in duration-500 pb-8 md:pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-heading font-black tracking-tight text-text-primary italic">Discipline Engine</h1>
-          <p className="text-text-secondary font-soft mt-1">Identity is built through non-negotiable actions.</p>
+          <h1 className="text-2xl md:text-3xl font-heading font-black tracking-tight text-text-primary italic">Discipline Engine</h1>
+          <p className="text-xs md:text-sm text-text-secondary font-soft mt-1">Identity is built through non-negotiable actions.</p>
         </div>
         
-        <div className="flex items-center gap-3 bg-card p-2 rounded-2xl border border-border shadow-sm transition-all duration-300">
+        <div className="flex items-center gap-2 md:gap-3 bg-card p-1.5 md:p-2 rounded-2xl border border-border shadow-sm transition-all duration-300">
           <button 
             onClick={() => {
               const newDate = new Date(selectedDate);
               newDate.setDate(newDate.getDate() - 1);
               setSelectedDate(newDate);
             }}
-            className="p-2 hover:bg-secondary/50 dark:bg-white/5 rounded-xl transition-all duration-200"
+            className="p-2 md:p-2.5 hover:bg-secondary/50 dark:bg-white/5 rounded-xl transition-all duration-200"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
-          <div className="px-4 font-semibold text-sm min-w-[140px] text-center tracking-wide">
+          <div className="px-2 md:px-4 font-semibold text-xs md:text-sm min-w-[100px] md:min-w-[140px] text-center tracking-wide">
             {isToday ? "Today" : formatDate(selectedDate)}
           </div>
           <button 
@@ -281,7 +315,7 @@ export default function HabitTrackerPage() {
               setSelectedDate(newDate);
             }}
             disabled={isToday}
-            className="p-2 hover:bg-secondary/50 dark:bg-white/5 rounded-xl transition-all duration-200 disabled:opacity-20"
+            className="p-2 md:p-2.5 hover:bg-secondary/50 dark:bg-white/5 rounded-xl transition-all duration-200 disabled:opacity-20"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
@@ -289,14 +323,14 @@ export default function HabitTrackerPage() {
       </div>
 
       {/* Progress Overview */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-3 monk-card p-8 relative overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="lg:col-span-3 monk-card p-5 md:p-8 relative overflow-hidden">
           <div className="relative z-10">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-lg tracking-wide">Integrity Score</h2>
-              <span className="text-base font-black text-primary">{Math.round(progress)}%</span>
+            <div className="flex items-center justify-between mb-3 md:mb-4">
+              <h2 className="font-semibold text-base md:text-lg tracking-wide">Integrity Score</h2>
+              <span className="text-sm md:text-base font-black text-primary">{Math.round(progress)}%</span>
             </div>
-            <div className="h-3 w-full bg-secondary/50 dark:bg-white/5 rounded-full overflow-hidden">
+            <div className="h-2.5 md:h-3 w-full bg-secondary/50 dark:bg-white/5 rounded-full overflow-hidden">
               <div 
                 className={cn(
                   "h-full transition-all duration-1000 ease-out rounded-full",
@@ -305,11 +339,11 @@ export default function HabitTrackerPage() {
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <div className="mt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[10px] text-text-secondary font-bold uppercase tracking-[0.15em]">
+            <div className="mt-4 md:mt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[9px] md:text-[10px] text-text-secondary font-bold uppercase tracking-[0.1em] md:tracking-[0.15em]">
               <span>{nnCompletedCount} of {nonNegotiableHabits.length} Non-Negotiables</span>
               {isPerfectDay && (
                 <span className="text-monk-mint flex items-center gap-1.5 font-black">
-                  <div className="h-3.5 w-3.5 relative bg-white dark:bg-white/10 rounded-sm overflow-hidden p-0.5 border border-black/5 dark:border-white/10">
+                  <div className="h-3 md:h-3.5 w-3 md:w-3.5 relative bg-white dark:bg-white/10 rounded-sm overflow-hidden p-0.5 border border-black/5 dark:border-white/10">
                     <Image src="/monk-logo.jpeg" alt="Logo" fill className="object-contain" />
                   </div>
                   Integrity Maintained
@@ -317,7 +351,7 @@ export default function HabitTrackerPage() {
               )}
             </div>
           </div>
-          {isPerfectDay && <div className="absolute -right-20 -top-20 h-64 w-64 bg-monk-mint/5 rounded-full blur-3xl animate-pulse" />}
+          {isPerfectDay && <div className="absolute -right-10 md:-right-20 -top-10 md:-top-20 h-40 md:h-64 w-40 md:w-64 bg-monk-mint/5 rounded-full blur-3xl animate-pulse" />}
         </div>
 
         <div className="monk-card p-4 flex items-center justify-center gap-4 border-2 border-accent/10">
@@ -361,7 +395,7 @@ export default function HabitTrackerPage() {
       </div>
 
       {/* Habits List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
         <section className="space-y-6">
           <div className="flex items-center justify-between px-1">
             <h2 className="font-semibold text-lg tracking-wide flex items-center gap-2.5">
@@ -459,7 +493,7 @@ export default function HabitTrackerPage() {
         
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10 relative z-10">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+            <div className="h-11 w-11 md:h-10 md:w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
               <Calendar className="h-5 w-5" />
             </div>
             <div>
@@ -533,10 +567,10 @@ export default function HabitTrackerPage() {
       <AnimatePresence>
         {isAddModalOpen && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
-            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="w-full max-w-md monk-card p-8 shadow-2xl border-2 border-monk-rose/20">
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="w-full max-w-md monk-card p-5 md:p-8 shadow-2xl border-2 border-monk-rose/20">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-heading font-bold flex items-center gap-2"><Plus className="text-primary" /> New Action</h2>
-                <button onClick={() => setIsAddModalOpen(false)} className="p-2 hover:bg-secondary/20 rounded-full transition-all"><X /></button>
+                <button onClick={() => setIsAddModalOpen(false)} className="p-3 md:p-2 hover:bg-secondary/20 rounded-full transition-all"><X /></button>
               </div>
               <form onSubmit={e => { e.preventDefault(); addHabit(); }} className="space-y-6">
                 <div className="space-y-2">
@@ -567,20 +601,20 @@ export default function HabitTrackerPage() {
       <AnimatePresence>
         {isReflectionModalOpen && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
-            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="w-full max-w-lg bg-card text-card-foreground rounded-[40px] p-8 md:p-12 shadow-2xl relative z-10 border-2 border-primary/20">
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="w-full max-w-lg bg-card text-card-foreground rounded-[40px] p-6 md:p-12 shadow-2xl relative z-10 border-2 border-primary/20">
               <div className="flex items-center justify-between mb-8">
                 <div>
                   <h2 className="text-2xl font-heading font-black tracking-tighter uppercase italic">Witness Mastery</h2>
                   <p className="text-[10px] font-bold text-primary uppercase tracking-widest mt-1">Recording: {habits.find(h => h.id === reflectingHabitId)?.title}</p>
                 </div>
-                <button onClick={() => setIsReflectionModalOpen(false)} className="p-2 hover:bg-secondary/50 rounded-full transition-all text-muted-foreground hover:text-foreground"><X /></button>
+                <button onClick={() => setIsReflectionModalOpen(false)} className="p-3 md:p-2 hover:bg-secondary/50 rounded-full transition-all text-muted-foreground hover:text-foreground"><X /></button>
               </div>
-              <div className="space-y-8">
+              <div className="space-y-5 md:space-y-8">
                 <div className="space-y-4">
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">What did you achieve during this session?</label>
                   <textarea autoFocus value={reflectionContent} onChange={(e) => setReflectionContent(e.target.value)} placeholder="Specifics build discipline. Vagueness builds weakness..." className="w-full h-48 bg-transparent text-xl font-soft leading-relaxed border-none focus:ring-0 placeholder:opacity-20 resize-none no-scrollbar text-foreground" />
                 </div>
-                <button onClick={handleSaveReflection} className="w-full py-5 bg-primary text-primary-foreground font-heading font-black text-lg rounded-3xl hover:scale-[1.01] transition-all shadow-2xl shadow-primary/20 flex items-center justify-center gap-3"><Check className="h-6 w-6" /> SUBMIT EVIDENCE</button>
+                <button onClick={handleSaveReflection} className="w-full py-5 bg-primary text-primary-foreground font-heading font-black text-lg rounded-3xl hover:scale-[1.01] transition-all shadow-2xl shadow-primary/20 flex items-center justify-center gap-3 min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"><Check className="h-6 w-6" /> SUBMIT EVIDENCE</button>
               </div>
             </motion.div>
           </div>
@@ -598,7 +632,7 @@ function HabitItem({
   return (
     <motion.div layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className={cn("group flex items-center justify-between p-5 rounded-[24px] border-2 transition-all duration-300", isLocked ? "opacity-60" : "cursor-pointer", isCompleted ? "bg-monk-mint/[0.03] border-monk-mint/20 shadow-lg shadow-monk-mint/[0.02]" : "bg-card border-border hover:border-primary/40 hover:translate-y-[-1px]")} onClick={() => !isEditing && toggleHabit()}>
       <div className="flex items-center gap-5 flex-1">
-        <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center transition-all duration-500", isCompleted ? "bg-monk-mint text-white scale-110 shadow-lg shadow-monk-mint/20" : "bg-secondary/30 dark:bg-white/[0.03] text-text-secondary group-hover:bg-white/[0.05] group-hover:scale-105")}>
+        <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center transition-all duration-500", isCompleted ? "bg-monk-mint text-zinc-900 scale-110 shadow-lg shadow-monk-mint/20" : "bg-secondary/30 dark:bg-white/[0.03] text-text-secondary group-hover:bg-white/[0.05] group-hover:scale-105")}>
           {isCompleted ? <CheckCircle2 className="h-6 w-6" /> : <Plus className="h-6 w-6" />}
         </div>
         <div className="flex-1">
@@ -619,8 +653,8 @@ function HabitItem({
       <div className="flex items-center gap-3" onClick={e => e.stopPropagation()}>
         {!isEditing && !isLocked && (
           <div className="flex opacity-0 group-hover:opacity-100 transition-all duration-200">
-            <button onClick={startEditing} className="p-2.5 text-text-secondary hover:text-primary transition-colors"><Edit2 className="h-4 w-4"/></button>
-            <button onClick={deleteHabit} className="p-2.5 text-text-secondary hover:text-red-500 transition-colors"><Trash2 className="h-4 w-4"/></button>
+            <button onClick={startEditing} className="p-2.5 text-text-secondary hover:text-primary transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"><Edit2 className="h-4 w-4"/></button>
+            <button onClick={deleteHabit} className="p-2.5 text-text-secondary hover:text-red-500 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"><Trash2 className="h-4 w-4"/></button>
           </div>
         )}
         {isLocked ? <Lock className="h-4 w-4 text-text-secondary/50" /> : (

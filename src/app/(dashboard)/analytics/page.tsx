@@ -172,11 +172,11 @@ export default function AnalyticsPage() {
   }, [calculateAnalytics]);
 
   return (
-    <div className="max-w-7xl mx-auto space-y-10 animate-in fade-in duration-700 pb-20 px-4 md:px-8">
+    <div className="max-w-7xl mx-auto space-y-6 md:space-y-10 animate-in fade-in duration-700 pb-8 md:pb-20 px-4 md:px-8">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-heading font-black text-foreground italic tracking-tighter uppercase">Identity Evolution</h1>
+          <h1 className="text-3xl md:text-4xl font-heading font-black text-foreground italic tracking-tighter uppercase">Identity Evolution</h1>
           <p className="text-muted-foreground font-bold text-xs uppercase tracking-[0.3em] mt-2 flex items-center gap-2">
             <Target className="h-4 w-4 text-primary" /> Hard Data. Zero Lies.
           </p>
@@ -195,7 +195,7 @@ export default function AnalyticsPage() {
         </div>
         
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <div className="space-y-10 text-center lg:text-left">
+          <div className="space-y-6 md:space-y-10 text-center lg:text-left">
             <div className="space-y-4">
               <span className="text-[10px] font-black text-primary uppercase tracking-[0.5em] bg-primary/10 px-5 py-2 rounded-full border border-border">Integrated Life Score</span>
               <h2 className="text-7xl md:text-8xl lg:text-9xl font-heading font-black mt-8 tracking-tighter leading-[0.8] text-foreground drop-shadow-sm">
@@ -258,10 +258,10 @@ export default function AnalyticsPage() {
       </section>
 
       {/* Detailed Metrics Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
         
         {/* Habit Completion Trend */}
-        <section className="monk-card p-10 border-2 flex flex-col shadow-xl shadow-sm">
+        <section className="monk-card p-6 md:p-10 border-2 flex flex-col shadow-xl shadow-sm">
           <div className="flex items-center justify-between mb-12">
             <h3 className="font-heading font-black text-xl flex items-center gap-3 uppercase tracking-tighter text-foreground">
               <Flame className="h-6 w-6 text-accent" />
@@ -293,7 +293,7 @@ export default function AnalyticsPage() {
         </section>
 
         {/* Deep Work Hours */}
-        <section className="monk-card p-10 border-2 flex flex-col shadow-xl shadow-sm">
+        <section className="monk-card p-6 md:p-10 border-2 flex flex-col shadow-xl shadow-sm">
           <div className="flex items-center justify-between mb-12">
             <h3 className="font-heading font-black text-xl flex items-center gap-3 uppercase tracking-tighter text-foreground">
               <Zap className="h-6 w-6 text-primary" />
@@ -325,7 +325,7 @@ export default function AnalyticsPage() {
         </section>
 
         {/* Wealth Chart */}
-        <section className="monk-card p-10 border-2 flex flex-col shadow-xl shadow-sm">
+        <section className="monk-card p-6 md:p-10 border-2 flex flex-col shadow-xl shadow-sm">
           <div className="flex items-center justify-between mb-12">
             <h3 className="font-heading font-black text-xl flex items-center gap-3 uppercase tracking-tighter text-foreground">
               <TrendingUp className="h-6 w-6 text-success" />

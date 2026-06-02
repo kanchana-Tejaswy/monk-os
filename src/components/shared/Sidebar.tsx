@@ -22,9 +22,11 @@ import {
   ListTodo,
   RotateCcw,
   ShieldAlert,
-  X
+  X,
+  LogOut
 } from "lucide-react";
 import Image from "next/image";
+import { useAuth } from "@/lib/contexts/AuthContext";
 
 const navigation = [
   {
@@ -72,6 +74,7 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const { signOut } = useAuth();
   const [streak, setStreak] = useState(0);
   const [integrityScore, setIntegrityScore] = useState(0);
 
@@ -134,12 +137,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       )}
 
       <div className={cn(
-        "fixed inset-y-0 left-0 z-50 w-72 flex-col glass-panel border-r border-border transition-transform duration-500 ease-out lg:static lg:flex lg:translate-x-0 h-[100dvh] overflow-y-auto custom-scrollbar",
+        "fixed inset-y-0 left-0 z-50 w-[85vw] max-w-[320px] lg:w-72 flex-col glass-panel border-r border-border transition-transform duration-500 ease-out lg:static lg:flex lg:translate-x-0 h-[100dvh] overflow-y-auto custom-scrollbar",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <div className="flex h-20 items-center justify-between px-6 shrink-0 border-b border-border bg-background/50 backdrop-blur-md sticky top-0 z-20">
-          <div className="flex items-center gap-3 overflow-hidden">
-            <div className="flex h-12 w-12 items-center justify-center relative bg-white dark:bg-white/10 rounded-xl transition-transform duration-300 hover:scale-110 flex-shrink-0 shadow-lg overflow-hidden">
+        <div className="flex h-16 lg:h-20 items-center justify-between px-4 lg:px-6 shrink-0 border-b border-border bg-background/50 backdrop-blur-md sticky top-0 z-20">
+          <div className="flex items-center gap-2 lg:gap-3 overflow-hidden">
+            <div className="flex h-10 w-10 lg:h-12 lg:w-12 items-center justify-center relative bg-white dark:bg-white/10 rounded-xl transition-transform duration-300 hover:scale-110 flex-shrink-0 shadow-lg overflow-hidden">
               {streak > 0 && (
                 <motion.div
                   animate={{
@@ -163,25 +166,25 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 />
               </div>
             </div>
-            <span className="text-xl font-heading font-black tracking-tighter text-foreground uppercase italic truncate">
+            <span className="text-lg lg:text-xl font-heading font-black tracking-tighter text-foreground uppercase italic truncate">
               monk mode
             </span>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 hover:bg-secondary dark:bg-white/5 rounded-xl lg:hidden shrink-0 transition-all duration-200"
+            className="flex items-center justify-center h-11 w-11 hover:bg-secondary dark:hover:bg-white/5 rounded-xl lg:hidden shrink-0 transition-all duration-200"
           >
-            <X className="h-5 w-5 text-text-secondary hover:text-text-primary" />
+            <X className="h-6 w-6 text-text-secondary hover:text-text-primary" />
           </button>
         </div>
         
-        <nav className="flex-1 px-4 py-6 overflow-y-auto custom-scrollbar relative space-y-8">
+        <nav className="flex-1 px-3 py-4 lg:px-4 lg:py-6 overflow-y-auto custom-scrollbar relative space-y-6 lg:space-y-8">
           {/* Subtle nav background glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-primary/[0.03] rounded-full blur-[80px] pointer-events-none" />
           
           {navigation.map((group) => (
-            <div key={group.group} className="space-y-2">
-              <h3 className="px-4 text-[10px] font-black text-text-secondary/40 uppercase tracking-[0.3em]">
+            <div key={group.group} className="space-y-1 lg:space-y-2">
+              <h3 className="px-3 lg:px-4 text-[9px] lg:text-[10px] font-black text-text-secondary/40 uppercase tracking-[0.2em] lg:tracking-[0.3em]">
                 {group.group}
               </h3>
               <div className="space-y-1">
@@ -193,17 +196,17 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                       href={item.href}
                       onClick={() => onClose?.()}
                       className={cn(
-                        "group flex items-center rounded-2xl px-4 py-3 text-sm font-bold transition-all duration-300 relative overflow-hidden",
+                        "group flex items-center rounded-2xl px-3 py-3.5 lg:px-4 lg:py-3 text-sm font-bold transition-all duration-300 relative overflow-hidden active:scale-95 lg:active:scale-100",
                         isActive 
                           ? "bg-primary/10 text-primary shadow-sm shadow-primary/5" 
                           : "text-text-secondary hover:bg-secondary dark:hover:bg-white/[0.03] hover:text-text-primary"
                       )}
                     >
                       <item.icon className={cn(
-                        "mr-4 h-5 w-5 flex-shrink-0 transition-all duration-300 relative z-10",
+                        "mr-3 lg:mr-4 h-5 w-5 flex-shrink-0 transition-all duration-300 relative z-10",
                         isActive ? "text-primary scale-110" : "text-text-secondary group-hover:text-text-primary"
                       )} />
-                      <span className="truncate relative z-10 tracking-wide">{item.name}</span>
+                      <span className="truncate relative z-10 tracking-wide text-[15px] lg:text-sm">{item.name}</span>
                       {isActive && (
                         <motion.div 
                           layoutId="active-nav"
@@ -218,8 +221,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-border bg-background transition-colors duration-500">
-          <div className="rounded-[20px] bg-secondary/40 dark:bg-white/[0.02] border border-border p-4 relative group overflow-hidden transition-all duration-300 hover:bg-secondary/60 dark:hover:bg-white/[0.04]">
+        <div className="p-3 lg:p-4 border-t border-border bg-background transition-colors duration-500">
+          <div className="rounded-[20px] bg-secondary/40 dark:bg-white/[0.02] border border-border p-3 lg:p-4 relative group overflow-hidden transition-all duration-300 hover:bg-secondary/60 dark:hover:bg-white/[0.04]">
             <div className="absolute -right-4 -top-4 w-20 h-20 bg-accent/[0.05] rounded-full blur-2xl group-hover:bg-accent/10 transition-colors" />
             <div className="flex items-center justify-between mb-2 relative z-10">
               <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] opacity-80">Life Streak</span>
@@ -257,6 +260,21 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               <span className="text-[8px] font-black text-accent uppercase tracking-[0.1em]">{Math.round(integrityScore)}%</span>
             </div>
           </div>
+
+          {/* Logout Option - Highly Accessible */}
+          <button 
+            onClick={() => {
+              if (confirm("Terminate current session? Your data will remain synced to the cloud.")) {
+                signOut();
+              }
+            }}
+            className="mt-4 w-full flex items-center justify-between p-4 rounded-2xl bg-rose-500/5 text-rose-600 dark:text-rose-500 border border-rose-500/10 font-black uppercase tracking-widest text-[9px] hover:bg-rose-500/10 transition-all active:scale-[0.98] group"
+          >
+            <div className="flex items-center gap-3">
+              <LogOut className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              <span>Terminate Session</span>
+            </div>
+          </button>
         </div>
       </div>
     </>

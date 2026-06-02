@@ -36,7 +36,8 @@ CREATE TABLE habits (
   title TEXT NOT NULL,
   category TEXT NOT NULL, -- 'Academic', 'Health', 'Spiritual', 'Skill', 'Finance', 'Personal'
   is_non_negotiable BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- 3. Habit Logs (Tracking)
@@ -46,7 +47,8 @@ CREATE TABLE habit_logs (
   user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
   completed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   is_perfect_day BOOLEAN DEFAULT FALSE,
-  streak_count INTEGER DEFAULT 0
+  streak_count INTEGER DEFAULT 0,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- 4. Tasks (Daily Execution)
@@ -60,7 +62,8 @@ CREATE TABLE tasks (
   is_deep_work BOOLEAN DEFAULT FALSE,
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'cancelled')),
   due_date DATE DEFAULT CURRENT_DATE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- 5. Focus Sessions (Deep Work)
@@ -70,7 +73,8 @@ CREATE TABLE focus_sessions (
   mode TEXT NOT NULL, -- 'Study', 'Coding', 'Reading', 'Meditation'
   task_id UUID REFERENCES tasks(id) ON DELETE SET NULL,
   duration_minutes INTEGER NOT NULL,
-  completed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  completed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- 6. Finances (Credits/Debits)
@@ -81,7 +85,8 @@ CREATE TABLE finances (
   amount DECIMAL NOT NULL,
   reason TEXT NOT NULL,
   category TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- 7. Bills (Recurring)
@@ -92,7 +97,8 @@ CREATE TABLE bills (
   amount DECIMAL NOT NULL,
   due_date DATE NOT NULL,
   is_paid BOOLEAN DEFAULT FALSE,
-  repeat_interval TEXT -- 'Monthly', 'One-time'
+  repeat_interval TEXT, -- 'Monthly', 'One-time'
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- 8. Debts (Borrowed/Lent)
@@ -103,7 +109,8 @@ CREATE TABLE debts (
   amount DECIMAL NOT NULL,
   type TEXT NOT NULL CHECK (type IN ('owe', 'receivable')),
   reason TEXT,
-  due_date DATE
+  due_date DATE,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- 9. Journal (Daily Reflections)
@@ -113,7 +120,8 @@ CREATE TABLE journal_entries (
   content TEXT NOT NULL,
   category TEXT, -- 'Morning', 'Evening', 'General'
   domain TEXT, -- 'Discipline', 'Gratitude', 'Vision'
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- 10. Iron Will (Elimination Challenges)
@@ -124,7 +132,8 @@ CREATE TABLE iron_will_challenges (
   start_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   last_reset_date TIMESTAMP WITH TIME ZONE,
   personal_best INTEGER DEFAULT 0,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- 11. Iron Will Logs (Relapse History)
@@ -133,7 +142,8 @@ CREATE TABLE iron_will_logs (
   challenge_id UUID REFERENCES iron_will_challenges(id) ON DELETE CASCADE NOT NULL,
   user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
   reason TEXT,
-  occurred_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  occurred_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- 12. Ikigai (Life Direction)
@@ -177,3 +187,22 @@ CREATE POLICY "Users can handle own journal entries" ON journal_entries FOR ALL 
 CREATE POLICY "Users can handle own iron will challenges" ON iron_will_challenges FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users can handle own iron will logs" ON iron_will_logs FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users can handle own ikigai data" ON ikigai_data FOR ALL USING (auth.uid() = user_id);
+
+-- Function to handle new user profile creation
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, full_name, avatar_url)
+  VALUES (
+    new.id,
+    new.raw_user_meta_data->>'full_name',
+    new.raw_user_meta_data->>'avatar_url'
+  );
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger to create profile on sign-up
+CREATE OR REPLACE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();

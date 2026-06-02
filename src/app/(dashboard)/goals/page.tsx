@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { syncManager } from "@/lib/sync/syncManager";
+import { useAuth } from "@/lib/contexts/AuthContext";
 
 interface Milestone {
   id: string;
@@ -29,6 +31,7 @@ interface Goal {
 }
 
 export default function GoalsPage() {
+  const { user } = useAuth();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -75,6 +78,15 @@ export default function GoalsPage() {
     };
 
     updateGoals([newGoal, ...goals]);
+    if (user) {
+      syncManager.save('tasks', 'INSERT', {
+        id: newGoal.id,
+        user_id: user.id,
+        title: newGoal.title,
+        category: newGoal.category,
+        status: 'pending'
+      });
+    }
     resetForm();
     setIsModalOpen(false);
   };
@@ -87,6 +99,7 @@ export default function GoalsPage() {
   };
 
   const toggleMilestone = (goalId: string, milestoneId: string) => {
+    let finalProgress = 0;
     const newGoals = goals.map(g => {
       if (g.id !== goalId) return g;
       
@@ -96,16 +109,26 @@ export default function GoalsPage() {
       
       const completedCount = newMilestones.filter(m => m.completed).length;
       const progress = newMilestones.length > 0 ? Math.round((completedCount / newMilestones.length) * 100) : 0;
+      finalProgress = progress;
       
       return { ...g, milestones: newMilestones, progress };
     });
     
     updateGoals(newGoals);
+    if (user) {
+      syncManager.save('tasks', 'UPDATE', {
+        id: goalId,
+        status: finalProgress === 100 ? 'completed' : 'pending'
+      });
+    }
   };
 
   const deleteGoal = (id: string) => {
     if (confirm("Are you sure you want to abandon this vision?")) {
       updateGoals(goals.filter(g => g.id !== id));
+      if (user) {
+        syncManager.save('tasks', 'DELETE', { id });
+      }
     }
   };
 
@@ -113,9 +136,9 @@ export default function GoalsPage() {
     <div className="max-w-7xl mx-auto px-4 md:px-10 py-10 space-y-12 animate-in fade-in duration-500 pb-32">
       
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-8">
         <div className="space-y-2">
-          <h1 className="text-4xl md:text-5xl font-heading font-extrabold text-foreground tracking-tighter">Long-Term Visions</h1>
+          <h1 className="text-3xl md:text-4xl md:text-5xl font-heading font-extrabold text-foreground tracking-tighter">Long-Term Visions</h1>
           <p className="text-muted-foreground font-soft text-lg max-w-2xl">Identity goals that give direction to your daily execution. Anchor your soul in a meaningful future.</p>
         </div>
         <button 
@@ -127,7 +150,7 @@ export default function GoalsPage() {
       </div>
 
       {/* Goals Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-10">
         <AnimatePresence mode="popLayout">
           {goals.map((goal) => (
             <motion.div 
@@ -136,7 +159,7 @@ export default function GoalsPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
               key={goal.id} 
-              className="monk-card p-8 md:p-12 border-2 border-transparent hover:border-primary/20 transition-all flex flex-col group relative shadow-2xl hover:shadow-primary/5"
+              className="monk-card p-5 md:p-6 md:p-12 border-2 border-transparent hover:border-primary/20 transition-all flex flex-col group relative shadow-2xl hover:shadow-primary/5"
             >
               <button 
                 onClick={() => deleteGoal(goal.id)}
@@ -158,7 +181,7 @@ export default function GoalsPage() {
                   <h2 className="text-3xl font-heading font-bold leading-tight tracking-tight">{goal.title}</h2>
                 </div>
                 <div className="text-right">
-                  <span className="text-5xl font-heading font-extrabold text-primary tabular-nums tracking-tighter">{goal.progress}%</span>
+                  <span className="text-4xl md:text-5xl font-heading font-extrabold text-primary tabular-nums tracking-tighter">{goal.progress}%</span>
                 </div>
               </div>
 
@@ -261,20 +284,20 @@ export default function GoalsPage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-2xl monk-card p-10 md:p-14 shadow-2xl border-2 border-border overflow-hidden relative"
+              className="w-full max-w-2xl monk-card p-6 md:p-6 md:p-14 shadow-2xl border-2 border-border overflow-hidden relative"
             >
               <div className="absolute top-0 right-0 h-40 w-40 bg-primary/10 rounded-full blur-3xl -mr-20 -mt-20" />
               
               <div className="flex items-center justify-between mb-12 relative z-10">
                 <div className="space-y-1">
-                  <h2 className="text-4xl font-heading font-bold tracking-tighter">Define Vision</h2>
+                  <h2 className="text-3xl md:text-4xl font-heading font-bold tracking-tighter">Define Vision</h2>
                   <p className="text-muted-foreground text-sm font-bold uppercase tracking-widest">Anchoring a New Identity Trajectory</p>
                 </div>
                 <button onClick={() => setIsModalOpen(false)} className="p-3 hover:bg-secondary/20 rounded-2xl transition-all"><X className="h-6 w-6" /></button>
               </div>
 
-              <form onSubmit={handleCreateGoal} className="space-y-10 relative z-10">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <form onSubmit={handleCreateGoal} className="space-y-6 md:space-y-10 relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                   <div className="space-y-3">
                     <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.3em] ml-1">Vision Title</label>
                     <input 
@@ -341,7 +364,7 @@ export default function GoalsPage() {
 
                 <button 
                   type="submit" 
-                  className="w-full py-6 rounded-[28px] bg-primary text-primary-foreground font-bold text-2xl shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
+                  className="w-full py-6 rounded-[28px] bg-primary text-primary-foreground font-bold text-2xl shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"
                 >
                   Anchor This Vision <ArrowRight className="h-7 w-7" />
                 </button>

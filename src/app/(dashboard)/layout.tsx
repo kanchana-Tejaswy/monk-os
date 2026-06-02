@@ -2,11 +2,11 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Sidebar } from "@/components/shared/Sidebar";
+import { ProfileDrawer } from "@/components/shared/ProfileDrawer";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Menu, User, Flame } from "lucide-react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";
 import { calculateStreak } from "@/lib/streak";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +16,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const containerRef = useRef<HTMLElement>(null);
   const { scrollY } = useScroll({ container: containerRef });
   const [hidden, setHidden] = useState(false);
@@ -77,10 +78,10 @@ export default function DashboardLayout({
           }}
           animate={hidden ? "hidden" : "visible"}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="flex h-20 items-center justify-between glass-panel fixed lg:sticky top-0 left-0 right-0 lg:left-auto lg:right-auto z-30 px-6 md:px-10 border-b border-border transition-colors duration-500"
+          className="flex h-16 md:h-20 items-center justify-between glass-panel fixed lg:sticky top-0 left-0 right-0 lg:left-auto lg:right-auto z-30 px-4 md:px-10 border-b border-border transition-colors duration-500"
         >
           <div className="flex items-center gap-3 lg:hidden">
-            <div className="flex h-10 w-10 relative bg-white dark:bg-white/10 rounded-xl overflow-hidden shadow-lg p-1 border border-black/5 dark:border-white/10">
+            <div className="flex h-10 w-10 relative bg-white dark:bg-white/10 rounded-xl overflow-hidden shadow-lg p-1 border border-black/5 dark:border-white/10 shrink-0">
               <Image 
                 src="/monk-logo.jpeg" 
                 alt="Logo" 
@@ -88,12 +89,12 @@ export default function DashboardLayout({
                 className="object-contain"
               />
             </div>
-            <span className="text-xl font-heading font-black tracking-tighter text-foreground uppercase">
-              monk
+            <span className="text-lg md:text-xl font-heading font-black tracking-tighter text-foreground uppercase italic">
+              monk mode
             </span>
             
             {/* Mobile Streak Badge */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-secondary/30 dark:bg-white/5 rounded-xl border border-border ml-1">
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-secondary/30 dark:bg-white/5 rounded-xl border border-border ml-1">
               <div className="relative flex items-center justify-center">
                 {streak > 0 ? (
                   <motion.div
@@ -157,20 +158,20 @@ export default function DashboardLayout({
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <Link 
-              href="/settings"
-              className="p-2.5 hover:bg-secondary/20 rounded-xl transition-all text-muted-foreground hover:text-foreground border border-transparent hover:border-border"
-              title="Profile"
+          <div className="flex items-center gap-2 md:gap-4">
+            <button 
+              onClick={() => setIsProfileOpen(true)}
+              className="flex items-center justify-center h-11 w-11 md:h-10 md:w-10 hover:bg-secondary/20 rounded-xl transition-all text-muted-foreground hover:text-foreground border border-transparent hover:border-border"
+              title="Identity Profile"
             >
-              <User className="h-5 w-5" />
-            </Link>
-            <div className="p-1 bg-secondary/50 dark:bg-secondary/10 rounded-2xl border border-border transition-colors duration-500">
+              <User className="h-5 w-5 md:h-5 md:w-5" />
+            </button>
+            <div className="flex items-center justify-center h-11 w-11 md:h-10 md:w-10 bg-secondary/50 dark:bg-secondary/10 rounded-2xl border border-border transition-colors duration-500">
               <ThemeToggle />
             </div>
             <button 
               onClick={() => setIsSidebarOpen(true)}
-              className="p-2.5 hover:bg-secondary/20 rounded-xl lg:hidden transition-all text-muted-foreground hover:text-foreground"
+              className="flex items-center justify-center h-11 w-11 hover:bg-secondary/20 rounded-xl lg:hidden transition-all text-muted-foreground hover:text-foreground"
             >
               <Menu className="h-6 w-6" />
             </button>
@@ -179,13 +180,18 @@ export default function DashboardLayout({
 
         <main 
           ref={containerRef}
-          className="flex-1 overflow-y-auto px-4 py-24 md:px-10 md:py-12 custom-scrollbar scroll-smooth"
+          className="flex-1 overflow-y-auto px-4 py-20 md:px-10 md:py-12 custom-scrollbar scroll-smooth"
         >
           <div className="mx-auto max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-1000 ease-out">
             {children}
           </div>
         </main>
       </div>
+
+      <ProfileDrawer 
+        isOpen={isProfileOpen} 
+        onClose={() => setIsProfileOpen(false)} 
+      />
     </div>
   );
 }
