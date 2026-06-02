@@ -66,12 +66,12 @@ export default function GoalsPage() {
     if (!title) return;
 
     const newGoal: Goal = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: crypto.randomUUID(),
       title,
       category,
       progress: 0,
       milestones: tempMilestones.map(m => ({
-        id: Math.random().toString(36).substr(2, 9),
+        id: crypto.randomUUID(),
         title: m,
         completed: false
       }))

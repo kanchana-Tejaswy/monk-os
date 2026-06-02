@@ -3,28 +3,18 @@
 import { useState, useEffect, useMemo } from "react";
 import { 
   Heart, 
-  Brain, 
-  Globe, 
-  CircleDollarSign, 
-  ArrowRight, 
   RotateCcw,
   Compass,
-  ArrowUpRight,
   Target,
   Zap,
-  CheckCircle2,
-  Smile,
-  ChevronRight,
   History,
   TrendingUp,
   Sparkles,
   X,
-  Plus,
   Info
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/lib/contexts/AuthContext";
 import { syncManager } from "@/lib/sync/syncManager";
 
 // --- Types ---
@@ -99,7 +89,7 @@ const generatePurposeStatement = (answers: ReflectionAnswer[]) => {
   return `Evolving through ${energized} while focusing on ${meaningful} to create lasting impact.`;
 };
 
-const generateRecommendations = (entry: IkigaiEntry) => {
+const generateRecommendations = () => {
   return [
     { title: "Skill Deep Dive", desc: "Spend 45 mins daily on your most improved skill.", icon: Zap },
     { title: "Alignment Check", desc: "Review your draining tasks and delegate or systemize them.", icon: Target },
@@ -124,7 +114,7 @@ function ReflectionModal({ isOpen, onClose, onComplete }: { isOpen: boolean, onC
       const purpose = generatePurposeStatement(reflectionAnswers);
       const score = calculateClarityScore({ reflections: reflectionAnswers });
       const newEntry: IkigaiEntry = {
-        id: Math.random().toString(36).substr(2, 9),
+        id: crypto.randomUUID(),
         timestamp: new Date().toISOString(),
         purposeStatement: purpose,
         clarityScore: score,
@@ -177,7 +167,7 @@ function ReflectionModal({ isOpen, onClose, onComplete }: { isOpen: boolean, onC
               </div>
               <div className="p-8 rounded-[32px] bg-amber-50 dark:bg-amber-500/5 border-2 border-amber-200 dark:border-amber-500/20 shadow-lg shadow-amber-500/5">
                 <p className="text-lg md:text-xl font-soft text-amber-900 dark:text-amber-200/80 leading-relaxed italic">
-                  "The accuracy of your Ikigai evolution depends entirely on the depth and honesty of your answers. Please reflect deeply and answer wisely."
+                  &quot;The accuracy of your Ikigai evolution depends entirely on the depth and honesty of your answers. Please reflect deeply and answer wisely.&quot;
                 </p>
               </div>
               <div className="flex justify-center">
@@ -185,7 +175,7 @@ function ReflectionModal({ isOpen, onClose, onComplete }: { isOpen: boolean, onC
                   onClick={() => setStep(0)}
                   className="px-10 py-4 bg-zinc-900 dark:bg-white text-white dark:text-black font-black text-xs uppercase tracking-widest rounded-xl hover:scale-105 active:scale-95 transition-all shadow-xl"
                 >
-                  I Understand, Let's Begin
+                  I Understand, Let&apos;s Begin
                 </button>
               </div>
             </motion.div>
@@ -312,7 +302,7 @@ export default function IkigaiPage() {
     setShowReevaluation(false);
     window.dispatchEvent(new Event("streak_updated"));
   };
-  const recommendations = useMemo(() => activeEntry ? generateRecommendations(activeEntry) : [], [activeEntry]);
+  const recommendations = useMemo(() => activeEntry ? generateRecommendations() : [], [activeEntry]);
 
   if (!isLoaded) return null;
 
@@ -325,7 +315,7 @@ export default function IkigaiPage() {
             <div className="space-y-4">
               <span className="text-[10px] font-black text-primary uppercase tracking-[0.5em] bg-primary/10 px-5 py-2 rounded-full border border-border inline-block">Living Purpose</span>
               <h1 className="text-3xl md:text-4xl md:text-5xl lg:text-6xl font-heading font-black tracking-tighter leading-tight text-text-primary">{activeEntry ? `"${activeEntry.purposeStatement}"` : "Define Your Direction."}</h1>
-              <p className="text-lg md:text-xl text-text-secondary font-soft italic">"Your purpose becomes clearer through action."</p>
+              <p className="text-lg md:text-xl text-text-secondary font-soft italic">&quot;Your purpose becomes clearer through action.&quot;</p>
             </div>
             <div className="pt-4"><button onClick={() => setShowReevaluation(true)} className="px-10 py-5 bg-zinc-900 dark:bg-white text-white dark:text-black font-black text-[10px] uppercase tracking-[0.3em] rounded-[24px] hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-primary/20 flex items-center gap-3 mx-auto lg:mx-0"><RotateCcw className="h-4 w-4" /> {activeEntry ? "Re-evaluate My Ikigai" : "Start First Reflection"}</button></div>
           </div>

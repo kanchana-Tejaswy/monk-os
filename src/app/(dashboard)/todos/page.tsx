@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Plus, Circle, CheckCircle2, Trash2, RotateCcw } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { createClient } from "@/utils/supabase/client";
 import { syncManager } from "@/lib/sync/syncManager";
@@ -41,7 +40,7 @@ export default function TodoPage() {
     if (!newTodo.trim()) return;
     
     const taskTitle = newTodo.trim();
-    const newTask = { id: Math.random().toString(36).substr(2, 9), title: taskTitle, completed: false };
+    const newTask = { id: crypto.randomUUID(), title: taskTitle, completed: false };
     const updated = [
       newTask,
       ...todos

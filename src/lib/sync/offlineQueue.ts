@@ -2,7 +2,7 @@ export interface Mutation {
   id: string;
   table: string;
   action: 'INSERT' | 'UPDATE' | 'DELETE' | 'UPSERT';
-  payload: any;
+  payload: Record<string, unknown>;
   timestamp: string;
 }
 
@@ -18,7 +18,7 @@ export const offlineQueue = {
     const queue = offlineQueue.get();
     const newMutation: Mutation = {
       ...mutation,
-      id: Math.random().toString(36).substring(2, 9),
+      id: crypto.randomUUID(),
       timestamp: new Date().toISOString(),
     };
     queue.push(newMutation);

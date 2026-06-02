@@ -11,8 +11,6 @@ import {
   Search,
   ArrowUpRight
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface Habit {
   id: string;
@@ -64,7 +62,7 @@ export default function HistoryPage() {
     let csv = "Habit/Day," + Array.from({ length: daysInMonth }, (_, i) => i + 1).join(",") + "\n";
     
     habits.forEach(habit => {
-      let row = `"${habit.title}",`;
+      const row = `"${habit.title}",`;
       const rowData = Array.from({ length: daysInMonth }, (_, i) => {
         const ref = getReflectionForHabitAndDay(habit.id, i + 1);
         return `"${ref?.content.replace(/"/g, '""') || ""}"`;
@@ -147,7 +145,7 @@ export default function HistoryPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredHabits.map((habit, hIdx) => (
+              {filteredHabits.map((habit) => (
                 <tr key={habit.id} className="border-b border-primary/5 last:border-b-0 group hover:bg-primary/[0.02] transition-colors">
                   <td className="sticky left-0 z-10 bg-card/90 backdrop-blur-md p-6 border-r border-primary/10 group-hover:bg-primary/[0.04]">
                     <div className="flex items-center gap-3">
@@ -203,7 +201,7 @@ export default function HistoryPage() {
            </div>
            <h3 className="text-xs font-black uppercase tracking-[0.3em] text-primary mb-6">Ledger Insight</h3>
            <p className="text-xl font-heading font-bold italic leading-relaxed text-foreground/80">
-            "Your ledger is the unbiased mirror of your commitment. Every note is a brick in the foundation of your new identity. Do not look for perfection; look for presence."
+            &quot;Your ledger is the unbiased mirror of your commitment. Every note is a brick in the foundation of your new identity. Do not look for perfection; look for presence.&quot;
            </p>
         </section>
         

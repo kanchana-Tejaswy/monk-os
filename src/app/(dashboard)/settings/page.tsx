@@ -1,16 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { 
   User, 
   Shield, 
   Moon, 
   Sun, 
   CheckCircle2, 
-  Flame, 
   ChevronRight,
   Monitor,
-  LogOut,
   Trash2,
   Download,
   Sparkles,
@@ -46,7 +45,7 @@ export default function SettingsPage() {
       "monk_os_iron_will", "monkos_ikigai_data", "monk_os_goals", "monk_os_journal",
       "monk_os_bills", "monk_os_debts", "monk_os_reflections"
     ];
-    const exportData: Record<string, any> = {};
+    const exportData: Record<string, unknown> = {};
     keys.forEach(key => {
       const data = localStorage.getItem(key);
       if (data) exportData[key] = JSON.parse(data);
@@ -200,22 +199,18 @@ export default function SettingsPage() {
                   
                   <div className="space-y-4">
                     <h3 className="text-sm font-black text-text-primary uppercase tracking-widest">Non-Negotiable Protocols</h3>
-                    <div className="grid gap-3">
-                      {["Morning Chanting", "45m Workout", "Deep Work: Coding"].map((h, i) => (
-                        <div key={i} className="flex items-center justify-between p-5 bg-card rounded-[24px] border border-border group hover:border-primary/30 transition-all">
-                          <div className="flex items-center gap-4">
-                            <div className="h-2 w-2 rounded-full bg-primary" />
-                            <span className="font-bold text-sm">{h}</span>
-                          </div>
-                          <button className="p-2 text-text-secondary hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex">
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ))}
+                    <div className="flex flex-col items-center justify-center p-10 bg-secondary/10 dark:bg-white/[0.02] rounded-[32px] border-2 border-dashed border-border text-center space-y-4">
+                      <div className="p-4 bg-primary/10 rounded-2xl text-primary">
+                        <CheckCircle2 className="h-8 w-8" />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="font-bold text-lg">No Protocols Defined</h4>
+                        <p className="text-sm text-text-secondary max-w-xs mx-auto">Your identity is forged through repeated actions. Define your first non-negotiable protocol.</p>
+                      </div>
+                      <Link href="/habits" className="px-8 py-3 bg-primary text-primary-foreground font-black text-[10px] uppercase tracking-widest rounded-xl hover:scale-105 transition-all shadow-lg shadow-primary/20">
+                        Initialize First Protocol
+                      </Link>
                     </div>
-                    <button className="w-full py-4 border-2 border-dashed border-border rounded-[24px] text-text-secondary font-black text-[10px] uppercase tracking-widest hover:border-primary/30 hover:text-primary transition-all">
-                      + Initialize New Protocol
-                    </button>
                   </div>
                 </motion.div>
               )}

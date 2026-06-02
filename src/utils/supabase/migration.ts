@@ -28,7 +28,7 @@ export async function migrateLocalDataToCloud() {
     // 2. Habit Logs
     const localLogs = JSON.parse(localStorage.getItem("monk_os_logs") || "{}");
     if (Object.keys(localLogs).length > 0) {
-      const logsToInsert = Object.entries(localLogs).map(([key, value]) => {
+      const logsToInsert = Object.entries(localLogs).map(([key]) => {
         const [date, habitId] = key.split('-');
         return {
           user_id: user.id,
@@ -44,7 +44,7 @@ export async function migrateLocalDataToCloud() {
     // 3. Finances
     const localFinance = JSON.parse(localStorage.getItem("monk_os_finance") || "[]");
     if (localFinance.length > 0) {
-      const finToInsert = localFinance.map((f: any) => ({
+      const finToInsert = localFinance.map((f: { type: string; amount: number; reason?: string; category: string; date: string }) => ({
         user_id: user.id,
         type: f.type,
         amount: f.amount,
@@ -58,7 +58,7 @@ export async function migrateLocalDataToCloud() {
     // 4. Focus Sessions
     const localFocus = JSON.parse(localStorage.getItem("monk_os_focus") || "[]");
     if (localFocus.length > 0) {
-      const focusToInsert = localFocus.map((f: any) => ({
+      const focusToInsert = localFocus.map((f: { mode: string; duration: number; timestamp: string }) => ({
         user_id: user.id,
         mode: f.mode,
         duration_minutes: f.duration,

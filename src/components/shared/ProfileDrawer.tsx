@@ -1,24 +1,22 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   X, 
   LogOut, 
   RefreshCw, 
   Shield, 
-  Smartphone, 
-  Database,
   Cloud,
   CloudOff,
   User,
-  ExternalLink,
   ChevronRight
 } from "lucide-react";
 import { useAuth } from "@/lib/contexts/AuthContext";
 import { useSyncStore } from "@/lib/sync/syncStore";
 import { syncManager } from "@/lib/sync/syncManager";
 import Image from "next/image";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 interface ProfileDrawerProps {
@@ -29,7 +27,6 @@ interface ProfileDrawerProps {
 export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
   const { user, profile, signOut } = useAuth();
   const { status, lastSyncedAt, pendingMutations } = useSyncStore();
-  const [activeDevices, setActiveDevices] = useState(1);
 
   // Close on escape key
   useEffect(() => {
@@ -76,45 +73,47 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
           <div className="flex-1 overflow-y-auto custom-scrollbar p-5 md:p-8 space-y-10">
             {/* Account Info - Premium Identity Card */}
             <section className="relative">
-              <div className="flex flex-col items-center text-center p-8 rounded-[32px] bg-zinc-50 dark:bg-white/[0.02] border border-zinc-100 dark:border-white/5 relative overflow-hidden group shadow-sm">
-                <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity">
-                   <Shield className="h-32 w-32 rotate-12" />
-                </div>
-                
-                <div className="h-24 w-24 md:h-28 md:w-28 relative mb-6">
-                  <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full animate-pulse" />
-                  <div className="h-full w-full relative bg-white dark:bg-white/10 rounded-[32px] overflow-hidden p-1.5 border-4 border-white dark:border-zinc-900 shadow-2xl relative z-10">
-                    {profile?.avatar_url || user?.user_metadata?.avatar_url ? (
-                      <Image 
-                        src={profile?.avatar_url || user?.user_metadata?.avatar_url} 
-                        alt="Avatar" 
-                        fill 
-                        className="object-cover rounded-[24px]"
-                      />
-                    ) : (
-                      <div className="h-full w-full flex items-center justify-center bg-primary/10 text-primary">
-                        <User className="h-10 w-10" />
-                      </div>
-                    )}
+              <Link href="/account" onClick={onClose} className="block group">
+                <div className="flex flex-col items-center text-center p-8 rounded-[32px] bg-zinc-50 dark:bg-white/[0.02] border border-zinc-100 dark:border-white/5 relative overflow-hidden transition-all hover:border-primary/20 hover:bg-primary/[0.01] shadow-sm">
+                  <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
+                    <Shield className="h-32 w-32 rotate-12" />
+                  </div>
+                  
+                  <div className="h-24 w-24 md:h-28 md:w-28 relative mb-6">
+                    <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full animate-pulse" />
+                    <div className="h-full w-full relative bg-white dark:bg-white/10 rounded-[32px] overflow-hidden p-1.5 border-4 border-white dark:border-zinc-900 shadow-2xl z-10">
+                      {profile?.avatar_url || user?.user_metadata?.avatar_url ? (
+                        <Image 
+                          src={profile?.avatar_url || user?.user_metadata?.avatar_url} 
+                          alt="Avatar" 
+                          fill 
+                          className="object-cover rounded-[24px]"
+                        />
+                      ) : (
+                        <div className="h-full w-full flex items-center justify-center bg-primary/10 text-primary">
+                          <User className="h-10 w-10" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-1 relative z-10">
+                    <h3 className="font-heading font-black text-2xl tracking-tighter uppercase italic group-hover:text-primary transition-colors">
+                      {profile?.full_name || user?.user_metadata?.full_name || "Monk"}
+                    </h3>
+                    <p className="text-[10px] md:text-xs text-zinc-500 dark:text-zinc-400 font-black tracking-[0.2em] uppercase opacity-70">
+                      {user?.email}
+                    </p>
+                  </div>
+
+                  <div className="mt-6 flex items-center gap-2">
+                    <div className="px-4 py-1.5 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-black text-[9px] font-black uppercase tracking-widest shadow-lg">
+                      {profile?.subscription_tier || 'Free'} Status
+                    </div>
+                    <div className="h-2 w-2 rounded-full bg-monk-mint animate-pulse shadow-[0_0_8px_rgba(142,217,204,0.6)]" />
                   </div>
                 </div>
-
-                <div className="space-y-1 relative z-10">
-                  <h3 className="font-heading font-black text-2xl tracking-tighter uppercase italic">
-                    {profile?.full_name || user?.user_metadata?.full_name || "Monk"}
-                  </h3>
-                  <p className="text-[10px] md:text-xs text-zinc-500 dark:text-zinc-400 font-black tracking-[0.2em] uppercase opacity-70">
-                    {user?.email}
-                  </p>
-                </div>
-
-                <div className="mt-6 flex items-center gap-2">
-                  <div className="px-4 py-1.5 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-black text-[9px] font-black uppercase tracking-widest shadow-lg">
-                    {profile?.subscription_tier || 'Free'} Status
-                  </div>
-                  <div className="h-2 w-2 rounded-full bg-monk-mint animate-pulse shadow-[0_0_8px_rgba(142,217,204,0.6)]" />
-                </div>
-              </div>
+              </Link>
             </section>
 
             {/* Sync Engine - High Fidelity Controls */}
@@ -200,7 +199,7 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
   );
 }
 
-function SyncStat({ icon: Icon, label, value, color }: { icon: any, label: string, value: string, color: string }) {
+function SyncStat({ icon: Icon, label, value, color }: { icon: React.ElementType, label: string, value: string, color: string }) {
   return (
     <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-white/[0.02] border border-zinc-100 dark:border-white/5 space-y-1">
       <div className="flex items-center gap-2">
@@ -212,7 +211,7 @@ function SyncStat({ icon: Icon, label, value, color }: { icon: any, label: strin
   );
 }
 
-function MenuButton({ icon: Icon, label }: { icon: any, label: string }) {
+function MenuButton({ icon: Icon, label }: { icon: React.ElementType, label: string }) {
   return (
     <button className="w-full flex items-center justify-between p-4 rounded-2xl hover:bg-zinc-50 dark:hover:bg-white/[0.02] text-zinc-700 dark:text-zinc-300 font-bold text-sm transition-all active:scale-95 border border-transparent hover:border-zinc-100 dark:hover:border-white/5">
       <div className="flex items-center gap-3">

@@ -32,7 +32,7 @@ interface FocusSession {
 interface CustomMode {
   color: string;
   bg: string;
-  icon?: any;
+  icon?: React.ElementType;
 }
 
 const DEFAULT_MODES: Record<string, CustomMode> = {
@@ -128,7 +128,7 @@ export default function FocusPage() {
     } else if (timeLeft === 0) {
       setIsActive(false);
       const newSession: FocusSession = {
-        id: Math.random().toString(36).substr(2, 9),
+        id: crypto.randomUUID(),
         mode,
         duration: targetDuration,
         timestamp: new Date().toISOString()
@@ -184,8 +184,7 @@ export default function FocusPage() {
           className="flex flex-wrap justify-center gap-2 md:gap-4 px-2 md:px-0 max-w-2xl mt-12 md:mt-0 w-full"
         >
           {Object.keys(customModes).map((m) => {
-            const Config = customModes[m];
-            const Icon = (DEFAULT_MODES[m] as any)?.icon || Zap;
+            const Icon = customModes[m]?.icon || Zap;
             return (
               <button
                 key={m}

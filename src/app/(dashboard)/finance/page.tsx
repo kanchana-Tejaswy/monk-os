@@ -100,7 +100,7 @@ export default function FinancePage() {
     e.preventDefault();
     if (!amount || isNaN(parseFloat(amount))) return;
 
-    const id = Math.random().toString(36).substr(2, 9);
+    const id = crypto.randomUUID();
     const parsedAmount = Math.abs(parseFloat(amount));
 
     if (modalType === "credit" || modalType === "debit") {
@@ -219,7 +219,7 @@ export default function FinancePage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-4 md:pt-0 text-center md:text-left">
         <div className="space-y-1">
           <h1 className="text-2xl md:text-3xl font-heading font-black text-foreground tracking-tighter uppercase italic">Mastery Ledger</h1>
-          <p className="text-[10px] md:text-sm text-muted-foreground font-soft uppercase tracking-widest opacity-60">"Precision in finance reflects precision in soul."</p>
+          <p className="text-[10px] md:text-sm text-muted-foreground font-soft uppercase tracking-widest opacity-60">&quot;Precision in finance reflects precision in soul.&quot;</p>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-2">
           <ActionButton onClick={() => { setModalType("credit"); setIsModalOpen(true); }} icon={Plus} label="Income" color="text-monk-mint" bg="bg-monk-mint/10" border="border-monk-mint/20" />

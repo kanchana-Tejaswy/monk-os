@@ -14,25 +14,26 @@ import {
   Zap,
   BookText, 
   Target, 
-  Calendar as CalendarIcon, 
   History, 
-  Settings,
   Flame,
   Wallet,
   ListTodo,
   RotateCcw,
   ShieldAlert,
   X,
-  LogOut
+  LogOut,
+  User
 } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/lib/contexts/AuthContext";
+import { syncManager } from "@/lib/sync/syncManager";
 
 const navigation = [
   {
     group: "OVERVIEW",
     items: [
       { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+      { name: "Account", href: "/account", icon: User },
     ]
   },
   {
@@ -74,7 +75,7 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const [streak, setStreak] = useState(0);
   const [integrityScore, setIntegrityScore] = useState(0);
 
@@ -95,8 +96,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         const logs = JSON.parse(savedLogs);
         
         // Streak calculation
-        const nnHabits = habits.filter((h: any) => h.isNonNegotiable || h.is_non_negotiable);
-        const nnHabitIds = nnHabits.map((h: any) => h.id);
+        const nnHabits = habits.filter((h: { isNonNegotiable?: boolean, is_non_negotiable?: boolean }) => h.isNonNegotiable || h.is_non_negotiable);
+        const nnHabitIds = nnHabits.map((h: { id: string }) => h.id);
         const currentStreak = calculateStreak(logs, nnHabitIds, restartDate);
         setStreak(currentStreak);
 
@@ -121,6 +122,15 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     if (confirm("Are you sure you want to restart your streak? This represents a fresh start on your identity evolution.")) {
       const today = new Date().toISOString().split('T')[0];
       localStorage.setItem("monk_os_streak_restart", today);
+      
+      // Cloud Sync
+      if (user) {
+        syncManager.save('streaks', 'UPSERT', {
+          user_id: user.id,
+          restart_date: today
+        });
+      }
+
       window.dispatchEvent(new Event("streak_updated"));
       alert("Streak restarted. Begin anew, Monk.");
     }

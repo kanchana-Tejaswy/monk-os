@@ -83,14 +83,16 @@ export default function HabitTrackerPage() {
     
     // Cloud Sync
     if (willBeCompleted) {
-      syncManager.save('habit_logs', 'INSERT', {
+      syncManager.save('habit_logs', 'UPSERT', {
         habit_id: habitId,
         completed_at: new Date(dateKey).toISOString(),
       });
     } else {
-      // For deletion of logs, we need the ID from Supabase. 
-      // This is a known limitation of the simple LWW sync for logs.
-      // For now, we allow the insert to handle the positive case.
+      // Create a payload that allows backend/syncManager to delete by habit_id and date
+      syncManager.save('habit_logs', 'DELETE', {
+        habit_id: habitId,
+        completed_at: new Date(dateKey).toISOString(),
+      });
     }
 
     setLogs(newLogs);
@@ -202,7 +204,7 @@ export default function HabitTrackerPage() {
   const addHabit = () => {
     if (!newHabitTitle.trim()) return;
     const newHabit: Habit = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: crypto.randomUUID(),
       title: newHabitTitle,
       category: newHabitCategory,
       isNonNegotiable: newHabitIsNonNegotiable
@@ -244,7 +246,6 @@ export default function HabitTrackerPage() {
   const nonNegotiableHabits = habits.filter(h => h.isNonNegotiable);
   const normalHabits = habits.filter(h => !h.isNonNegotiable);
 
-  const completedCount = habits.filter(h => logs[`${dateKey}-${h.id}`]).length;
   const nnCompletedCount = nonNegotiableHabits.filter(h => logs[`${dateKey}-${h.id}`]).length;
   
   const progress = nonNegotiableHabits.length > 0 ? (nnCompletedCount / nonNegotiableHabits.length) * 100 : 0;
@@ -429,8 +430,20 @@ export default function HabitTrackerPage() {
               />
             ))}
             {nonNegotiableHabits.length === 0 && (
-              <div className="p-10 border-2 border-dashed border-border rounded-[24px] text-center bg-secondary/20 dark:bg-white/[0.02]">
-                <p className="text-sm text-text-secondary italic">No non-negotiables defined.</p>
+              <div className="flex flex-col items-center justify-center p-12 md:p-20 border-2 border-dashed border-border rounded-[32px] bg-secondary/10 dark:bg-white/[0.01] text-center space-y-6">
+                <div className="p-5 bg-primary/10 rounded-2xl text-primary">
+                  <CheckCircle2 className="h-10 w-10" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-heading font-black tracking-tight">No Non-Negotiables Yet</h3>
+                  <p className="text-sm text-text-secondary max-w-xs mx-auto font-soft">Your identity is built through repeated actions. Create your first non-negotiable habit to anchor your discipline.</p>
+                </div>
+                <button 
+                  onClick={() => { setNewHabitIsNonNegotiable(true); setIsAddModalOpen(true); }}
+                  className="px-10 py-4 bg-primary text-primary-foreground font-black text-xs uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl shadow-primary/20 flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4" /> Create First Habit
+                </button>
               </div>
             )}
             </AnimatePresence>
@@ -469,8 +482,14 @@ export default function HabitTrackerPage() {
               />
             ))}
             {normalHabits.length === 0 && (
-              <div className="p-10 border-2 border-dashed border-border rounded-[24px] text-center bg-secondary/20 dark:bg-white/[0.02]">
-                <p className="text-sm text-text-secondary italic">No maintenance habits.</p>
+              <div className="flex flex-col items-center justify-center p-10 border-2 border-dashed border-border rounded-[32px] bg-secondary/10 dark:bg-white/[0.01] text-center space-y-4 opacity-80">
+                <p className="text-sm text-text-secondary italic font-soft">No maintenance habits yet.</p>
+                <button 
+                  onClick={() => { setNewHabitIsNonNegotiable(false); setIsAddModalOpen(true); }}
+                  className="text-[10px] font-black text-text-primary uppercase tracking-widest px-6 py-2.5 bg-secondary/30 rounded-xl hover:bg-secondary/50 transition-all"
+                >
+                  + Add Maintenance Habit
+                </button>
               </div>
             )}
             </AnimatePresence>
@@ -518,48 +537,62 @@ export default function HabitTrackerPage() {
         </div>
 
         <div className="flex flex-col relative z-10 w-full">
-          {/* Months - Perfectly aligned to grid columns */}
-          <div className="flex w-full mb-3 text-[10px] font-bold text-text-secondary uppercase tracking-[0.1em] relative h-4 overflow-hidden" style={{ paddingLeft: '40px' }}>
-            {filteredMonthLabels.map((ml, i) => (
-              <div 
-                key={i} 
-                className="absolute transition-all opacity-40 group-hover:opacity-80" 
-                style={{ left: `${40 + (ml.index * 17)}px` }}
-              >
-                {ml.label}
+          {habits.length > 0 ? (
+            <>
+              {/* Months - Perfectly aligned to grid columns */}
+              <div className="flex w-full mb-3 text-[10px] font-bold text-text-secondary uppercase tracking-[0.1em] relative h-4 overflow-hidden" style={{ paddingLeft: '40px' }}>
+                {filteredMonthLabels.map((ml, i) => (
+                  <div 
+                    key={i} 
+                    className="absolute transition-all opacity-40 group-hover:opacity-80" 
+                    style={{ left: `${40 + (ml.index * 17)}px` }}
+                  >
+                    {ml.label}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          <div className="flex gap-2">
-            {/* Days of week - Fixed width for perfect alignment */}
-            <div className="flex flex-col justify-between py-1 text-[9px] font-black text-text-secondary opacity-30 uppercase tracking-tighter w-8 shrink-0">
-              <span className="h-3 flex items-center">Mon</span>
-              <span className="h-3 flex items-center invisible">Tue</span>
-              <span className="h-3 flex items-center">Wed</span>
-              <span className="h-3 flex items-center invisible">Thu</span>
-              <span className="h-3 flex items-center">Fri</span>
-              <span className="h-3 flex items-center invisible">Sat</span>
-              <span className="h-3 flex items-center">Sun</span>
-            </div>
+              <div className="flex gap-2">
+                {/* Days of week - Fixed width for perfect alignment */}
+                <div className="flex flex-col justify-between py-1 text-[9px] font-black text-text-secondary opacity-30 uppercase tracking-tighter w-8 shrink-0">
+                  <span className="h-3 flex items-center">Mon</span>
+                  <span className="h-3 flex items-center invisible">Tue</span>
+                  <span className="h-3 flex items-center">Wed</span>
+                  <span className="h-3 flex items-center invisible">Thu</span>
+                  <span className="h-3 flex items-center">Fri</span>
+                  <span className="h-3 flex items-center invisible">Sat</span>
+                  <span className="h-3 flex items-center">Sun</span>
+                </div>
 
-            <div className="grid grid-flow-col grid-rows-7 gap-1 overflow-x-auto pb-4 custom-scrollbar scroll-smooth">
-              {heatmapDays.map((day) => (
-                <div 
-                  key={day.date}
-                  title={`${day.date}: ${Math.round(day.completionRate * 100)}%`}
-                  className={cn(
-                    "h-3.2 w-3.2 md:h-3.5 md:w-3.5 rounded-[2px] transition-all duration-300 hover:scale-125 hover:z-20 cursor-help border",
-                    day.completionRate === 0 && "bg-zinc-100 dark:bg-white/5 border-zinc-200/50 dark:border-white/5",
-                    day.completionRate > 0 && day.completionRate < 0.4 && "bg-primary/20 border-primary/5",
-                    day.completionRate >= 0.4 && day.completionRate < 0.7 && "bg-primary/40 border-primary/5",
-                    day.completionRate >= 0.7 && day.completionRate < 1 && "bg-primary/70 border-primary/5",
-                    day.completionRate === 1 && "bg-primary border-primary shadow-[0_0_12px_rgba(217,167,167,0.3)]"
-                  )}
-                />
-              ))}
+                <div className="grid grid-flow-col grid-rows-7 gap-1 overflow-x-auto pb-4 custom-scrollbar scroll-smooth">
+                  {heatmapDays.map((day) => (
+                    <div 
+                      key={day.date}
+                      title={`${day.date}: ${Math.round(day.completionRate * 100)}%`}
+                      className={cn(
+                        "h-3.2 w-3.2 md:h-3.5 md:w-3.5 rounded-[2px] transition-all duration-300 hover:scale-125 hover:z-20 cursor-help border",
+                        day.completionRate === 0 && "bg-zinc-100 dark:bg-white/5 border-zinc-200/50 dark:border-white/5",
+                        day.completionRate > 0 && day.completionRate < 0.4 && "bg-primary/20 border-primary/5",
+                        day.completionRate >= 0.4 && day.completionRate < 0.7 && "bg-primary/40 border-primary/5",
+                        day.completionRate >= 0.7 && day.completionRate < 1 && "bg-primary/70 border-primary/5",
+                        day.completionRate === 1 && "bg-primary border-primary shadow-[0_0_12px_rgba(217,167,167,0.3)]"
+                      )}
+                    />
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="py-12 flex flex-col items-center justify-center text-center space-y-4">
+              <div className="h-16 w-16 bg-primary/5 rounded-full flex items-center justify-center text-primary/20">
+                <Calendar className="h-8 w-8" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-bold text-text-primary">Your consistency journey starts today.</h3>
+                <p className="text-sm text-text-secondary font-soft">Complete your first habit to begin building your history.</p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 

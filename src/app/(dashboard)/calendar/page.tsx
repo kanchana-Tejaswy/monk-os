@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { 
   Calendar as CalendarIcon, 
   ChevronLeft, 
   ChevronRight, 
-  Plus, 
   ExternalLink, 
   ShieldCheck,
   CheckCircle2,
@@ -16,7 +15,6 @@ import {
 } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
 
 interface Habit {
@@ -43,7 +41,7 @@ export default function CalendarPage() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [logs, setLogs] = useState<Record<string, boolean>>({});
   
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function checkConnection() {
@@ -66,7 +64,7 @@ export default function CalendarPage() {
 
     window.addEventListener("streak_updated", loadLocalData);
     return () => window.removeEventListener("streak_updated", loadLocalData);
-  }, [selectedDate]);
+  }, [selectedDate, supabase.auth]);
 
   const handleConnect = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -109,36 +107,6 @@ export default function CalendarPage() {
       console.error("Error fetching events:", error);
     } finally {
       setIsLoadingEvents(false);
-    }
-  };
-
-  const createGoogleEvent = async (summary: string) => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.provider_token) return alert("Please reconnect your Google Calendar.");
-
-    const now = new Date();
-    const event = {
-      summary,
-      description: "Auto-synced from monk mode Discipline Engine.",
-      start: { dateTime: now.toISOString() },
-      end: { dateTime: new Date(now.getTime() + 30 * 60000).toISOString() },
-    };
-
-    try {
-      await fetch(
-        'https://www.googleapis.com/calendar/v3/calendars/primary/events',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${session.provider_token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(event),
-        }
-      );
-      fetchGoogleEvents(session.provider_token, selectedDate);
-    } catch (error) {
-      console.error("Error creating event:", error);
     }
   };
 

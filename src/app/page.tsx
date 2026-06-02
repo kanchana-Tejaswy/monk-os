@@ -382,7 +382,7 @@ function NavLink({ href, children }: { href: string, children: React.ReactNode }
   );
 }
 
-function FeatureBadge({ icon: Icon, label }: { icon: any, label: string }) {
+function FeatureBadge({ icon: Icon, label }: { icon: React.ElementType, label: string }) {
   return (
     <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/5">
       <Icon className="h-3 w-3" />

@@ -39,7 +39,7 @@ export default function IronWillPage() {
     if (saved) {
       const parsed = JSON.parse(saved);
       // Migrate old data if personalBest is missing
-      const migrated = parsed.map((c: any) => ({
+      const migrated = parsed.map((c: IronWillChallenge) => ({
         ...c,
         personalBest: c.personalBest || 0,
         history: c.history || []
@@ -59,7 +59,7 @@ export default function IronWillPage() {
     e.preventDefault();
     if (!newTitle.trim()) return;
     const nc: IronWillChallenge = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: crypto.randomUUID(),
       title: newTitle,
       startDate: new Date().toISOString(),
       lastResetDate: null,

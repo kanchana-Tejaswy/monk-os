@@ -88,7 +88,6 @@ export function calculateAllTimeStats(logs: Record<string, boolean>, habitIds: s
   const checkDate = new Date(firstDate);
   while (checkDate <= lastDate) {
     const dateStr = checkDate.toISOString().split('T')[0];
-    const monthKey = `${checkDate.getFullYear()}-${checkDate.getMonth()}`;
     const monthName = checkDate.toLocaleString('default', { month: 'long' });
     const year = checkDate.getFullYear();
     const fullMonthKey = `${monthName} ${year}`;

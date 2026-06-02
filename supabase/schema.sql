@@ -48,7 +48,8 @@ CREATE TABLE habit_logs (
   completed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   is_perfect_day BOOLEAN DEFAULT FALSE,
   streak_count INTEGER DEFAULT 0,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  CONSTRAINT unique_habit_log_per_day UNIQUE (habit_id, completed_at)
 );
 
 -- 4. Tasks (Daily Execution)
@@ -187,6 +188,73 @@ CREATE POLICY "Users can handle own journal entries" ON journal_entries FOR ALL 
 CREATE POLICY "Users can handle own iron will challenges" ON iron_will_challenges FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users can handle own iron will logs" ON iron_will_logs FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users can handle own ikigai data" ON ikigai_data FOR ALL USING (auth.uid() = user_id);
+
+-- 13. Goals (Long-Term Visions)
+CREATE TABLE goals (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  title TEXT NOT NULL,
+  category TEXT NOT NULL,
+  progress INTEGER DEFAULT 0,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'abandoned')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 14. Goal Milestones
+CREATE TABLE goal_milestones (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  goal_id UUID REFERENCES goals(id) ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  title TEXT NOT NULL,
+  completed BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 15. User Settings
+CREATE TABLE user_settings (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL UNIQUE,
+  theme TEXT DEFAULT 'system',
+  notifications_enabled BOOLEAN DEFAULT TRUE,
+  onboarding_completed BOOLEAN DEFAULT FALSE,
+  preferences JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 16. Streaks
+CREATE TABLE streaks (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL UNIQUE,
+  current_streak INTEGER DEFAULT 0,
+  longest_streak INTEGER DEFAULT 0,
+  last_activity_date DATE,
+  restart_date DATE,
+  yearly_history JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Indexes for new tables
+CREATE INDEX idx_goals_user_id ON goals(user_id);
+CREATE INDEX idx_goal_milestones_goal_id ON goal_milestones(goal_id);
+CREATE INDEX idx_goal_milestones_user_id ON goal_milestones(user_id);
+CREATE INDEX idx_user_settings_user_id ON user_settings(user_id);
+CREATE INDEX idx_streaks_user_id ON streaks(user_id);
+
+-- Enable RLS
+ALTER TABLE goals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE goal_milestones ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE streaks ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies
+CREATE POLICY "Users can handle own goals" ON goals FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can handle own goal milestones" ON goal_milestones FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can handle own user settings" ON user_settings FOR ALL USING (auth.uid() = user_id);
+CREATE POLICY "Users can handle own streaks" ON streaks FOR ALL USING (auth.uid() = user_id);
 
 -- Function to handle new user profile creation
 CREATE OR REPLACE FUNCTION public.handle_new_user()

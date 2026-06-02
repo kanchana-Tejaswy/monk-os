@@ -33,7 +33,7 @@ export class MigrationManager {
     const localLogs = JSON.parse(localStorage.getItem('monk_os_logs') || '{}');
 
     if (localHabits.length > 0) {
-      const habitsToInsert = localHabits.map((h: any) => ({
+      const habitsToInsert = localHabits.map((h: { id: string; title: string; category: string; isNonNegotiable: boolean }) => ({
         id: h.id,
         user_id: userId,
         title: h.title,
@@ -44,7 +44,7 @@ export class MigrationManager {
     }
 
     if (Object.keys(localLogs).length > 0) {
-      const logsToInsert = Object.entries(localLogs).map(([key, value]) => {
+      const logsToInsert = Object.entries(localLogs).map(([key]) => {
         const [date, habitId] = key.split('-');
         return {
           user_id: userId,
@@ -62,7 +62,7 @@ export class MigrationManager {
     const localDebts = JSON.parse(localStorage.getItem('monk_os_debts') || '[]');
 
     if (localFinance.length > 0) {
-      const toInsert = localFinance.map((f: any) => ({
+      const toInsert = localFinance.map((f: { type: string; amount: number; reason: string; category: string; date: string }) => ({
         user_id: userId,
         type: f.type,
         amount: f.amount,
@@ -74,7 +74,7 @@ export class MigrationManager {
     }
 
     if (localBills.length > 0) {
-      const toInsert = localBills.map((b: any) => ({
+      const toInsert = localBills.map((b: { title: string; amount: number; dueDate: string; isPaid: boolean; repeatInterval: string }) => ({
         user_id: userId,
         title: b.title,
         amount: b.amount,
@@ -86,7 +86,7 @@ export class MigrationManager {
     }
 
     if (localDebts.length > 0) {
-      const toInsert = localDebts.map((d: any) => ({
+      const toInsert = localDebts.map((d: { personName: string; amount: number; type: string; reason: string; dueDate: string }) => ({
         user_id: userId,
         person_name: d.personName,
         amount: d.amount,
@@ -101,7 +101,7 @@ export class MigrationManager {
   private async migrateFocus(userId: string) {
     const localFocus = JSON.parse(localStorage.getItem('monk_os_focus') || '[]');
     if (localFocus.length > 0) {
-      const toInsert = localFocus.map((f: any) => ({
+      const toInsert = localFocus.map((f: { mode: string; duration: number; timestamp: string }) => ({
         user_id: userId,
         mode: f.mode,
         duration_minutes: f.duration,
@@ -114,7 +114,7 @@ export class MigrationManager {
   private async migrateJournal(userId: string) {
     const localJournal = JSON.parse(localStorage.getItem('monk_os_journal') || '[]');
     if (localJournal.length > 0) {
-      const toInsert = localJournal.map((j: any) => ({
+      const toInsert = localJournal.map((j: { content: string; category: string; domain: string; timestamp: string }) => ({
         user_id: userId,
         content: j.content,
         category: j.category,
@@ -128,7 +128,7 @@ export class MigrationManager {
   private async migrateIronWill(userId: string) {
     const localIronWill = JSON.parse(localStorage.getItem('monk_os_iron_will') || '[]');
     if (localIronWill.length > 0) {
-      for (const challenge of localIronWill) {
+      for (const challenge of localIronWill as { id: string; title: string; startDate: string; lastResetDate: string; personalBest: number }[]) {
         await this.supabase.from('iron_will_challenges').upsert({
           id: challenge.id,
           user_id: userId,
@@ -144,7 +144,7 @@ export class MigrationManager {
   private async migrateGoals(userId: string) {
     const localGoals = JSON.parse(localStorage.getItem('monk_os_goals') || '[]');
     if (localGoals.length > 0) {
-      const toInsert = localGoals.map((g: any) => ({
+      const toInsert = localGoals.map((g: { title: string; completed: boolean; timestamp: string }) => ({
         user_id: userId,
         title: g.title,
         status: g.completed ? 'completed' : 'pending',

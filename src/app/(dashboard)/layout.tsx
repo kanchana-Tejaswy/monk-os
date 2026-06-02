@@ -8,7 +8,12 @@ import { Menu, User, Flame } from "lucide-react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import Image from "next/image";
 import { calculateStreak } from "@/lib/streak";
-import { cn } from "@/lib/utils";
+
+interface Habit {
+  id: string;
+  isNonNegotiable?: boolean;
+  is_non_negotiable?: boolean;
+}
 
 export default function DashboardLayout({
   children,
@@ -37,12 +42,12 @@ export default function DashboardLayout({
         const habits = JSON.parse(savedHabits);
         const logs = JSON.parse(savedLogs);
         const nnHabitIds = habits
-          .filter((h: any) => h.isNonNegotiable || h.is_non_negotiable)
-          .map((h: any) => h.id);
+          .filter((h: Habit) => h.isNonNegotiable || h.is_non_negotiable)
+          .map((h: Habit) => h.id);
 
         const currentStreak = calculateStreak(logs, nnHabitIds, restartDate);
         setStreak(currentStreak);
-      } catch (e) {
+      } catch {
         setStreak(0);
       }
     }

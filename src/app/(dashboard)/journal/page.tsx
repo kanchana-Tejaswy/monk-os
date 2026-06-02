@@ -17,7 +17,6 @@ import {
   X,
   ChevronDown,
   ChevronUp,
-  Edit3,
   Lightbulb
 } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
@@ -106,7 +105,7 @@ export default function JournalPage() {
       }
     } else {
       const newEntry: JournalEntry = {
-        id: Math.random().toString(36).substr(2, 9),
+        id: crypto.randomUUID(),
         content,
         category,
         domain,
