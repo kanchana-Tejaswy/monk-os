@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
   User, 
-  Shield, 
   Moon, 
   Sun, 
   CheckCircle2, 
@@ -13,9 +12,9 @@ import {
   Trash2,
   Download,
   Sparkles,
-  Lock,
   Clock,
-  Compass
+  Compass,
+  ShieldAlert
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -94,30 +93,30 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-5 md:space-y-8 animate-in fade-in duration-700 pb-8 md:pb-20">
+    <div className="max-w-6xl mx-auto space-y-8 md:space-y-12 animate-in fade-in duration-700 pb-24 md:pb-24 px-4 sm:px-0">    
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-heading font-black tracking-tight text-foreground italic">System Settings</h1>
-        <p className="text-text-secondary font-soft mt-1">Configure your environment for maximum self-mastery.</p>
+      <div className="space-y-2 text-center lg:text-left">
+        <h1 className="text-3xl md:text-5xl font-heading font-black tracking-tighter text-foreground italic uppercase">System Settings.</h1>
+        <p className="text-text-secondary font-soft mt-1 opacity-80 text-sm md:text-lg">Configure your environment for maximum self-mastery.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8">
-        
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
+
         {/* Navigation */}
         <div className="lg:col-span-3">
-          <nav className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-4 lg:pb-0 no-scrollbar sticky top-24">
+          <nav className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-visible pb-4 lg:pb-0 custom-scrollbar sticky top-24 -mx-4 px-4 lg:mx-0 lg:px-0">
             {sections.map((section) => (
               <button
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
                 className={cn(
-                  "flex items-center gap-3 px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all whitespace-nowrap lg:w-full",
-                  activeSection === section.id 
-                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
-                    : "bg-card text-text-secondary hover:bg-secondary/30 dark:hover:bg-white/[0.03] border border-border/50"
+                  "flex items-center gap-3 px-6 py-4 md:py-5 rounded-2xl md:rounded-[24px] font-black text-[10px] md:text-[11px] uppercase tracking-[0.2em] transition-all whitespace-nowrap lg:w-full active:scale-95 shadow-sm border-2",
+                  activeSection === section.id
+                    ? "bg-primary border-primary text-primary-foreground shadow-xl shadow-primary/20 scale-105 lg:scale-100"
+                    : "bg-card text-text-secondary hover:bg-secondary/50 dark:hover:bg-white/[0.03] border-border/50 hover:border-primary/30"
                 )}
               >
-                <section.icon className="h-4 w-4" />
+                <section.icon className="h-5 w-5 md:h-4 md:w-4" />
                 {section.label}
               </button>
             ))}
@@ -126,36 +125,36 @@ export default function SettingsPage() {
 
         {/* Content Area */}
         <div className="lg:col-span-9">
-          <div className="monk-card p-6 md:p-10 min-h-[600px]">
+          <div className="monk-card p-6 md:p-12 min-h-[500px] md:min-h-[600px] shadow-sm border-border">
             <AnimatePresence mode="wait">
               {activeSection === "identity" && (
-                <motion.div 
+                <motion.div
                   key="identity"
-                  initial={{ opacity: 0, y: 10 }} 
-                  animate={{ opacity: 1, y: 0 }} 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="space-y-12"
+                  className="space-y-12 md:space-y-16"
                 >
-                  <section className="space-y-5 md:space-y-8">
-                    <div className="flex items-center gap-3 border-b border-border pb-4">
-                      <div className="h-11 w-11 md:h-10 md:w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                        <User className="h-5 w-5" />
+                  <section className="space-y-6 md:space-y-8">
+                    <div className="flex items-center gap-4 border-b border-border pb-4 md:pb-6">
+                      <div className="h-12 w-12 md:h-12 md:w-12 rounded-xl md:rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
+                        <User className="h-6 w-6 md:h-5 md:w-5" />
                       </div>
-                      <h2 className="text-xl font-heading font-black italic tracking-tight">Identity Setup</h2>
+                      <h2 className="text-2xl md:text-3xl font-heading font-black italic tracking-tight uppercase">Identity Setup</h2> 
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                       <div className="space-y-3">
-                        <label className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em]">Full Name</label>
-                        <input 
-                          type="text" 
+                        <label className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] ml-1">Full Name</label>
+                        <input
+                          type="text"
                           defaultValue="Monk User"
-                          className="w-full px-5 py-4 rounded-2xl bg-background border border-border focus:outline-none focus:border-primary/50 transition-all font-heading font-bold"
+                          className="w-full px-6 py-5 rounded-[24px] bg-background border-2 border-border focus:outline-none focus:border-primary/50 transition-all font-heading font-bold text-lg shadow-inner"
                         />
                       </div>
                       <div className="space-y-3">
-                        <label className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em]">Identity Type</label>
-                        <select className="w-full px-5 py-4 rounded-2xl bg-background border border-border focus:outline-none focus:border-primary/50 transition-all font-heading font-bold appearance-none cursor-pointer">
+                        <label className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] ml-1">Identity Type</label>
+                        <select className="w-full px-6 py-5 rounded-[24px] bg-background border-2 border-border focus:outline-none focus:border-primary/50 transition-all font-heading font-bold text-lg appearance-none cursor-pointer shadow-inner">    
                           <option>Builder</option>
                           <option>Student</option>
                           <option>Monk Mode</option>
@@ -166,14 +165,14 @@ export default function SettingsPage() {
                     </div>
                   </section>
 
-                  <section className="space-y-5 md:space-y-8">
-                    <div className="flex items-center gap-3 border-b border-border pb-4">
-                      <div className="h-11 w-11 md:h-10 md:w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                        <Clock className="h-5 w-5" />
+                  <section className="space-y-6 md:space-y-8">
+                    <div className="flex items-center gap-4 border-b border-border pb-4 md:pb-6">
+                      <div className="h-12 w-12 md:h-12 md:w-12 rounded-xl md:rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
+                        <Clock className="h-6 w-6 md:h-5 md:w-5" />
                       </div>
-                      <h2 className="text-xl font-heading font-black italic tracking-tight">Daily Structure</h2>
+                      <h2 className="text-2xl md:text-3xl font-heading font-black italic tracking-tight uppercase">Daily Structure</h2>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8">
                       <SettingsInput label="Wake Time" value="05:00 AM" />
                       <SettingsInput label="Sleep Time" value="10:00 PM" />
                       <SettingsInput label="Deep Work Goal" value="4 Hours" />
@@ -183,31 +182,31 @@ export default function SettingsPage() {
               )}
 
               {activeSection === "habits" && (
-                <motion.div 
+                <motion.div
                   key="habits"
-                  initial={{ opacity: 0, y: 10 }} 
-                  animate={{ opacity: 1, y: 0 }} 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="space-y-5 md:space-y-8"
+                  className="space-y-8 md:space-y-12"
                 >
-                  <div className="flex items-center gap-3 border-b border-border pb-4">
-                    <div className="h-11 w-11 md:h-10 md:w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                      <CheckCircle2 className="h-5 w-5" />
+                  <div className="flex items-center gap-4 border-b border-border pb-4 md:pb-6">
+                    <div className="h-12 w-12 md:h-12 md:w-12 rounded-xl md:rounded-2xl bg-monk-mint/10 flex items-center justify-center text-monk-mint shadow-inner">
+                      <CheckCircle2 className="h-6 w-6 md:h-5 md:w-5" />
                     </div>
-                    <h2 className="text-xl font-heading font-black italic tracking-tight">Habit Governance</h2>
+                    <h2 className="text-2xl md:text-3xl font-heading font-black italic tracking-tight uppercase">Habit Governance</h2> 
                   </div>
-                  
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-black text-text-primary uppercase tracking-widest">Non-Negotiable Protocols</h3>
-                    <div className="flex flex-col items-center justify-center p-10 bg-secondary/10 dark:bg-white/[0.02] rounded-[32px] border-2 border-dashed border-border text-center space-y-4">
-                      <div className="p-4 bg-primary/10 rounded-2xl text-primary">
-                        <CheckCircle2 className="h-8 w-8" />
+
+                  <div className="space-y-6">
+                    <h3 className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em] opacity-60">Non-Negotiable Protocols</h3>
+                    <div className="flex flex-col items-center justify-center p-12 md:p-16 bg-secondary/10 dark:bg-white/[0.01] rounded-[40px] border-2 border-dashed border-border text-center space-y-6 group hover:border-monk-mint/30 transition-all">
+                      <div className="p-6 bg-monk-mint/10 rounded-3xl text-monk-mint group-hover:scale-110 transition-transform duration-500 shadow-inner">
+                        <CheckCircle2 className="h-10 w-10 stroke-[2.5px]" />
                       </div>
-                      <div className="space-y-1">
-                        <h4 className="font-bold text-lg">No Protocols Defined</h4>
-                        <p className="text-sm text-text-secondary max-w-xs mx-auto">Your identity is forged through repeated actions. Define your first non-negotiable protocol.</p>
+                      <div className="space-y-2">
+                        <h4 className="font-heading font-black text-xl md:text-2xl uppercase italic">No Protocols Defined</h4>
+                        <p className="text-sm text-text-secondary max-w-sm mx-auto font-soft leading-relaxed opacity-80">Your identity is forged through repeated actions. Define your first non-negotiable protocol.</p>
                       </div>
-                      <Link href="/habits" className="px-8 py-3 bg-primary text-primary-foreground font-black text-[10px] uppercase tracking-widest rounded-xl hover:scale-105 transition-all shadow-lg shadow-primary/20">
+                      <Link href="/habits" className="px-10 py-5 bg-monk-mint text-zinc-900 font-black text-[11px] uppercase tracking-[0.3em] rounded-[24px] hover:scale-105 transition-all shadow-2xl shadow-monk-mint/20 active:scale-95 border border-white/20">     
                         Initialize First Protocol
                       </Link>
                     </div>
@@ -216,121 +215,121 @@ export default function SettingsPage() {
               )}
 
               {activeSection === "system" && (
-                <motion.div 
+                <motion.div
                   key="system"
-                  initial={{ opacity: 0, y: 10 }} 
-                  animate={{ opacity: 1, y: 0 }} 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="space-y-12"
+                  className="space-y-12 md:space-y-16"
                 >
-                  <section className="space-y-5 md:space-y-8">
-                    <div className="flex items-center gap-3 border-b border-border pb-4">
-                      <div className="h-11 w-11 md:h-10 md:w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                        <Monitor className="h-5 w-5" />
+                  <section className="space-y-6 md:space-y-8">
+                    <div className="flex items-center gap-4 border-b border-border pb-4 md:pb-6">
+                      <div className="h-12 w-12 md:h-12 md:w-12 rounded-xl md:rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
+                        <Monitor className="h-6 w-6 md:h-5 md:w-5" />
                       </div>
-                      <h2 className="text-xl font-heading font-black italic tracking-tight">System Interface</h2>
+                      <h2 className="text-2xl md:text-3xl font-heading font-black italic tracking-tight uppercase">System Interface</h2>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                      <button 
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
+                      <button
                         onClick={() => handleThemeChange("light")}
                         className={cn(
-                          "flex items-center gap-5 p-6 rounded-[28px] border-2 transition-all text-left group",
-                          theme === "light" 
-                            ? "border-primary bg-primary/[0.03] text-primary shadow-lg shadow-primary/5" 
-                            : "border-border/50 bg-secondary/10 text-text-secondary hover:border-primary/20"
+                          "flex items-center gap-6 p-8 rounded-[32px] border-2 transition-all text-left group active:scale-[0.98]", 
+                          theme === "light"
+                            ? "border-primary bg-primary/[0.03] text-primary shadow-2xl shadow-primary/10"        
+                            : "border-border bg-card text-text-secondary hover:border-primary/30"    
                         )}
                       >
                         <div className={cn(
-                          "h-12 w-12 rounded-2xl flex items-center justify-center transition-all",
-                          theme === "light" ? "bg-primary text-white" : "bg-card text-text-secondary"
+                          "h-16 w-16 rounded-2xl flex items-center justify-center transition-all shadow-inner shrink-0",
+                          theme === "light" ? "bg-primary text-white" : "bg-secondary/50 dark:bg-white/[0.03] text-text-secondary"
                         )}>
-                          <Sun className="h-6 w-6" />
+                          <Sun className="h-8 w-8 stroke-[2px]" />
                         </div>
-                        <div>
-                          <div className="font-black text-sm uppercase tracking-tight">Monk Morning</div>
-                          <div className="text-[10px] font-bold opacity-60">Light System</div>
+                        <div className="space-y-1">
+                          <div className="font-heading font-black text-xl uppercase tracking-tighter">Monk Morning</div>       
+                          <div className="text-[10px] font-black uppercase tracking-widest opacity-60">Light System</div>
                         </div>
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleThemeChange("dark")}
                         className={cn(
-                          "flex items-center gap-5 p-6 rounded-[28px] border-2 transition-all text-left group",
-                          theme === "dark" 
-                            ? "border-primary bg-primary/[0.03] text-primary shadow-lg shadow-primary/5" 
-                            : "border-border/50 bg-secondary/10 text-text-secondary hover:border-primary/20"
+                          "flex items-center gap-6 p-8 rounded-[32px] border-2 transition-all text-left group active:scale-[0.98]", 
+                          theme === "dark"
+                            ? "border-primary bg-primary/[0.03] text-primary shadow-2xl shadow-primary/10"        
+                            : "border-border bg-card text-text-secondary hover:border-primary/30"    
                         )}
                       >
                         <div className={cn(
-                          "h-12 w-12 rounded-2xl flex items-center justify-center transition-all",
-                          theme === "dark" ? "bg-primary text-white" : "bg-card text-text-secondary"
+                          "h-16 w-16 rounded-2xl flex items-center justify-center transition-all shadow-inner shrink-0",
+                          theme === "dark" ? "bg-primary text-white" : "bg-secondary/50 dark:bg-white/[0.03] text-text-secondary"
                         )}>
-                          <Moon className="h-6 w-6" />
+                          <Moon className="h-8 w-8 stroke-[2px]" />
                         </div>
-                        <div>
-                          <div className="font-black text-sm uppercase tracking-tight">Deep Night</div>
-                          <div className="text-[10px] font-bold opacity-60">Dark System</div>
+                        <div className="space-y-1">
+                          <div className="font-heading font-black text-xl uppercase tracking-tighter">Deep Night</div>
+                          <div className="text-[10px] font-black uppercase tracking-widest opacity-60">Dark System</div>
                         </div>
                       </button>
                     </div>
                   </section>
 
-                  <section className="space-y-5 md:space-y-8">
-                    <div className="flex items-center gap-3 border-b border-border pb-4">
-                      <div className="h-11 w-11 md:h-10 md:w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                        <Sparkles className="h-5 w-5" />
+                  <section className="space-y-6 md:space-y-8">
+                    <div className="flex items-center gap-4 border-b border-border pb-4 md:pb-6">
+                      <div className="h-12 w-12 md:h-12 md:w-12 rounded-xl md:rounded-2xl bg-accent/10 flex items-center justify-center text-accent shadow-inner">
+                        <Sparkles className="h-6 w-6 md:h-5 md:w-5" />
                       </div>
-                      <h2 className="text-xl font-heading font-black italic tracking-tight">Feedback Signals</h2>
+                      <h2 className="text-2xl md:text-3xl font-heading font-black italic tracking-tight uppercase">Feedback Signals</h2>
                     </div>
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                       <ToggleSwitch label="Habit Reminders" description="Alerts for uncompleted non-negotiables." defaultChecked />
                       <ToggleSwitch label="Bill Punctuality" description="Due date reminders for registered bills." defaultChecked />
-                      <ToggleSwitch label="Daily Reflection" description="Morning/Evening journal prompts." />
+                      <ToggleSwitch label="Daily Reflection" description="Morning/Evening journal prompts." />  
                     </div>
                   </section>
                 </motion.div>
               )}
 
               {activeSection === "ikigai" && (
-                <motion.div 
+                <motion.div
                   key="ikigai"
-                  initial={{ opacity: 0, y: 10 }} 
-                  animate={{ opacity: 1, y: 0 }} 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="space-y-12"
+                  className="space-y-8 md:space-y-12"
                 >
-                  <section className="space-y-5 md:space-y-8">
-                    <div className="flex items-center gap-3 border-b border-border pb-4">
-                      <div className="h-11 w-11 md:h-10 md:w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                        <Compass className="h-5 w-5" />
+                  <section className="space-y-6 md:space-y-8">
+                    <div className="flex items-center gap-4 border-b border-border pb-4 md:pb-6">
+                      <div className="h-12 w-12 md:h-12 md:w-12 rounded-xl md:rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500 shadow-inner">
+                        <Compass className="h-6 w-6 md:h-5 md:w-5" />
                       </div>
-                      <h2 className="text-xl font-heading font-black italic tracking-tight">Ikigai Governance</h2>
+                      <h2 className="text-2xl md:text-3xl font-heading font-black italic tracking-tight uppercase">Ikigai Governance</h2>
                     </div>
-                    <p className="text-sm text-text-secondary font-soft leading-relaxed max-w-2xl">
+                    <p className="text-sm md:text-base text-text-secondary font-soft leading-relaxed max-w-2xl opacity-80">
                       Your Ikigai represents the intersection of your passion, mission, vocation, and profession. This data is the bedrock of your purposeful living.
                     </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                      <button 
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 pt-4">
+                      <button
                         onClick={handleExportIkigai}
-                        className="flex items-center gap-5 p-6 bg-card border border-border rounded-[28px] hover:border-primary/30 transition-all group text-left"
+                        className="flex flex-col items-center gap-5 p-10 bg-card border-2 border-border rounded-[32px] hover:border-amber-500/30 transition-all group text-center shadow-sm"
                       >
-                        <div className="h-12 w-12 rounded-2xl bg-secondary/50 flex items-center justify-center text-text-secondary group-hover:text-primary transition-colors">
-                          <Download className="h-6 w-6" />
+                        <div className="h-16 w-16 rounded-2xl bg-secondary/50 dark:bg-white/[0.03] flex items-center justify-center text-text-secondary group-hover:text-amber-500 group-hover:bg-amber-500/10 transition-colors shadow-inner">
+                          <Download className="h-8 w-8" />
                         </div>
-                        <div>
-                          <div className="font-black text-sm uppercase tracking-tight">Export Wisdom</div>
-                          <div className="text-[10px] font-bold text-text-secondary">Download Ikigai protocols.</div>
+                        <div className="space-y-2">
+                          <div className="font-heading font-black text-xl uppercase tracking-tighter">Export Wisdom</div>      
+                          <div className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">Download Ikigai protocols.</div>
                         </div>
                       </button>
-                      <button 
+                      <button
                         onClick={handleResetIkigai}
-                        className="flex items-center gap-5 p-6 bg-red-500/[0.03] border border-red-500/20 rounded-[28px] hover:bg-red-500/[0.06] transition-all group text-left"
+                        className="flex flex-col items-center gap-5 p-10 bg-rose-500/[0.02] border-2 border-rose-500/20 rounded-[32px] hover:bg-rose-500/[0.05] transition-all group text-center shadow-sm"
                       >
-                        <div className="h-12 w-12 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500">
-                          <Trash2 className="h-6 w-6" />
+                        <div className="h-16 w-16 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-500 shadow-inner group-hover:scale-110 transition-transform">
+                          <Trash2 className="h-8 w-8" />
                         </div>
-                        <div>
-                          <div className="font-black text-sm uppercase tracking-tight text-red-500">Reset Destiny</div>
-                          <div className="text-[10px] font-bold text-red-400">Clear all Ikigai datasets.</div>
+                        <div className="space-y-2">
+                          <div className="font-heading font-black text-xl uppercase tracking-tighter text-rose-500">Reset Destiny</div>
+                          <div className="text-[10px] font-bold text-rose-400 uppercase tracking-widest">Clear all Ikigai datasets.</div>  
                         </div>
                       </button>
                     </div>
@@ -339,52 +338,52 @@ export default function SettingsPage() {
               )}
 
               {activeSection === "security" && (
-                <motion.div 
+                <motion.div
                   key="security"
-                  initial={{ opacity: 0, y: 10 }} 
-                  animate={{ opacity: 1, y: 0 }} 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   className="space-y-12"
                 >
-                  <section className="space-y-5 md:space-y-8">
-                    <div className="flex items-center gap-3 border-b border-border pb-4">
-                      <div className="h-11 w-11 md:h-10 md:w-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-500">
-                        <Lock className="h-5 w-5" />
+                  <section className="space-y-8">
+                    <div className="flex items-center gap-4 border-b border-rose-500/20 pb-4 md:pb-6">
+                      <div className="h-12 w-12 md:h-12 md:w-12 rounded-xl md:rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-500 shadow-inner">
+                        <ShieldAlert className="h-6 w-6 md:h-5 md:w-5" />
                       </div>
-                      <h2 className="text-xl font-heading font-black italic tracking-tight text-red-500 uppercase">Danger Zone</h2>
+                      <h2 className="text-2xl md:text-3xl font-heading font-black italic tracking-tight text-rose-500 uppercase">Danger Zone</h2>
                     </div>
-                    
-                    <div className="space-y-4">
-                      <button 
+
+                    <div className="space-y-6">
+                      <button
                         onClick={handleExportLifeData}
-                        className="w-full flex items-center justify-between p-6 bg-card border border-border rounded-[28px] hover:border-primary/30 transition-all group"
+                        className="w-full flex items-center justify-between p-8 bg-card border-2 border-border rounded-[32px] hover:border-primary/30 transition-all group shadow-sm active:scale-[0.98]"
                       >
-                        <div className="flex items-center gap-5">
-                          <div className="h-12 w-12 rounded-2xl bg-secondary/50 flex items-center justify-center text-text-secondary group-hover:text-primary transition-colors">
+                        <div className="flex items-center gap-6">
+                          <div className="h-14 w-14 rounded-2xl bg-secondary/50 flex items-center justify-center text-text-secondary group-hover:text-primary transition-colors shadow-inner">
                             <Download className="h-6 w-6" />
                           </div>
-                          <div className="text-left">
-                            <div className="font-black text-sm uppercase tracking-tight">Export Life Evidence</div>
-                            <div className="text-[10px] font-bold text-text-secondary">Download complete history (JSON).</div>
+                          <div className="text-left space-y-1">
+                            <div className="font-heading font-black text-lg uppercase tracking-tight">Export Life Evidence</div>
+                            <div className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">Download complete history (JSON).</div>
                           </div>
                         </div>
-                        <ChevronRight className="h-5 w-5 text-text-secondary group-hover:translate-x-1 transition-all" />
+                        <ChevronRight className="h-6 w-6 text-text-secondary group-hover:translate-x-2 group-hover:text-primary transition-all" />
                       </button>
-                      
-                      <button 
+
+                      <button
                         onClick={handleDeleteAccount}
-                        className="w-full flex items-center justify-between p-6 bg-red-500/[0.03] border border-red-500/20 rounded-[28px] hover:bg-red-500/[0.06] transition-all group"
+                        className="w-full flex items-center justify-between p-8 bg-rose-500/[0.03] border-2 border-rose-500/20 rounded-[32px] hover:bg-rose-500/[0.08] hover:border-rose-500/40 transition-all group shadow-sm active:scale-[0.98]"
                       >
-                        <div className="flex items-center gap-5">
-                          <div className="h-12 w-12 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500">
+                        <div className="flex items-center gap-6">
+                          <div className="h-14 w-14 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-500 shadow-inner">
                             <Trash2 className="h-6 w-6" />
                           </div>
-                          <div className="text-left">
-                            <div className="font-black text-sm uppercase tracking-tight text-red-500">Identity Purge</div>
-                            <div className="text-[10px] font-bold text-red-400">Permanently wipe all system data.</div>
+                          <div className="text-left space-y-1">
+                            <div className="font-heading font-black text-lg uppercase tracking-tight text-rose-500">Identity Purge</div>
+                            <div className="text-[10px] font-bold text-rose-400 uppercase tracking-widest">Permanently wipe all system data.</div>
                           </div>
                         </div>
-                        <ChevronRight className="h-5 w-5 text-red-500 group-hover:translate-x-1 transition-all" />
+                        <ChevronRight className="h-6 w-6 text-rose-500 group-hover:translate-x-2 transition-all" />
                       </button>
                     </div>
                   </section>
@@ -397,48 +396,48 @@ export default function SettingsPage() {
       </div>
     </div>
   );
-}
+  }
 
-const sections = [
+  const sections = [
   { id: "identity", label: "Identity", icon: User },
   { id: "habits", label: "Habits", icon: CheckCircle2 },
   { id: "system", label: "System", icon: Monitor },
   { id: "ikigai", label: "Ikigai", icon: Compass },
-  { id: "security", label: "Security", icon: Shield },
-];
+  { id: "security", label: "Security", icon: ShieldAlert },
+  ];
 
-function SettingsInput({ label, value }: { label: string, value: string }) {
+  function SettingsInput({ label, value }: { label: string, value: string }) {
   return (
     <div className="space-y-3">
-      <label className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em]">{label}</label>
-      <div className="px-5 py-4 rounded-2xl bg-background border border-border font-heading font-bold text-sm cursor-pointer hover:border-primary/50 transition-all flex items-center justify-between">
+      <label className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] ml-1">{label}</label>  
+      <div className="px-6 py-5 rounded-[24px] bg-background border-2 border-border font-heading font-bold text-lg cursor-pointer hover:border-primary/50 transition-all flex items-center justify-between shadow-inner">
         {value}
-        <ChevronRight className="h-4 w-4 text-text-secondary/30" />
+        <ChevronRight className="h-5 w-5 text-text-secondary/30" />
       </div>
     </div>
   );
-}
+  }
 
-function ToggleSwitch({ label, description, defaultChecked }: { label: string, description: string, defaultChecked?: boolean }) {
+  function ToggleSwitch({ label, description, defaultChecked }: { label: string, description: string, defaultChecked?: boolean }) {
   const [checked, setChecked] = useState(!!defaultChecked);
   return (
-    <div className="flex items-center justify-between p-4 rounded-2xl bg-secondary/10 dark:bg-white/[0.02] border border-transparent hover:border-border transition-all">
-      <div className="space-y-1">
-        <div className="font-black text-sm uppercase tracking-tight">{label}</div>
-        <div className="text-[10px] font-bold text-text-secondary">{description}</div>
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-6 rounded-[32px] bg-secondary/10 dark:bg-white/[0.02] border-2 border-border/50 hover:border-border transition-all">
+      <div className="space-y-2">
+        <div className="font-heading font-black text-lg uppercase tracking-tight text-text-primary">{label}</div>
+        <div className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">{description}</div>
       </div>
-      <button 
+      <button
         onClick={() => setChecked(!checked)}
         className={cn(
-          "w-14 h-7 rounded-full relative transition-all duration-500 flex items-center",
-          checked ? "bg-primary shadow-lg shadow-primary/20" : "bg-secondary"
+          "w-16 h-8 rounded-full relative transition-all duration-500 flex items-center shrink-0 border border-white/10",
+          checked ? "bg-primary shadow-lg shadow-primary/30" : "bg-secondary dark:bg-white/10"
         )}
       >
-        <motion.div 
-          animate={{ x: checked ? 28 : 4 }}
-          className="h-5 w-5 bg-white rounded-full shadow-sm"
+        <motion.div
+          animate={{ x: checked ? 34 : 4 }}
+          className="h-6 w-6 bg-white rounded-full shadow-sm"
         />
       </button>
     </div>
   );
-}
+  }

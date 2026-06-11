@@ -244,7 +244,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
             <DomainCard 
               icon={Brain} 
               title="Academic" 
@@ -402,7 +402,7 @@ interface DomainCardProps {
 
 function DomainCard({ icon: Icon, title, desc, color, bg, borderColor }: DomainCardProps) {
   return (
-    <div className={cn("p-6 md:p-10 rounded-[24px] md:rounded-[32px] border transition-all duration-500 h-full flex flex-col items-center text-center bg-white dark:bg-white/[0.02] shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1", borderColor)}>
+    <div className={cn("p-5 md:p-10 rounded-[24px] md:rounded-[32px] border transition-all duration-500 h-full flex flex-col items-center text-center bg-white dark:bg-white/[0.02] shadow-sm hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1", borderColor)}>
       <div className={`h-12 w-12 md:h-16 md:w-16 rounded-2xl flex items-center justify-center mb-6 md:mb-8 shrink-0 ${bg}`}>
         <Icon className={`h-6 w-6 md:h-8 md:w-8 ${color}`} />
       </div>

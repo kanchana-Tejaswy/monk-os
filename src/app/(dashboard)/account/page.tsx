@@ -251,84 +251,86 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-12 pb-24 animate-in fade-in duration-700 px-4 md:px-8 text-foreground">
-      
+    <div className="max-w-6xl mx-auto space-y-12 md:space-y-16 pb-24 md:pb-24 animate-in fade-in duration-700 px-4 md:px-8 text-foreground">
+
       {/* 1. PROFILE OVERVIEW - PREMIUM CARD */}
-      <section className="relative overflow-hidden rounded-[48px] bg-card border-2 border-border p-8 md:p-16 shadow-2xl group transition-all duration-500 hover:border-primary/20">
-        <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none group-hover:scale-110 group-hover:rotate-12 transition-transform duration-1000">
-          <Shield className="h-64 w-64 text-primary" />
+      <section className="relative overflow-hidden rounded-[40px] md:rounded-[48px] bg-card border-2 border-border p-6 md:p-16 shadow-2xl group transition-all duration-500 hover:border-primary/20">
+        <div className="absolute top-0 right-0 p-8 md:p-12 opacity-[0.03] pointer-events-none group-hover:scale-110 group-hover:rotate-12 transition-transform duration-1000">
+          <Shield className="h-48 w-48 md:h-64 md:w-64 text-primary" />
         </div>
-        
-        <div className="relative z-10 flex flex-col lg:flex-row items-center lg:items-start gap-12 lg:gap-16">
+
+        <div className="relative z-10 flex flex-col lg:flex-row items-center lg:items-start gap-8 md:gap-12 lg:gap-16">  
           <div className="relative group/avatar">
             <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full animate-pulse" />
-            <div className="h-40 w-40 md:h-48 md:w-48 relative bg-white dark:bg-white/10 rounded-[56px] overflow-hidden p-2 border-8 border-white dark:border-zinc-900 shadow-2xl z-10">
+            <div className="h-32 w-32 md:h-48 md:w-48 relative bg-white dark:bg-white/10 rounded-[40px] md:rounded-[56px] overflow-hidden p-2 border-[6px] md:border-8 border-white dark:border-zinc-900 shadow-2xl z-10">
               {profile?.avatar_url || user?.user_metadata?.avatar_url ? (
-                <Image 
-                  src={profile?.avatar_url || user?.user_metadata?.avatar_url} 
-                  alt="Avatar" 
-                  fill 
-                  className="object-cover rounded-[40px]"
+                <Image
+                  src={profile?.avatar_url || user?.user_metadata?.avatar_url}
+                  alt="Avatar"
+                  fill
+                  className="object-cover rounded-[32px] md:rounded-[40px]"
                 />
               ) : (
-                <div className="h-full w-full flex items-center justify-center bg-primary/10 text-primary">
-                  <User className="h-20 w-20" />
+                <div className="h-full w-full flex items-center justify-center bg-primary/10 text-primary">     
+                  <User className="h-16 w-16 md:h-20 md:w-20" />
                 </div>
               )}
             </div>
-            <button 
+            <button
               onClick={() => setEditModalOpen(true)}
-              className="absolute bottom-2 right-2 h-12 w-12 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-2xl flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all z-20 border-4 border-white dark:border-zinc-900 group/btn"
+              className="absolute bottom-1 right-1 md:bottom-2 md:right-2 h-10 w-10 md:h-12 md:w-12 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-2xl flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all z-20 border-[3px] md:border-4 border-white dark:border-zinc-900 group/btn"
             >
-               <Camera className="h-5 w-5 group-hover/btn:scale-110 transition-transform" />
+               <Camera className="h-4 w-4 md:h-5 md:w-5 group-hover/btn:scale-110 transition-transform" />
             </button>
           </div>
 
-          <div className="flex-1 text-center lg:text-left space-y-6">
-            <div className="space-y-3">
-              <div className="flex flex-wrap justify-center lg:justify-start items-center gap-3">
+          <div className="flex-1 text-center lg:text-left space-y-6 md:space-y-6">
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row justify-center lg:justify-start items-center gap-3">
                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.5em] bg-primary/10 px-5 py-2 rounded-full border border-border inline-block">Authenticated Agent</span>
                 <SyncStatusBadge status={syncStatus} />
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-black tracking-tighter italic uppercase text-foreground leading-tight">
                 {profile?.full_name || user?.user_metadata?.full_name || "Monk Mode"}
               </h1>
-              <div className="flex items-center justify-center lg:justify-start gap-2 text-text-secondary">
+              <div className="flex items-center justify-center lg:justify-start gap-2 text-text-secondary">     
                  <Mail className="h-4 w-4 opacity-40" />
-                 <p className="text-lg md:text-xl font-soft opacity-70">{user?.email}</p>
+                 <p className="text-base md:text-xl font-soft opacity-70 truncate max-w-[250px] sm:max-w-none">{user?.email}</p>
               </div>
             </div>
 
-            <div className="flex flex-wrap justify-center lg:justify-start gap-4">
-               <button 
+            <div className="flex flex-col sm:flex-row flex-wrap justify-center lg:justify-start gap-3 md:gap-4 w-full">
+               <button
                 onClick={handleCopyId}
-                className="flex items-center gap-3 px-6 py-3 bg-secondary/50 dark:bg-white/[0.03] border border-border rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-secondary transition-all active:scale-95 group/sig"
+                className="flex items-center justify-center gap-3 w-full sm:w-auto px-6 py-4 md:py-3 bg-secondary/50 dark:bg-white/[0.03] border border-border rounded-[20px] md:rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-secondary transition-all active:scale-95 group/sig"
                >
-                 {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Fingerprint className="h-3.5 w-3.5 opacity-40 group-hover/sig:opacity-100 transition-opacity" />}
+                 {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Fingerprint className="h-4 w-4 opacity-40 group-hover/sig:opacity-100 transition-opacity" />}
                  {showId ? user?.id : "Copy Signature ID"}
                </button>
-               <button 
-                onClick={() => setShowId(!showId)}
-                className="p-3 bg-secondary/50 dark:bg-white/[0.03] border border-border rounded-2xl text-text-secondary hover:text-foreground transition-all active:scale-95"
-               >
-                 {showId ? <Zap className="h-4 w-4 text-primary fill-primary" /> : <Lock className="h-4 w-4" />}
-               </button>
-               <button 
-                onClick={() => setEditModalOpen(true)}
-                className="px-6 py-3 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-zinc-900/10 active:scale-95"
-               >
-                 Configure Identity
-               </button>
+               <div className="flex gap-3 w-full sm:w-auto">
+                 <button
+                  onClick={() => setShowId(!showId)}
+                  className="flex-1 sm:flex-none flex items-center justify-center p-4 md:p-3 bg-secondary/50 dark:bg-white/[0.03] border border-border rounded-[20px] md:rounded-2xl text-text-secondary hover:text-foreground transition-all active:scale-95"
+                 >
+                   {showId ? <Zap className="h-5 w-5 md:h-4 md:w-4 text-primary fill-primary" /> : <Lock className="h-5 w-5 md:h-4 md:w-4" />}
+                 </button>
+                 <button
+                  onClick={() => setEditModalOpen(true)}
+                  className="flex-[2] sm:flex-none px-6 py-4 md:py-3 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-[20px] md:rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-zinc-900/10 active:scale-95 flex items-center justify-center"
+                 >
+                   Configure Identity
+                 </button>
+               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-8 pt-6 border-t border-border/50 max-w-md mx-auto lg:mx-0">
+            <div className="grid grid-cols-2 gap-6 md:gap-8 pt-8 md:pt-6 border-t border-border/50 max-w-sm mx-auto lg:mx-0 w-full">    
                <div className="space-y-1">
-                  <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2"><Calendar className="h-3 w-3" /> System Start</p>
-                  <p className="text-sm font-bold">{user?.created_at ? new Date(user.created_at).toLocaleDateString('default', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Unknown'}</p>
+                  <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest flex items-center justify-center lg:justify-start gap-2"><Calendar className="h-3 w-3" /> System Start</p>
+                  <p className="text-xs md:text-sm font-bold">{user?.created_at ? new Date(user.created_at).toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown'}</p>
                </div>
                <div className="space-y-1">
-                  <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2"><History className="h-3 w-3" /> Last Pulse</p>
-                  <p className="text-sm font-bold">{lastSyncedAt ? new Date(lastSyncedAt).toLocaleTimeString() : 'Awaiting Pulse'}</p>
+                  <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest flex items-center justify-center lg:justify-start gap-2"><History className="h-3 w-3" /> Last Pulse</p>
+                  <p className="text-xs md:text-sm font-bold">{lastSyncedAt ? new Date(lastSyncedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Awaiting Pulse'}</p>
                </div>
             </div>
           </div>

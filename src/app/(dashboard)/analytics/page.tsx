@@ -180,16 +180,21 @@ export default function AnalyticsPage() {
   }, [data]);
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 md:space-y-10 pb-8 md:pb-20 animate-in fade-in duration-700 px-4 md:px-8">
+    <div className="max-w-7xl mx-auto space-y-10 md:space-y-16 pb-12 md:pb-24 animate-in fade-in duration-700 px-4 md:px-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 text-foreground">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-heading font-black text-foreground italic tracking-tighter uppercase">Intelligence Layer</h1>
-          <p className="text-muted-foreground font-bold text-xs uppercase tracking-[0.3em] mt-2 flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 text-primary" /> Strategy & Trajectory
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 text-foreground">
+        <div className="space-y-2 md:space-y-3">
+          <div className="inline-flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-[0.4em] bg-primary/10 px-4 py-1.5 rounded-full border border-primary/10">
+            Cognitive Audit
+          </div>
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-heading font-black text-foreground italic tracking-tighter uppercase leading-tight">
+            Intelligence Layer.
+          </h1>
+          <p className="text-muted-foreground font-bold text-[10px] md:text-xs uppercase tracking-[0.3em] flex items-center gap-2 opacity-60">
+            <BarChart3 className="h-4 w-4 text-primary" /> Strategy & Trajectory Analysis
           </p>
         </div>
-        <div className="flex items-center gap-2 p-1 bg-secondary dark:bg-white/5 rounded-2xl border border-border">
+        <div className="flex items-center justify-between lg:justify-end gap-2 p-1.5 bg-secondary/50 dark:bg-white/5 rounded-2xl border border-border w-full lg:w-auto">
           <ViewButton active={viewType === "weekly"} onClick={() => setViewType("weekly")} label="7D" />
           <ViewButton active={viewType === "monthly"} onClick={() => setViewType("monthly")} label="30D" />
           <ViewButton active={viewType === "yearly"} onClick={() => setViewType("yearly")} label="12M" />
@@ -197,52 +202,55 @@ export default function AnalyticsPage() {
       </div>
 
       {!hasData ? (
-        <div className="flex flex-col items-center justify-center py-20 md:py-40 space-y-8 bg-card rounded-[48px] border-2 border-dashed border-border text-center">
-          <div className="h-24 w-24 bg-primary/5 rounded-full flex items-center justify-center text-primary/20">
+        <div className="flex flex-col items-center justify-center py-24 md:py-40 space-y-10 bg-card rounded-[40px] md:rounded-[48px] border-2 border-dashed border-border text-center px-6 shadow-sm">
+          <div className="h-24 w-24 bg-primary/5 rounded-full flex items-center justify-center text-primary/20 shadow-inner">
             <BarChart3 className="h-12 w-12" />
           </div>
-          <div className="space-y-3">
-            <h2 className="text-3xl font-heading font-black tracking-tight text-foreground">Not enough data yet.</h2>
-            <p className="text-muted-foreground max-w-sm mx-auto font-soft">Complete habits and focus sessions to unlock deep cognitive and discipline insights.</p>
+          <div className="space-y-4">
+            <h2 className="text-3xl font-heading font-black tracking-tight text-foreground uppercase italic">Insufficient Data.</h2>
+            <p className="text-muted-foreground max-w-sm mx-auto font-soft text-base leading-relaxed">Complete habits and focus sessions to unlock deep cognitive and discipline insights.</p>
           </div>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link href="/habits" className="px-8 py-3 bg-primary text-primary-foreground font-black text-[10px] uppercase tracking-widest rounded-xl hover:scale-105 transition-all shadow-lg">Start Habits</Link>
-            <Link href="/focus" className="px-8 py-3 bg-secondary text-text-primary font-black text-[10px] uppercase tracking-widest rounded-xl hover:scale-105 transition-all">Begin Deep Work</Link>
+          <div className="flex flex-col sm:flex-row justify-center gap-4 w-full sm:w-auto">
+            <Link href="/habits" className="px-10 py-4 bg-primary text-primary-foreground font-black text-xs uppercase tracking-widest rounded-xl hover:scale-105 transition-all shadow-xl shadow-primary/20 active:scale-95 text-center">Start Habits</Link>
+            <Link href="/focus" className="px-10 py-4 bg-secondary dark:bg-white/5 text-text-primary font-black text-xs uppercase tracking-widest rounded-xl hover:scale-105 transition-all active:scale-95 text-center">Begin Deep Work</Link>
           </div>
         </div>
       ) : (
         <>
           {/* Primary Life Score */}
-          <section className="bg-card p-8 md:p-16 rounded-[48px] border-2 border-border relative overflow-hidden group shadow-2xl shadow-primary/5">
-            <div className="absolute top-0 right-0 p-12 opacity-[0.05] pointer-events-none group-hover:rotate-12 transition-transform duration-1000">
+          <section className="bg-card p-8 sm:p-12 md:p-16 rounded-[40px] md:rounded-[48px] border-2 border-border relative overflow-hidden group shadow-2xl shadow-primary/[0.03]">
+            <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none group-hover:rotate-12 transition-transform duration-[2000ms]">
               <ShieldCheck className="h-64 w-64 text-primary" />
             </div>
-            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center text-foreground">
-              <div className="space-y-8 text-center lg:text-left">
-                <div className="space-y-4">
-                  <span className="text-[10px] font-black text-primary uppercase tracking-[0.5em] bg-primary/10 px-5 py-2 rounded-full border border-border">Integrated Life Score</span>
-                  <h2 className="text-8xl md:text-9xl font-heading font-black tracking-tighter leading-none text-foreground">
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center text-foreground"> 
+              <div className="space-y-10 text-center lg:text-left">
+                <div className="space-y-6">
+                  <span className="text-[10px] font-black text-primary uppercase tracking-[0.5em] bg-primary/10 px-6 py-2.5 rounded-full border border-primary/10 inline-block shadow-sm">Integrated Score</span>
+                  <h2 className="text-7xl md:text-9xl font-heading font-black tracking-tighter leading-none text-foreground italic drop-shadow-sm">
                     {metrics.lifeScore}
                   </h2>
                 </div>
-                <div className="flex flex-wrap justify-center lg:justify-start gap-3">
-                  <MetricPill label={`${metrics.disciplineScore}% Discipline`} color="bg-primary/10 text-primary" />
-                  <MetricPill label={`${metrics.savingsMomentum}% Wealth`} color="bg-emerald-500/10 text-emerald-500" />
-                  <MetricPill label={`${metrics.focusHours}h Focus`} color="bg-secondary/50 text-foreground" />
+                <div className="flex flex-wrap justify-center lg:justify-start gap-4">
+                  <MetricPill label={`${metrics.disciplineScore}% Discipline`} color="bg-primary/10 text-primary border-primary/20" />
+                  <MetricPill label={`${metrics.savingsMomentum}% Wealth`} color="bg-emerald-500/10 text-emerald-500 border-emerald-500/20" />
+                  <MetricPill label={`${metrics.focusHours}h Focus`} color="bg-secondary/50 dark:bg-white/5 text-foreground border-border" /> 
                 </div>
               </div>
 
-              <div className="bg-secondary/20 dark:bg-white/[0.02] p-8 rounded-[32px] border border-border/50">
-                 <h3 className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em] mb-6">Strategic Insights</h3>
-                 <div className="space-y-4">
+              <div className="bg-secondary/30 dark:bg-white/[0.02] p-8 md:p-10 rounded-[32px] border border-border shadow-inner relative overflow-hidden">
+                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+                 <h3 className="text-[10px] font-black text-text-secondary uppercase tracking-[0.4em] mb-8 opacity-60">Strategic Intelligence</h3>
+                 <div className="space-y-5">
                     {metrics.insights.length > 0 ? metrics.insights.map((insight, i) => (
-                      <div key={i} className="flex gap-4 p-4 bg-background rounded-2xl border border-border">
-                        <insight.icon className={cn("h-5 w-5 shrink-0", insight.color)} />
-                        <p className="text-sm font-bold text-text-primary leading-relaxed">{insight.text}</p>
+                      <div key={i} className="flex gap-5 p-5 bg-card/80 backdrop-blur-sm rounded-2xl border border-border group/insight transition-all hover:border-primary/30 shadow-sm">   
+                        <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover/insight:scale-110", insight.color.replace('text-', 'bg-') + '/10')}>
+                          <insight.icon className={cn("h-5 w-5", insight.color)} />
+                        </div>
+                        <p className="text-sm font-bold text-text-primary leading-relaxed mt-0.5">{insight.text}</p>   
                       </div>
                     )) : (
-                      <div className="py-8 text-center italic text-text-secondary text-sm">
-                        Generate more data to unlock intelligence.
+                      <div className="py-12 text-center italic text-text-secondary text-base opacity-40 font-soft">
+                        Synthesizing history to unlock insights...
                       </div>
                     )}
                  </div>
@@ -251,9 +259,9 @@ export default function AnalyticsPage() {
           </section>
 
           {/* Detailed Trends */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <TrendSection title="Discipline Momentum" value={`${metrics.disciplineScore}%`} trend={metrics.consistencyTrend} color="bg-accent" icon={Flame} labels={metrics.labels} />
-            <TrendSection title="Cognitive Depth" value={`${metrics.focusHours}h`} trend={metrics.focusTrend} color="bg-primary" icon={Zap} labels={metrics.labels} max={viewType === 'yearly' ? 100 : 6} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10 pb-12">
+            <TrendSection title="Discipline Stream" value={`${metrics.disciplineScore}%`} trend={metrics.consistencyTrend} color="bg-accent" icon={Flame} labels={metrics.labels} />
+            <TrendSection title="Cognitive Flow" value={`${metrics.focusHours}h`} trend={metrics.focusTrend} color="bg-primary" icon={Zap} labels={metrics.labels} max={viewType === 'yearly' ? 100 : 6} />
           </div>
         </>
       )}
@@ -271,26 +279,30 @@ interface TrendSectionProps {
   max?: number;
 }
 
-function TrendSection({ title, value, trend, color, icon: Icon, labels, max = 100 }: TrendSectionProps) {
+function TrendSection({ title, value, trend, color, icon: Icon, labels, max = 100 }: TrendSectionProps) {       
   return (
-    <section className="monk-card p-8 md:p-10">
-      <div className="flex items-center justify-between mb-12">
-        <h3 className="font-heading font-black text-xl flex items-center gap-3 uppercase tracking-tighter text-foreground">
-          <Icon className={cn("h-6 w-6", color.replace('bg-', 'text-'))} />
+    <section className="monk-card p-6 md:p-10 shadow-sm border-border hover:shadow-xl transition-all duration-700">
+      <div className="flex items-center justify-between mb-16">
+        <h3 className="font-heading font-black text-xl md:text-2xl flex items-center gap-4 uppercase tracking-tighter text-foreground italic">
+          <div className={cn("h-11 w-11 rounded-xl flex items-center justify-center shadow-inner", color.replace('bg-', 'bg-') + '/10')}>
+            <Icon className={cn("h-6 w-6", color.replace('bg-', 'text-'))} />
+          </div>
           {title}
         </h3>
-        <span className={cn("text-sm font-black px-4 py-1.5 rounded-xl border border-border", color.replace('bg-', 'text-'), color.replace('bg-', 'bg-') + '/10')}>{value}</span>
+        <div className={cn("px-5 py-2 rounded-2xl border text-base font-black tracking-tight", color.replace('bg-', 'text-'), color.replace('bg-', 'bg-') + '/10', color.replace('bg-', 'border-') + '/20')}>
+          {value}
+        </div>
       </div>
-      <div className="flex items-end justify-between gap-2 h-48">
+      <div className="flex items-end justify-between gap-1.5 sm:gap-2 md:gap-3 h-56 px-2">
         {trend.map((val: number, i: number) => (
           <div key={i} className="flex-1 group relative">
-            <motion.div 
+            <motion.div
               initial={{ height: 0 }}
-              animate={{ height: `${Math.min(100, (val/max)*100)}%` }}
-              className={cn("w-full rounded-2xl transition-all duration-500", color, "opacity-20 group-hover:opacity-100")}
+              animate={{ height: `${Math.max(5, (val/max)*100)}%` }}
+              className={cn("w-full rounded-full transition-all duration-[1000ms] ease-out", color, "opacity-20 group-hover:opacity-100 group-hover:shadow-lg", color === 'bg-primary' ? 'group-hover:shadow-primary/40' : 'group-hover:shadow-accent/40')}
             />
             {i % Math.ceil(trend.length/7) === 0 && (
-              <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-black text-muted-foreground whitespace-nowrap">
+              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-[8px] font-black text-muted-foreground uppercase tracking-widest opacity-40 group-hover:opacity-100 transition-opacity">
                  {labels[i]}
               </div>
             )}
@@ -301,9 +313,9 @@ function TrendSection({ title, value, trend, color, icon: Icon, labels, max = 10
   );
 }
 
-function ViewButton({ active, onClick, label }: { active: boolean, onClick: () => void, label: string }) {
+function ViewButton({ active, onClick, label }: { active: boolean, onClick: () => void, label: string }) {      
   return (
-    <button onClick={onClick} className={cn("px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all", active ? "bg-primary text-primary-foreground shadow-xl" : "text-muted-foreground hover:text-foreground")}>
+    <button onClick={onClick} className={cn("flex-1 lg:flex-none h-11 px-6 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center border border-transparent", active ? "bg-primary text-primary-foreground shadow-2xl shadow-primary/20 border-white/10 scale-[1.02]" : "text-muted-foreground hover:bg-secondary hover:text-foreground active:scale-95")}>
       {label}
     </button>
   );
@@ -311,7 +323,7 @@ function ViewButton({ active, onClick, label }: { active: boolean, onClick: () =
 
 function MetricPill({ label, color }: { label: string, color: string }) {
   return (
-    <div className={cn("px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border border-border shadow-sm", color)}>
+    <div className={cn("px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] border shadow-sm transition-all hover:scale-105", color)}>
       {label}
     </div>
   );

@@ -334,7 +334,7 @@ export default function CalendarPage() {
                               </div>
                             </div>
                             {habit.completed && habit.isNonNegotiable && (
-                              <Flame className="h-4 w-4 text-orange-500 fill-orange-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                              <Flame className="h-4 w-4 text-orange-500 fill-orange-500 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity" />
                             )}
                           </motion.div>
                         ))}

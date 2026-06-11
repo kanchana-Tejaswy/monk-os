@@ -168,82 +168,92 @@ export default function JournalPage() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 md:space-y-10 animate-in fade-in duration-500 pb-8 md:pb-20 px-4 sm:px-0">
-      
+    <div className="max-w-7xl mx-auto space-y-10 md:space-y-16 animate-in fade-in duration-700 pb-12 md:pb-24 px-4 sm:px-0">
+
       {/* --- HEADER --- */}
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-1">
-            <h1 className="text-3xl md:text-4xl font-heading font-black tracking-tighter italic text-foreground">The Digital Ashram</h1>
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-[0.3em] flex items-center gap-2">
-              <Sparkles className="h-3 w-3 text-primary animate-pulse" /> Categorised Wisdom
-            </p>
+      <div className="flex flex-col gap-8">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+          <div className="space-y-3 text-center lg:text-left">
+            <div className="inline-flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-[0.4em] bg-primary/10 px-5 py-2 rounded-full border border-primary/10 mx-auto lg:mx-0 shadow-sm">
+              <Sparkles className="h-3 w-3 animate-pulse" /> Categorised Wisdom
+            </div>
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-heading font-black tracking-tighter italic text-foreground leading-tight uppercase">
+              The Digital Ashram.
+            </h1>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="flex bg-secondary/50 dark:bg-white/5 p-1 rounded-xl border border-border">
-              <HeaderAction icon={<Undo2 className="h-4 w-4" />} onClick={undo} disabled={historyStep <= 0} title="Undo" />
-              <HeaderAction icon={<Redo2 className="h-4 w-4" />} onClick={redo} disabled={historyStep >= history.length - 1} title="Redo" />
+          <div className="flex items-center justify-between lg:justify-end gap-4 w-full lg:w-auto">
+            <div className="flex bg-secondary/50 dark:bg-white/5 p-1.5 rounded-2xl border border-border shadow-inner">
+              <HeaderAction icon={<Undo2 className="h-4.5 w-4.5" />} onClick={undo} disabled={historyStep <= 0} title="Undo" />
+              <div className="w-px h-6 bg-border/50 mx-1 self-center" />
+              <HeaderAction icon={<Redo2 className="h-4.5 w-4.5" />} onClick={redo} disabled={historyStep >= history.length - 1} title="Redo" />
             </div>
-            <button 
+            <button
               onClick={handleNewEntry}
-              className="flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground font-bold rounded-2xl hover:scale-105 transition-all shadow-xl min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"
+              className="flex-1 lg:flex-none flex items-center justify-center gap-3 px-10 py-5 bg-primary text-primary-foreground font-black text-[11px] uppercase tracking-[0.3em] rounded-[24px] hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-primary/20 border border-white/10"
             >
-              <Plus className="h-5 w-5" /> Reflect
+              <Plus className="h-5 w-5 stroke-[2.5px]" /> Reflect
             </button>
           </div>
         </div>
 
-        <div className="relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input 
-            type="text" 
+        <div className="relative group max-w-2xl mx-auto w-full">
+          <div className="absolute left-5 top-1/2 -translate-y-1/2 flex items-center justify-center">
+            <Search className="h-4.5 w-4.5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+          </div>
+          <input
+            type="text"
             placeholder="Search through the silence..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-4 rounded-2xl bg-card border-2 border-border focus:border-primary focus:outline-none text-sm transition-all shadow-sm"
+            className="w-full pl-14 pr-6 py-5 rounded-[24px] bg-card border-2 border-border focus:border-primary/40 focus:outline-none text-base transition-all shadow-sm focus:shadow-xl focus:shadow-primary/[0.02]"
           />
         </div>
       </div>
 
       {/* --- GRID --- */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 pb-12">
         {DOMAINS.map((dom) => {
           const domainEntries = filteredEntries.filter(e => e.domain === dom);
           return (
-            <section key={dom} className="space-y-6">
-              <div className="flex items-center justify-between px-2">
-                <div className="flex items-center gap-3">
+            <section key={dom} className="space-y-8">
+              <div className="flex items-center justify-between px-3">
+                <div className="flex items-center gap-4">
                   <div className={cn(
-                    "p-2.5 rounded-xl shadow-inner",
-                    dom === "Ideas" ? "bg-amber-100 text-amber-600" :
-                    dom === "Spiritual" ? "bg-accent/20 text-accent" :
-                    dom === "Academic" ? "bg-secondary dark:bg-white/5 text-secondary" :
-                    dom === "Physical" ? "bg-monk-mint/20 text-monk-mint" : "bg-primary/20 text-primary"
+                    "h-12 w-12 rounded-2xl flex items-center justify-center shadow-inner transition-transform hover:scale-110",
+                    dom === "Ideas" ? "bg-amber-500/10 text-amber-500 border border-amber-500/20" :
+                    dom === "Spiritual" ? "bg-accent/10 text-accent border border-accent/20" :
+                    dom === "Academic" ? "bg-secondary/50 dark:bg-white/5 text-text-secondary border border-border" :
+                    dom === "Physical" ? "bg-monk-mint/10 text-monk-mint border border-monk-mint/20" : "bg-primary/10 text-primary border border-primary/20"
                   )}>
-                    <DomainIcon domain={dom} size="h-5 w-5" />
+                    <DomainIcon domain={dom} size="h-6 w-6" />
                   </div>
-                  <h2 className="text-xl font-heading font-black uppercase tracking-tight text-foreground">
-                    {dom === "Spiritual" ? "Daily Journal" : dom}
+                  <h2 className="text-xl md:text-2xl font-heading font-black uppercase tracking-tight text-foreground italic">
+                    {dom === "Spiritual" ? "Daily Journal" : dom}.
                   </h2>
                 </div>
-                <span className="text-[10px] font-black bg-primary text-primary-foreground px-3 py-1.5 rounded-lg uppercase tracking-widest">
-                  {domainEntries.length}
-                </span>
+                <div className="h-8 px-4 bg-secondary/50 dark:bg-white/5 rounded-full flex items-center justify-center border border-border">
+                  <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
+                    {domainEntries.length}
+                  </span>
+                </div>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-6 md:space-y-8">
                 {domainEntries.length === 0 ? (
-                  <div className="py-12 flex flex-col items-center justify-center text-center bg-zinc-900/5 dark:bg-white/5 rounded-[32px] border-2 border-dashed border-border">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">The void is empty</p>
+                  <div className="py-16 flex flex-col items-center justify-center text-center bg-secondary/20 dark:bg-white/[0.01] rounded-[32px] border-2 border-dashed border-border group hover:border-primary/20 transition-colors">
+                    <div className="h-14 w-14 rounded-full bg-secondary/50 flex items-center justify-center text-muted-foreground/30 mb-4 group-hover:scale-110 transition-transform">
+                       <BookText className="h-6 w-6" />
+                    </div>
+                    <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.4em]">The void is waiting</p>
                   </div>
                 ) : (
                   domainEntries.map((entry) => (
-                    <EntryCard 
-                      key={entry.id} 
-                      entry={entry} 
-                      onDelete={handleDelete} 
-                      onEdit={() => handleEditEntry(entry)} 
+                    <EntryCard
+                      key={entry.id}
+                      entry={entry}
+                      onDelete={handleDelete}
+                      onEdit={() => handleEditEntry(entry)}
                     />
                   ))
                 )}
@@ -301,7 +311,7 @@ export default function JournalPage() {
                         key={cat}
                         onClick={() => setCategory(cat)}
                         className={cn(
-                          "px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap",
+                          "px-5 h-11 flex items-center justify-center rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap",
                           category === cat ? "bg-primary text-primary-foreground" : "bg-secondary/50 dark:bg-white/10 text-muted-foreground hover:bg-secondary/50"
                         )}
                       >
@@ -374,7 +384,7 @@ function EntryCard({ entry, onDelete, onEdit }: { entry: JournalEntry, onDelete:
         </div>
         <button 
           onClick={(e) => { e.stopPropagation(); onDelete(entry.id); }} 
-          className="p-2 text-muted-foreground/20 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100"
+          className="p-2 text-muted-foreground hover:text-red-500 transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100 min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"
         >
           <Trash2 className="h-4 w-4" />
         </button>

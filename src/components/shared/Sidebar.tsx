@@ -182,18 +182,18 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           </div>
           <button 
             onClick={onClose}
-            className="flex items-center justify-center h-11 w-11 hover:bg-secondary dark:hover:bg-white/5 rounded-xl lg:hidden shrink-0 transition-all duration-200"
+            className="flex items-center justify-center h-12 w-12 hover:bg-secondary dark:hover:bg-white/5 rounded-xl lg:hidden shrink-0 transition-all duration-200"
           >
             <X className="h-6 w-6 text-text-secondary hover:text-text-primary" />
           </button>
         </div>
         
-        <nav className="flex-1 px-3 py-4 lg:px-4 lg:py-6 overflow-y-auto custom-scrollbar relative space-y-6 lg:space-y-8">
+        <nav className="flex-1 px-3 py-4 lg:px-4 lg:py-6 overflow-y-auto custom-scrollbar relative space-y-8 lg:space-y-10">
           {/* Subtle nav background glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-primary/[0.03] rounded-full blur-[80px] pointer-events-none" />
           
           {navigation.map((group) => (
-            <div key={group.group} className="space-y-1 lg:space-y-2">
+            <div key={group.group} className="space-y-2 lg:space-y-3">
               <h3 className="px-3 lg:px-4 text-[9px] lg:text-[10px] font-black text-text-secondary/40 uppercase tracking-[0.2em] lg:tracking-[0.3em]">
                 {group.group}
               </h3>
@@ -206,7 +206,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                       href={item.href}
                       onClick={() => onClose?.()}
                       className={cn(
-                        "group flex items-center rounded-2xl px-3 py-3.5 lg:px-4 lg:py-3 text-sm font-bold transition-all duration-300 relative overflow-hidden active:scale-95 lg:active:scale-100",
+                        "group flex items-center rounded-2xl px-3 py-4 lg:px-4 lg:py-3 text-sm font-bold transition-all duration-300 relative overflow-hidden active:scale-95 lg:active:scale-100",
                         isActive 
                           ? "bg-primary/10 text-primary shadow-sm shadow-primary/5" 
                           : "text-text-secondary hover:bg-secondary dark:hover:bg-white/[0.03] hover:text-text-primary"

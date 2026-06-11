@@ -288,35 +288,35 @@ export default function HabitTrackerPage() {
   });
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 md:space-y-8 animate-in fade-in duration-500 pb-8 md:pb-20">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-heading font-black tracking-tight text-text-primary italic">Discipline Engine</h1>
-          <p className="text-xs md:text-sm text-text-secondary font-soft mt-1">Identity is built through non-negotiable actions.</p>
+    <div className="max-w-4xl mx-auto space-y-8 md:space-y-12 animate-in fade-in duration-500 pb-24 md:pb-20">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-1">
+          <h1 className="text-3xl md:text-4xl font-heading font-black tracking-tight text-text-primary italic">Discipline Engine.</h1>
+          <p className="text-sm text-text-secondary font-soft">Identity is built through non-negotiable actions.</p>
         </div>
-        
-        <div className="flex items-center gap-2 md:gap-3 bg-card p-1.5 md:p-2 rounded-2xl border border-border shadow-sm transition-all duration-300">
-          <button 
+
+        <div className="flex items-center gap-3 bg-card p-2 rounded-2xl border border-border shadow-sm transition-all duration-300">
+          <button
             onClick={() => {
               const newDate = new Date(selectedDate);
               newDate.setDate(newDate.getDate() - 1);
               setSelectedDate(newDate);
             }}
-            className="p-2 md:p-2.5 hover:bg-secondary/50 dark:bg-white/5 rounded-xl transition-all duration-200"
+            className="h-11 w-11 flex items-center justify-center hover:bg-secondary/50 dark:bg-white/5 rounded-xl transition-all duration-200"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
-          <div className="px-2 md:px-4 font-semibold text-xs md:text-sm min-w-[100px] md:min-w-[140px] text-center tracking-wide">
+          <div className="px-4 font-bold text-xs md:text-sm min-w-[120px] md:min-w-[140px] text-center tracking-widest uppercase">
             {isToday ? "Today" : formatDate(selectedDate)}
           </div>
-          <button 
+          <button
             onClick={() => {
               const newDate = new Date(selectedDate);
               newDate.setDate(newDate.getDate() + 1);
               setSelectedDate(newDate);
             }}
             disabled={isToday}
-            className="p-2 md:p-2.5 hover:bg-secondary/50 dark:bg-white/5 rounded-xl transition-all duration-200 disabled:opacity-20"
+            className="h-11 w-11 flex items-center justify-center hover:bg-secondary/50 dark:bg-white/5 rounded-xl transition-all duration-200 disabled:opacity-20"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
@@ -324,48 +324,48 @@ export default function HabitTrackerPage() {
       </div>
 
       {/* Progress Overview */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
-        <div className="lg:col-span-3 monk-card p-5 md:p-8 relative overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="lg:col-span-3 monk-card p-6 md:p-8 relative overflow-hidden">
           <div className="relative z-10">
-            <div className="flex items-center justify-between mb-3 md:mb-4">
-              <h2 className="font-semibold text-base md:text-lg tracking-wide">Integrity Score</h2>
-              <span className="text-sm md:text-base font-black text-primary">{Math.round(progress)}%</span>
+            <div className="flex items-center justify-between mb-4 md:mb-5">
+              <h2 className="font-bold text-base md:text-lg tracking-wide uppercase opacity-60">Integrity Score</h2>
+              <span className="text-2xl md:text-3xl font-heading font-black text-primary italic">{Math.round(progress)}%</span>
             </div>
-            <div className="h-2.5 md:h-3 w-full bg-secondary/50 dark:bg-white/5 rounded-full overflow-hidden">
-              <div 
+            <div className="h-3 md:h-4 w-full bg-secondary/50 dark:bg-white/5 rounded-full overflow-hidden">
+              <div
                 className={cn(
                   "h-full transition-all duration-1000 ease-out rounded-full",
-                  isPerfectDay ? "bg-monk-mint shadow-[0_0_15px_rgba(142,217,204,0.3)]" : "bg-primary shadow-[0_0_15px_rgba(217,167,167,0.3)]"
-                )} 
+                  isPerfectDay ? "bg-monk-mint shadow-[0_0_15px_rgba(142,217,204,0.4)]" : "bg-primary shadow-[0_0_15px_rgba(217,167,167,0.4)]"
+                )}
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <div className="mt-4 md:mt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[9px] md:text-[10px] text-text-secondary font-bold uppercase tracking-[0.1em] md:tracking-[0.15em]">
-              <span>{nnCompletedCount} of {nonNegotiableHabits.length} Non-Negotiables</span>
+            <div className="mt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[10px] text-text-secondary font-black uppercase tracking-[0.15em] md:tracking-[0.2em]">
+              <span>{nnCompletedCount} / {nonNegotiableHabits.length} Non-Negotiables</span>
               {isPerfectDay && (
-                <span className="text-monk-mint flex items-center gap-1.5 font-black">
-                  <div className="h-3 md:h-3.5 w-3 md:w-3.5 relative bg-white dark:bg-white/10 rounded-sm overflow-hidden p-0.5 border border-black/5 dark:border-white/10">
+                <span className="text-monk-mint flex items-center gap-2 font-black italic">
+                  <div className="h-4 w-4 relative bg-white dark:bg-white/10 rounded-sm overflow-hidden p-0.5 border border-black/5 dark:border-white/10 shadow-sm">
                     <Image src="/monk-logo.jpeg" alt="Logo" fill className="object-contain" />
                   </div>
-                  Integrity Maintained
+                  Systems Optimized
                 </span>
               )}
             </div>
           </div>
-          {isPerfectDay && <div className="absolute -right-10 md:-right-20 -top-10 md:-top-20 h-40 md:h-64 w-40 md:w-64 bg-monk-mint/5 rounded-full blur-3xl animate-pulse" />}
+          {isPerfectDay && <div className="absolute -right-10 md:-right-20 -top-10 md:-top-20 h-40 md:h-64 w-40 md:w-64 bg-monk-mint/10 rounded-full blur-3xl animate-pulse" />}
         </div>
 
-        <div className="monk-card p-4 flex items-center justify-center gap-4 border-2 border-accent/10">
+        <div className="monk-card p-6 flex flex-col items-center justify-center gap-2 border-2 border-accent/10 group hover:border-accent/30 transition-all">
           <div className="relative flex items-center justify-center">
             {currentStreak > 0 ? (
               <>
                 <motion.div
                   animate={{
-                    opacity: [0.2, 0.4, 0.2],
-                    scale: [1, 1.2, 1],
+                    opacity: [0.3, 0.6, 0.3],
+                    scale: [1, 1.4, 1],
                   }}
                   transition={{
-                    duration: 2,
+                    duration: 1.5,
                     repeat: Infinity,
                     ease: "easeInOut"
                   }}
@@ -373,8 +373,8 @@ export default function HabitTrackerPage() {
                 />
                 <motion.div
                   animate={{
-                    y: [0, -2, 0],
-                    rotate: [-2, 2, -2]
+                    y: [0, -4, 0],
+                    rotate: [-5, 5, -5]
                   }}
                   transition={{
                     duration: 2,
@@ -382,39 +382,42 @@ export default function HabitTrackerPage() {
                     ease: "easeInOut"
                   }}
                 >
-                  <Flame className="h-8 w-8 text-orange-500 fill-orange-500 relative z-10 drop-shadow-[0_0_10px_rgba(249,115,22,0.6)]" />
+                  <Flame className="h-10 w-10 text-orange-500 fill-orange-500 relative z-10 drop-shadow-[0_0_12px_rgba(249,115,22,0.8)]" />
                 </motion.div>
               </>
             ) : (
-              <Flame className="h-8 w-8 text-text-secondary/10 fill-transparent" />
+              <Flame className="h-10 w-10 text-text-secondary/10 fill-transparent" />
             )}
           </div>
-          <div className="text-3xl font-heading font-black tracking-tighter text-text-primary">
-            {currentStreak}
+          <div className="flex flex-col items-center">
+            <div className="text-4xl font-heading font-black tracking-tighter text-text-primary leading-none">
+              {currentStreak}
+            </div>
+            <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mt-1">Day Streak</div>
           </div>
         </div>
       </div>
 
       {/* Habits List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
-        <section className="space-y-6">
-          <div className="flex items-center justify-between px-1">
-            <h2 className="font-semibold text-lg tracking-wide flex items-center gap-2.5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+        <section className="space-y-6 md:space-y-8">
+          <div className="flex items-center justify-between px-2">
+            <h2 className="font-heading font-black text-xl tracking-tight flex items-center gap-3">
               Non-Negotiables
               {isLocked && <Lock className="h-4 w-4 text-text-secondary" />}
             </h2>
-            <button 
+            <button
               onClick={() => { setNewHabitIsNonNegotiable(true); setIsAddModalOpen(true); }}
-              className="text-xs font-black text-primary flex items-center gap-1.5 hover:opacity-80 transition-all uppercase tracking-widest"
+              className="h-10 px-4 bg-primary/5 rounded-xl text-[10px] font-black text-primary flex items-center gap-2 hover:bg-primary/10 transition-all uppercase tracking-widest"
             >
-              <Plus className="h-3.5 w-3.5" /> Add
+              <Plus className="h-4 w-4" /> Add
             </button>
           </div>
 
           <div className="grid grid-cols-1 gap-4">
             <AnimatePresence mode="popLayout">
             {nonNegotiableHabits.map((habit) => (
-              <HabitItem 
+              <HabitItem
                 key={habit.id}
                 habit={habit}
                 isCompleted={!!logs[`${dateKey}-${habit.id}`]}
@@ -430,19 +433,19 @@ export default function HabitTrackerPage() {
               />
             ))}
             {nonNegotiableHabits.length === 0 && (
-              <div className="flex flex-col items-center justify-center p-12 md:p-20 border-2 border-dashed border-border rounded-[32px] bg-secondary/10 dark:bg-white/[0.01] text-center space-y-6">
-                <div className="p-5 bg-primary/10 rounded-2xl text-primary">
-                  <CheckCircle2 className="h-10 w-10" />
+              <div className="flex flex-col items-center justify-center p-12 md:p-16 border-2 border-dashed border-border rounded-[32px] bg-secondary/10 dark:bg-white/[0.01] text-center space-y-6">
+                <div className="p-6 bg-primary/10 rounded-[24px] text-primary">
+                  <CheckCircle2 className="h-12 w-12" />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-2xl font-heading font-black tracking-tight">No Non-Negotiables Yet</h3>
-                  <p className="text-sm text-text-secondary max-w-xs mx-auto font-soft">Your identity is built through repeated actions. Create your first non-negotiable habit to anchor your discipline.</p>
+                  <h3 className="text-2xl font-heading font-black tracking-tight">No Protocols.</h3>
+                  <p className="text-sm text-text-secondary max-w-[240px] mx-auto font-soft leading-relaxed">Establish your non-negotiables to anchor your identity evolution.</p>
                 </div>
-                <button 
+                <button
                   onClick={() => { setNewHabitIsNonNegotiable(true); setIsAddModalOpen(true); }}
-                  className="px-10 py-4 bg-primary text-primary-foreground font-black text-xs uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl shadow-primary/20 flex items-center gap-2"
+                  className="px-10 py-5 bg-primary text-primary-foreground font-black text-xs uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl shadow-primary/20 flex items-center gap-2 active:scale-95"
                 >
-                  <Plus className="h-4 w-4" /> Create First Habit
+                  <Plus className="h-5 w-5" /> Initialize First Protocol
                 </button>
               </div>
             )}
@@ -450,23 +453,23 @@ export default function HabitTrackerPage() {
           </div>
         </section>
 
-        <section className="space-y-6">
-          <div className="flex items-center justify-between px-1">
-            <h2 className="font-semibold text-lg tracking-wide flex items-center gap-2.5 text-text-secondary">
+        <section className="space-y-6 md:space-y-8">
+          <div className="flex items-center justify-between px-2">
+            <h2 className="font-heading font-black text-xl tracking-tight flex items-center gap-3 text-text-secondary">
               Maintenance
             </h2>
-            <button 
+            <button
               onClick={() => { setNewHabitIsNonNegotiable(false); setIsAddModalOpen(true); }}
-              className="text-xs font-black text-text-secondary flex items-center gap-1.5 hover:text-text-primary transition-all uppercase tracking-widest"
+              className="h-10 px-4 bg-secondary/30 rounded-xl text-[10px] font-black text-text-secondary flex items-center gap-2 hover:bg-secondary/50 transition-all uppercase tracking-widest"
             >
-              <Plus className="h-3.5 w-3.5" /> Add
+              <Plus className="h-4 w-4" /> Add
             </button>
           </div>
 
           <div className="grid grid-cols-1 gap-4">
             <AnimatePresence mode="popLayout">
             {normalHabits.map((habit) => (
-              <HabitItem 
+              <HabitItem
                 key={habit.id}
                 habit={habit}
                 isCompleted={!!logs[`${dateKey}-${habit.id}`]}
@@ -482,13 +485,13 @@ export default function HabitTrackerPage() {
               />
             ))}
             {normalHabits.length === 0 && (
-              <div className="flex flex-col items-center justify-center p-10 border-2 border-dashed border-border rounded-[32px] bg-secondary/10 dark:bg-white/[0.01] text-center space-y-4 opacity-80">
-                <p className="text-sm text-text-secondary italic font-soft">No maintenance habits yet.</p>
-                <button 
+              <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-border rounded-[32px] bg-secondary/10 dark:bg-white/[0.01] text-center space-y-4 opacity-80">
+                <p className="text-sm text-text-secondary italic font-soft">No maintenance routines active.</p>
+                <button
                   onClick={() => { setNewHabitIsNonNegotiable(false); setIsAddModalOpen(true); }}
-                  className="text-[10px] font-black text-text-primary uppercase tracking-widest px-6 py-2.5 bg-secondary/30 rounded-xl hover:bg-secondary/50 transition-all"
+                  className="text-[10px] font-black text-text-primary uppercase tracking-widest px-8 py-3 bg-secondary/40 rounded-xl hover:bg-secondary/60 transition-all active:scale-95"
                 >
-                  + Add Maintenance Habit
+                  + Forge Routine
                 </button>
               </div>
             )}
@@ -498,10 +501,10 @@ export default function HabitTrackerPage() {
       </div>
 
       {isLocked && (
-        <div className="bg-card p-5 rounded-2xl flex items-start gap-3.5 border border-border shadow-sm">
-          <Info className="h-5 w-5 text-text-secondary mt-0.5" />
+        <div className="bg-card p-6 rounded-[24px] flex items-start gap-4 border border-border shadow-sm">
+          <Info className="h-6 w-6 text-text-secondary shrink-0" />
           <p className="text-sm text-text-secondary leading-relaxed font-soft">
-            This day is locked. <strong className="text-text-primary">monk mode</strong> maintains integrity by preventing back-filling habits older than 48 hours.
+            History is set. <strong className="text-text-primary">monk mode</strong> maintains integrity by preventing back-filling protocols older than 48 hours. Focus on the present.
           </p>
         </div>
       )}
@@ -509,122 +512,141 @@ export default function HabitTrackerPage() {
       {/* Heatmap Section */}
       <section className="monk-card p-6 md:p-10 relative overflow-hidden group border-border shadow-sm">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/[0.04] via-transparent to-transparent opacity-0 transition-opacity duration-700 group-hover:opacity-100 pointer-events-none" />
-        
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10 relative z-10">
-          <div className="flex items-center gap-3">
-            <div className="h-11 w-11 md:h-10 md:w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-              <Calendar className="h-5 w-5" />
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12 relative z-10">
+          <div className="flex items-center gap-4">
+            <div className="h-14 w-14 md:h-12 md:w-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner">
+              <Calendar className="h-6 w-6" />
             </div>
             <div>
-              <h2 className="font-semibold text-lg tracking-wide text-text-primary">Consistency Heatmap</h2>
-              <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] opacity-60">Visualizing Identity Growth</p>
+              <h2 className="font-heading font-black text-xl tracking-tight text-text-primary">Consistency Matrix.</h2>
+              <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.25em] opacity-60">Visualizing Cellular Growth</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3 self-end sm:self-auto">
-            <div className="flex items-center gap-3 text-[9px] font-black text-text-secondary uppercase tracking-[0.15em] bg-secondary/30 dark:bg-white/[0.02] px-4 py-2 rounded-xl border border-border">
-              <span>Less</span>
-              <div className="flex gap-1">
-                <div className="h-3 w-3 rounded-sm bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/5" />
-                <div className="h-3 w-3 rounded-sm bg-primary/20 border border-primary/5" />
-                <div className="h-3 w-3 rounded-sm bg-primary/40 border border-primary/5" />
-                <div className="h-3 w-3 rounded-sm bg-primary/70 border border-primary/5" />
-                <div className="h-3 w-3 rounded-sm bg-primary shadow-[0_0_10px_rgba(217,167,167,0.4)]" />
+            <div className="flex items-center gap-4 text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] bg-secondary/30 dark:bg-white/[0.02] px-5 py-2.5 rounded-2xl border border-border">
+              <span>Low</span>
+              <div className="flex gap-1.5">
+                <div className="h-3.5 w-3.5 rounded-[3px] bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/5" />
+                <div className="h-3.5 w-3.5 rounded-[3px] bg-primary/20 border border-primary/5" />
+                <div className="h-3.5 w-3.5 rounded-[3px] bg-primary/40 border border-primary/5" />
+                <div className="h-3.5 w-3.5 rounded-[3px] bg-primary/70 border border-primary/5" />
+                <div className="h-3.5 w-3.5 rounded-[3px] bg-primary shadow-[0_0_12px_rgba(217,167,167,0.5)]" />
               </div>
-              <span>More</span>
+              <span>Peak</span>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col relative z-10 w-full">
+        <div className="flex flex-col relative z-10 w-full overflow-hidden">
           {habits.length > 0 ? (
             <>
-              {/* Months - Perfectly aligned to grid columns */}
-              <div className="flex w-full mb-3 text-[10px] font-bold text-text-secondary uppercase tracking-[0.1em] relative h-4 overflow-hidden" style={{ paddingLeft: '40px' }}>
-                {filteredMonthLabels.map((ml, i) => (
-                  <div 
-                    key={i} 
-                    className="absolute transition-all opacity-40 group-hover:opacity-80" 
-                    style={{ left: `${40 + (ml.index * 17)}px` }}
-                  >
-                    {ml.label}
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex gap-2">
+              <div className="flex gap-4">
                 {/* Days of week - Fixed width for perfect alignment */}
-                <div className="flex flex-col justify-between py-1 text-[9px] font-black text-text-secondary opacity-30 uppercase tracking-tighter w-8 shrink-0">
-                  <span className="h-3 flex items-center">Mon</span>
-                  <span className="h-3 flex items-center invisible">Tue</span>
-                  <span className="h-3 flex items-center">Wed</span>
-                  <span className="h-3 flex items-center invisible">Thu</span>
-                  <span className="h-3 flex items-center">Fri</span>
-                  <span className="h-3 flex items-center invisible">Sat</span>
-                  <span className="h-3 flex items-center">Sun</span>
+                <div className="flex flex-col justify-between py-1 text-[10px] font-black text-text-secondary opacity-30 uppercase tracking-tighter w-8 shrink-0 mt-8">
+                  <span className="h-4 flex items-center">Mon</span>
+                  <span className="h-4 flex items-center invisible">Tue</span>
+                  <span className="h-4 flex items-center">Wed</span>
+                  <span className="h-4 flex items-center invisible">Thu</span>
+                  <span className="h-4 flex items-center">Fri</span>
+                  <span className="h-4 flex items-center invisible">Sat</span>
+                  <span className="h-4 flex items-center">Sun</span>
                 </div>
 
-                <div className="grid grid-flow-col grid-rows-7 gap-1 overflow-x-auto pb-4 custom-scrollbar scroll-smooth">
-                  {heatmapDays.map((day) => (
-                    <div 
-                      key={day.date}
-                      title={`${day.date}: ${Math.round(day.completionRate * 100)}%`}
-                      className={cn(
-                        "h-3.2 w-3.2 md:h-3.5 md:w-3.5 rounded-[2px] transition-all duration-300 hover:scale-125 hover:z-20 cursor-help border",
-                        day.completionRate === 0 && "bg-zinc-100 dark:bg-white/5 border-zinc-200/50 dark:border-white/5",
-                        day.completionRate > 0 && day.completionRate < 0.4 && "bg-primary/20 border-primary/5",
-                        day.completionRate >= 0.4 && day.completionRate < 0.7 && "bg-primary/40 border-primary/5",
-                        day.completionRate >= 0.7 && day.completionRate < 1 && "bg-primary/70 border-primary/5",
-                        day.completionRate === 1 && "bg-primary border-primary shadow-[0_0_12px_rgba(217,167,167,0.3)]"
-                      )}
-                    />
-                  ))}
+                {/* Scrollable Container for both Month labels and Heatmap Grid */}
+                <div className="flex-1 overflow-x-auto pb-6 custom-scrollbar scroll-smooth">
+                  <div className="min-w-max">
+                    {/* Months - Perfectly aligned to grid columns */}
+                    <div className="flex w-full mb-4 text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] relative h-4 overflow-hidden [--col-width:1.125rem] md:[--col-width:1.25rem]">
+                      {filteredMonthLabels.map((ml, i) => (
+                        <div
+                          key={i}
+                          className="absolute transition-all opacity-40 group-hover:opacity-100 italic"
+                          style={{ left: `calc(${ml.index} * var(--col-width))` }}
+                        >
+                          {ml.label}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Heatmap Grid */}
+                    <div className="grid grid-flow-col grid-rows-7 gap-1.5 md:gap-2">
+                      {heatmapDays.map((day) => (
+                        <div
+                          key={day.date}
+                          title={`${day.date}: ${Math.round(day.completionRate * 100)}%`}
+                          className={cn(
+                            "h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-[3px] transition-all duration-300 hover:scale-125 hover:z-20 cursor-help border",
+                            day.completionRate === 0 && "bg-zinc-100 dark:bg-white/5 border-zinc-200/50 dark:border-white/5",
+                            day.completionRate > 0 && day.completionRate < 0.4 && "bg-primary/20 border-primary/5",
+                            day.completionRate >= 0.4 && day.completionRate < 0.7 && "bg-primary/40 border-primary/5",
+                            day.completionRate >= 0.7 && day.completionRate < 1 && "bg-primary/70 border-primary/5",
+                            day.completionRate === 1 && "bg-primary border-primary shadow-[0_0_15px_rgba(217,167,167,0.4)]"
+                          )}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </>
           ) : (
-            <div className="py-12 flex flex-col items-center justify-center text-center space-y-4">
-              <div className="h-16 w-16 bg-primary/5 rounded-full flex items-center justify-center text-primary/20">
-                <Calendar className="h-8 w-8" />
+            <div className="py-16 flex flex-col items-center justify-center text-center space-y-6">
+              <div className="h-20 w-20 bg-primary/5 rounded-full flex items-center justify-center text-primary/20 shadow-inner">
+                <Calendar className="h-10 w-10" />
               </div>
-              <div className="space-y-1">
-                <h3 className="font-bold text-text-primary">Your consistency journey starts today.</h3>
-                <p className="text-sm text-text-secondary font-soft">Complete your first habit to begin building your history.</p>
+              <div className="space-y-2">
+                <h3 className="font-heading font-black text-xl tracking-tight">Your consistency journey starts now.</h3>
+                <p className="text-sm text-text-secondary font-soft max-w-[280px] mx-auto">Complete your first protocol to begin encoding your history.</p>
               </div>
             </div>
           )}
         </div>
       </section>
 
+      {/* Mobile Sticky Action Bar */}
+      <div className="fixed bottom-6 left-0 right-0 z-40 px-6 lg:hidden pointer-events-none">
+        <div className="max-w-md mx-auto flex justify-center pointer-events-auto">
+          <button
+            onClick={() => { setNewHabitIsNonNegotiable(true); setIsAddModalOpen(true); }}
+            className="flex h-14 items-center gap-3 px-8 bg-primary text-primary-foreground rounded-2xl shadow-2xl shadow-primary/40 active:scale-95 transition-all border border-white/20"
+          >
+            <Plus className="h-6 w-6" />
+            <span className="text-xs font-black uppercase tracking-widest">New Protocol</span>
+          </button>
+        </div>
+      </div>
+
       {/* Modals */}
       <AnimatePresence>
         {isAddModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
-            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="w-full max-w-md monk-card p-5 md:p-8 shadow-2xl border-2 border-monk-rose/20">
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-heading font-bold flex items-center gap-2"><Plus className="text-primary" /> New Action</h2>
-                <button onClick={() => setIsAddModalOpen(false)} className="p-3 md:p-2 hover:bg-secondary/20 rounded-full transition-all"><X /></button>
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/90 backdrop-blur-md">
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="w-full max-w-md monk-card p-8 md:p-10 shadow-2xl border-2 border-primary/20">
+              <div className="flex items-center justify-between mb-10">
+                <h2 className="text-3xl font-heading font-black tracking-tight italic flex items-center gap-3"><Plus className="text-primary h-8 w-8" /> New Action.</h2>
+                <button onClick={() => setIsAddModalOpen(false)} className="h-12 w-12 flex items-center justify-center hover:bg-secondary/20 rounded-xl transition-all"><X /></button>
               </div>
-              <form onSubmit={e => { e.preventDefault(); addHabit(); }} className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Habit Name</label>
-                  <input autoFocus required value={newHabitTitle} onChange={(e) => setNewHabitTitle(e.target.value)} placeholder="e.g. Morning Meditation" className="w-full px-5 py-4 rounded-2xl bg-background border border-monk-rose/20 focus:border-primary/50 focus:outline-none transition-all font-heading font-bold" />
+              <form onSubmit={e => { e.preventDefault(); addHabit(); }} className="space-y-8">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">Protocol Identity</label>
+                  <input autoFocus required value={newHabitTitle} onChange={(e) => setNewHabitTitle(e.target.value)} placeholder="e.g. Morning Meditation" className="w-full px-6 py-5 rounded-2xl bg-background border border-border focus:border-primary/50 focus:outline-none transition-all font-heading font-bold text-lg shadow-inner" />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Category</label>
-                    <select value={newHabitCategory} onChange={(e) => setNewHabitCategory(e.target.value)} className="w-full px-5 py-4 rounded-2xl bg-background border border-monk-rose/20 focus:border-primary/50 focus:outline-none transition-all font-soft font-bold">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">Category</label>
+                    <select value={newHabitCategory} onChange={(e) => setNewHabitCategory(e.target.value)} className="w-full px-5 py-4 rounded-2xl bg-background border border-border focus:border-primary/50 focus:outline-none transition-all font-soft font-bold text-sm shadow-inner appearance-none">
                       <option>General</option><option>Health</option><option>Skill</option><option>Spiritual</option><option>Academic</option>
                     </select>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Type</label>
-                    <button type="button" onClick={() => setNewHabitIsNonNegotiable(!newHabitIsNonNegotiable)} className={cn("w-full px-5 py-4 rounded-2xl border transition-all font-bold text-sm", newHabitIsNonNegotiable ? "bg-primary/10 border-primary text-primary" : "bg-secondary/10 border-secondary text-muted-foreground")}>
-                      {newHabitIsNonNegotiable ? "Non-Negotiable" : "Maintenance"}
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">Tier</label>
+                    <button type="button" onClick={() => setNewHabitIsNonNegotiable(!newHabitIsNonNegotiable)} className={cn("w-full px-5 py-4 rounded-2xl border transition-all font-black uppercase tracking-widest text-[10px] shadow-sm", newHabitIsNonNegotiable ? "bg-primary/10 border-primary text-primary shadow-primary/10" : "bg-secondary/10 border-border text-muted-foreground")}>
+                      {newHabitIsNonNegotiable ? "Core" : "Routine"}
                     </button>
                   </div>
                 </div>
-                <button type="submit" className="w-full py-5 rounded-2xl bg-primary text-primary-foreground font-bold text-lg shadow-xl hover:scale-[1.02] active:scale-95 transition-all">Create Habit</button>
+                <button type="submit" className="w-full py-5 rounded-2xl bg-primary text-primary-foreground font-black uppercase tracking-[0.2em] text-sm shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all mt-4">Initialize Protocol</button>
               </form>
             </motion.div>
           </div>
@@ -633,21 +655,21 @@ export default function HabitTrackerPage() {
 
       <AnimatePresence>
         {isReflectionModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
-            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="w-full max-w-lg bg-card text-card-foreground rounded-[40px] p-6 md:p-12 shadow-2xl relative z-10 border-2 border-primary/20">
-              <div className="flex items-center justify-between mb-8">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/90 backdrop-blur-md">
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="w-full max-w-lg monk-card p-8 md:p-12 shadow-2xl relative z-10 border-2 border-primary/20">
+              <div className="flex items-center justify-between mb-10">
                 <div>
-                  <h2 className="text-2xl font-heading font-black tracking-tighter uppercase italic">Witness Mastery</h2>
-                  <p className="text-[10px] font-bold text-primary uppercase tracking-widest mt-1">Recording: {habits.find(h => h.id === reflectingHabitId)?.title}</p>
+                  <h2 className="text-3xl font-heading font-black tracking-tighter uppercase italic">Witness Mastery.</h2>
+                  <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mt-2">Protocol: {habits.find(h => h.id === reflectingHabitId)?.title}</p>
                 </div>
-                <button onClick={() => setIsReflectionModalOpen(false)} className="p-3 md:p-2 hover:bg-secondary/50 rounded-full transition-all text-muted-foreground hover:text-foreground"><X /></button>
+                <button onClick={() => setIsReflectionModalOpen(false)} className="h-12 w-12 flex items-center justify-center hover:bg-secondary/50 rounded-xl transition-all text-muted-foreground hover:text-foreground active:scale-90"><X className="h-6 w-6" /></button>
               </div>
-              <div className="space-y-5 md:space-y-8">
+              <div className="space-y-8">
                 <div className="space-y-4">
-                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">What did you achieve during this session?</label>
-                  <textarea autoFocus value={reflectionContent} onChange={(e) => setReflectionContent(e.target.value)} placeholder="Specifics build discipline. Vagueness builds weakness..." className="w-full h-48 bg-transparent text-xl font-soft leading-relaxed border-none focus:ring-0 placeholder:opacity-20 resize-none no-scrollbar text-foreground" />
+                  <label className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Session Outcome Disclosure</label>
+                  <textarea autoFocus value={reflectionContent} onChange={(e) => setReflectionContent(e.target.value)} placeholder="Specifics build discipline. Vagueness builds weakness..." className="w-full h-56 bg-secondary/20 dark:bg-white/[0.02] rounded-3xl p-6 text-lg font-soft leading-relaxed border border-border focus:ring-2 focus:ring-primary/20 focus:outline-none placeholder:opacity-30 resize-none custom-scrollbar text-foreground shadow-inner" />
                 </div>
-                <button onClick={handleSaveReflection} className="w-full py-5 bg-primary text-primary-foreground font-heading font-black text-lg rounded-3xl hover:scale-[1.01] transition-all shadow-2xl shadow-primary/20 flex items-center justify-center gap-3 min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"><Check className="h-6 w-6" /> SUBMIT EVIDENCE</button>
+                <button onClick={handleSaveReflection} className="w-full py-5 bg-primary text-primary-foreground font-heading font-black text-lg rounded-[24px] hover:scale-[1.01] active:scale-95 transition-all shadow-2xl shadow-primary/30 flex items-center justify-center gap-4 uppercase tracking-[0.2em]"><Check className="h-6 w-6 stroke-[3px]" /> Submit Evidence</button>
               </div>
             </motion.div>
           </div>
@@ -655,47 +677,51 @@ export default function HabitTrackerPage() {
       </AnimatePresence>
     </div>
   );
-}
+  }
 
-function HabitItem({ 
-  habit, isCompleted, isLocked, isEditing, editValue, setEditValue, startEditing, saveEdit, cancelEditing, deleteHabit, toggleHabit 
-}: {
+  function HabitItem({
+  habit, isCompleted, isLocked, isEditing, editValue, setEditValue, startEditing, saveEdit, cancelEditing, deleteHabit, toggleHabit
+  }: {
   habit: Habit; isCompleted: boolean; isLocked: boolean; isEditing: boolean; editValue: string; setEditValue: (v: string) => void; startEditing: () => void; saveEdit: () => void; cancelEditing: () => void; deleteHabit: () => void; toggleHabit: () => void;
-}) {
+  }) {
   return (
-    <motion.div layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className={cn("group flex items-center justify-between p-5 rounded-[24px] border-2 transition-all duration-300", isLocked ? "opacity-60" : "cursor-pointer", isCompleted ? "bg-monk-mint/[0.03] border-monk-mint/20 shadow-lg shadow-monk-mint/[0.02]" : "bg-card border-border hover:border-primary/40 hover:translate-y-[-1px]")} onClick={() => !isEditing && toggleHabit()}>
-      <div className="flex items-center gap-5 flex-1">
-        <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center transition-all duration-500", isCompleted ? "bg-monk-mint text-zinc-900 scale-110 shadow-lg shadow-monk-mint/20" : "bg-secondary/30 dark:bg-white/[0.03] text-text-secondary group-hover:bg-white/[0.05] group-hover:scale-105")}>
-          {isCompleted ? <CheckCircle2 className="h-6 w-6" /> : <Plus className="h-6 w-6" />}
+    <motion.div layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className={cn("group flex items-center justify-between p-6 rounded-[32px] border-2 transition-all duration-500", isLocked ? "opacity-60" : "cursor-pointer", isCompleted ? "bg-monk-mint/[0.05] border-monk-mint/30 shadow-xl shadow-monk-mint/[0.05]" : "bg-card border-border hover:border-primary/40 hover:shadow-lg active:scale-[0.99]")} onClick={() => !isEditing && toggleHabit()}>
+      <div className="flex items-center gap-6 flex-1">
+        <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-sm shrink-0", isCompleted ? "bg-monk-mint text-zinc-900 scale-110 shadow-lg shadow-monk-mint/20" : "bg-secondary/50 dark:bg-white/[0.03] text-text-secondary group-hover:bg-primary/5 group-hover:text-primary group-hover:scale-105")}>
+          {isCompleted ? <CheckCircle2 className="h-7 w-7 stroke-[2.5px]" /> : <Plus className="h-7 w-7 stroke-[2.5px]" />}
         </div>
-        <div className="flex-1">
+        <div className="flex-1 space-y-0.5">
           {isEditing ? (
             <div className="flex items-center gap-3" onClick={e => e.stopPropagation()}>
-              <input autoFocus value={editValue} onChange={e => setEditValue(e.target.value)} onKeyDown={e => e.key === 'Enter' && saveEdit()} className="bg-background border border-primary/30 px-4 py-1.5 rounded-xl text-sm font-bold focus:outline-none w-full max-w-xs transition-all" />
-              <button onClick={saveEdit} className="p-1.5 text-monk-mint hover:bg-monk-mint/10 rounded-lg transition-colors"><Check className="h-4 w-4"/></button>
-              <button onClick={cancelEditing} className="p-1.5 text-primary hover:bg-primary/10 rounded-lg transition-colors"><X className="h-4 w-4"/></button>
+              <input autoFocus value={editValue} onChange={e => setEditValue(e.target.value)} onKeyDown={e => e.key === 'Enter' && saveEdit()} className="bg-background border border-primary/30 px-5 py-2.5 rounded-xl text-base font-bold focus:outline-none w-full max-w-xs transition-all shadow-inner" />
+              <button onClick={saveEdit} className="h-10 w-10 flex items-center justify-center text-monk-mint hover:bg-monk-mint/10 rounded-xl transition-colors"><Check className="h-5 w-5 stroke-[2.5px]"/></button>
+              <button onClick={cancelEditing} className="h-10 w-10 flex items-center justify-center text-primary hover:bg-primary/10 rounded-xl transition-colors"><X className="h-5 w-5 stroke-[2.5px]"/></button>
             </div>
           ) : (
             <>
-              <h3 className={cn("font-bold text-sm tracking-tight transition-all", isCompleted ? "text-foreground" : "text-text-primary")}>{habit.title}</h3>
-              <p className="text-[10px] text-text-secondary font-bold uppercase tracking-[0.15em] mt-0.5">{habit.category}</p>
+              <h3 className={cn("font-bold text-base md:text-lg tracking-tight transition-all", isCompleted ? "text-foreground italic" : "text-text-primary")}>{habit.title}</h3>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] opacity-50">{habit.category}</span>
+                {isCompleted && <div className="h-1 w-1 rounded-full bg-monk-mint" />}
+              </div>
             </>
           )}
         </div>
       </div>
-      <div className="flex items-center gap-3" onClick={e => e.stopPropagation()}>
+      <div className="flex items-center gap-4 ml-4" onClick={e => e.stopPropagation()}>
         {!isEditing && !isLocked && (
-          <div className="flex opacity-0 group-hover:opacity-100 transition-all duration-200">
-            <button onClick={startEditing} className="p-2.5 text-text-secondary hover:text-primary transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"><Edit2 className="h-4 w-4"/></button>
-            <button onClick={deleteHabit} className="p-2.5 text-text-secondary hover:text-red-500 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"><Trash2 className="h-4 w-4"/></button>
+          <div className="flex opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300 gap-1">
+            <button onClick={startEditing} className="h-11 w-11 flex items-center justify-center text-text-secondary hover:text-primary hover:bg-primary/5 rounded-xl transition-all active:scale-90"><Edit2 className="h-4.5 w-4.5"/></button>
+            <button onClick={deleteHabit} className="h-11 w-11 flex items-center justify-center text-text-secondary hover:text-rose-500 hover:bg-rose-500/5 rounded-xl transition-all active:scale-90"><Trash2 className="h-4.5 w-4.5"/></button>
           </div>
         )}
-        {isLocked ? <Lock className="h-4 w-4 text-text-secondary/50" /> : (
-          <div className={cn("text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest transition-all", isCompleted ? "bg-monk-mint/10 text-monk-mint" : "bg-secondary/30 dark:bg-white/[0.03] text-text-secondary")}>
-            {isCompleted ? "Done" : "Pending"}
+        {isLocked ? <Lock className="h-5 w-5 text-text-secondary/30" /> : (
+          <div className={cn("hidden sm:flex text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest transition-all shadow-sm", isCompleted ? "bg-monk-mint/20 text-monk-mint border border-monk-mint/20" : "bg-secondary/50 dark:bg-white/[0.05] text-text-secondary border border-transparent")}>
+            {isCompleted ? "Protocol Active" : "Standby"}
           </div>
         )}
       </div>
     </motion.div>
   );
-}
+  }
+

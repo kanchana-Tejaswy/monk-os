@@ -307,64 +307,126 @@ export default function IkigaiPage() {
   if (!isLoaded) return null;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-12 pb-24 px-4 md:px-8 animate-in fade-in duration-1000">
-      <section className="relative overflow-hidden rounded-[48px] bg-card border-2 border-border p-8 md:p-16 shadow-2xl group transition-all duration-700">
+    <div className="max-w-6xl mx-auto space-y-12 md:space-y-20 pb-24 px-4 md:px-8 animate-in fade-in duration-1000">
+      <section className="relative overflow-hidden rounded-[40px] md:rounded-[48px] bg-card border-2 border-border p-8 md:p-16 shadow-2xl group transition-all duration-700">
         <motion.div animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.2, 0.1] }} transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary via-transparent to-transparent pointer-events-none" />
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-8 space-y-5 md:space-y-8 text-center lg:text-left">
-            <div className="space-y-4">
-              <span className="text-[10px] font-black text-primary uppercase tracking-[0.5em] bg-primary/10 px-5 py-2 rounded-full border border-border inline-block">Living Purpose</span>
-              <h1 className="text-3xl md:text-4xl md:text-5xl lg:text-6xl font-heading font-black tracking-tighter leading-tight text-text-primary">{activeEntry ? `"${activeEntry.purposeStatement}"` : "Define Your Direction."}</h1>
-              <p className="text-lg md:text-xl text-text-secondary font-soft italic">&quot;Your purpose becomes clearer through action.&quot;</p>
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16 items-center">
+          <div className="lg:col-span-8 space-y-6 md:space-y-10 text-center lg:text-left order-2 lg:order-1">
+            <div className="space-y-5 md:space-y-6">
+              <div className="inline-flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-[0.4em] bg-primary/10 px-6 py-2.5 rounded-full border border-primary/10 mx-auto lg:mx-0 shadow-sm">
+                <Sparkles className="h-3 w-3" /> Living Purpose
+              </div>
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-heading font-black tracking-tighter leading-tight text-text-primary italic">
+                {activeEntry ? `"${activeEntry.purposeStatement}"` : "Define Your Destiny."}
+              </h1>
+              <p className="text-base md:text-xl text-text-secondary font-soft italic max-w-2xl mx-auto lg:mx-0 leading-relaxed opacity-80">
+                &quot;Clarity is not found; it is forged through intentional action and deep reflection.&quot;
+              </p>
             </div>
-            <div className="pt-4"><button onClick={() => setShowReevaluation(true)} className="px-10 py-5 bg-zinc-900 dark:bg-white text-white dark:text-black font-black text-[10px] uppercase tracking-[0.3em] rounded-[24px] hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-primary/20 flex items-center gap-3 mx-auto lg:mx-0"><RotateCcw className="h-4 w-4" /> {activeEntry ? "Re-evaluate My Ikigai" : "Start First Reflection"}</button></div>
+            <div className="pt-2">
+              <button 
+                onClick={() => setShowReevaluation(true)} 
+                className="px-10 py-5 bg-zinc-900 dark:bg-white text-white dark:text-black font-black text-[11px] uppercase tracking-[0.3em] rounded-[24px] hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-primary/30 flex items-center justify-center gap-4 mx-auto lg:mx-0 border border-white/10"
+              >
+                <RotateCcw className="h-4.5 w-4.5" /> 
+                {activeEntry ? "Initiate Re-evaluation" : "Begin Purpose Discovery"}
+              </button>
+            </div>
           </div>
-          <div className="lg:col-span-4 flex flex-col items-center justify-center space-y-4">
-             <div className="relative h-48 w-48 flex items-center justify-center">
-                <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90 drop-shadow-[0_0_20px_rgba(246,193,204,0.3)]">
-                   <circle cx="50" cy="50" r="45" className="fill-none stroke-secondary stroke-[4]" />
-                   <motion.circle cx="50" cy="50" r="45" className={cn("fill-none stroke-[6] stroke-linecap-round transition-colors duration-1000", (activeEntry?.clarityScore || 0) > 70 ? "stroke-primary" : "stroke-text-secondary/40")} strokeDasharray="283" initial={{ strokeDashoffset: 283 }} animate={{ strokeDashoffset: 283 - (283 * (activeEntry?.clarityScore || 0)) / 100 }} transition={{ duration: 2, ease: "easeOut" }} />
+          <div className="lg:col-span-4 flex flex-col items-center justify-center space-y-6 order-1 lg:order-2">
+             <div className="relative h-44 w-44 md:h-56 md:w-56 flex items-center justify-center">
+                <div className="absolute inset-0 bg-primary/5 rounded-full blur-3xl animate-pulse" />
+                <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90 drop-shadow-[0_0_25px_rgba(217,167,167,0.4)] relative z-10">
+                   <circle cx="50" cy="50" r="44" className="fill-none stroke-secondary/30 stroke-[3]" />
+                   <motion.circle cx="50" cy="50" r="44" className={cn("fill-none stroke-[6] stroke-linecap-round transition-colors duration-1000", (activeEntry?.clarityScore || 0) > 70 ? "stroke-primary" : "stroke-text-secondary/40")} strokeDasharray="276" initial={{ strokeDashoffset: 276 }} animate={{ strokeDashoffset: 276 - (276 * (activeEntry?.clarityScore || 0)) / 100 }} transition={{ duration: 2.5, ease: "easeOut" }} />
                 </svg>
-                <div className="absolute flex flex-col items-center text-center"><span className="text-4xl md:text-5xl font-heading font-black text-text-primary tracking-tighter">{activeEntry?.clarityScore || 0}</span><span className="text-[8px] font-black text-text-secondary uppercase tracking-widest mt-1">Clarity Score</span></div>
+                <div className="absolute flex flex-col items-center text-center z-20">
+                  <span className="text-5xl md:text-6xl font-heading font-black text-text-primary tracking-tighter italic">
+                    {activeEntry?.clarityScore || 0}
+                  </span>
+                  <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.25em] mt-1.5 opacity-60">Alignment %</span>
+                </div> 
              </div>
-             <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest max-w-[140px] text-center leading-relaxed">Clarity grows when actions align with values.</p>
           </div>
         </div>
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-10">
-        <div className="lg:col-span-7 space-y-6 md:space-y-10">
-           <section className="space-y-6">
-              <div className="flex items-center justify-between"><h3 className="text-xl font-heading font-black tracking-tighter uppercase italic flex items-center gap-3"><TrendingUp className="h-6 w-6 text-primary" /> Passion vs Skill Alignment</h3></div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16">
+        <div className="lg:col-span-7 space-y-10 md:space-y-16">
+           <section className="space-y-8">
+              <div className="flex items-center justify-between px-2">
+                <h3 className="text-xl md:text-2xl font-heading font-black tracking-tight uppercase italic flex items-center gap-4 text-text-primary">
+                  <TrendingUp className="h-7 w-7 text-primary" /> Passion-Skill Matrix.
+                </h3>
+              </div>
               <AlignmentGraph data={activeEntry?.alignmentData || []} />
            </section>
-           <section className="space-y-6">
-              <h3 className="text-xl font-heading font-black tracking-tighter uppercase italic flex items-center gap-3 text-text-primary"><Sparkles className="h-6 w-6 text-accent" /> Next Small Steps</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+           <section className="space-y-8">
+              <h3 className="text-xl md:text-2xl font-heading font-black tracking-tight uppercase italic flex items-center gap-4 text-text-primary px-2">
+                <Target className="h-7 w-7 text-accent" /> Strategic Directives.
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                  {recommendations.map((rec, i) => (
-                   <div key={i} className="monk-card p-4 md:p-6 border-2 border-border/50 hover:border-primary/30 transition-all space-y-4 group">
-                      <div className="h-11 w-11 md:h-10 md:w-10 rounded-xl bg-secondary/50 flex items-center justify-center text-primary group-hover:scale-110 transition-transform"><rec.icon className="h-5 w-5" /></div>
-                      <div className="space-y-1"><h4 className="font-bold text-sm text-text-primary uppercase tracking-tight">{rec.title}</h4><p className="text-xs text-text-secondary font-soft leading-relaxed">{rec.desc}</p></div>
+                   <div key={i} className="monk-card p-6 md:p-8 border-2 border-border/50 hover:border-primary/40 transition-all space-y-6 group bg-card shadow-sm hover:shadow-xl hover:translate-y-[-4px]">
+                      <div className="h-14 w-14 rounded-2xl bg-secondary/50 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-inner">
+                        <rec.icon className="h-6 w-6 stroke-[2.5px]" />
+                      </div>     
+                      <div className="space-y-2">
+                        <h4 className="font-heading font-black text-base text-text-primary uppercase tracking-tight">{rec.title}</h4>
+                        <p className="text-sm text-text-secondary font-soft leading-relaxed">{rec.desc}</p>
+                      </div>
                    </div>
                  ))}
               </div>
            </section>
         </div>
-        <div className="lg:col-span-5 space-y-6">
-           <h3 className="text-xl font-heading font-black tracking-tighter uppercase italic flex items-center gap-3 text-text-primary"><History className="h-6 w-6 text-text-secondary" /> Evolution Timeline</h3>
-           <div className="space-y-4 relative">
-             <div className="absolute left-[27px] top-8 bottom-8 w-0.5 bg-border/50" />
+
+        <div className="lg:col-span-5 space-y-10">
+           <h3 className="text-xl md:text-2xl font-heading font-black tracking-tight uppercase italic flex items-center gap-4 text-text-primary px-2">
+            <History className="h-7 w-7 text-text-secondary" /> Evolution Stream.
+           </h3>
+           <div className="space-y-6 relative">
+             <div className="absolute left-[31px] top-10 bottom-10 w-0.5 bg-gradient-to-b from-primary/20 via-border to-transparent" />
              {evolution.entries.map((entry, i) => (
-               <motion.div key={entry.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} className={cn("relative pl-14 pr-6 py-6 rounded-[32px] border-2 transition-all group", i === 0 ? "bg-card border-primary/20 shadow-xl" : "bg-background border-border/50 opacity-60 hover:opacity-100")}>
-                 <div className={cn("absolute left-5 top-8 h-4 w-4 rounded-full border-4 border-background transition-colors", i === 0 ? "bg-primary" : "bg-border group-hover:bg-text-secondary")} />
-                 <div className="space-y-3">
-                    <div className="flex items-center justify-between"><span className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em]">{new Date(entry.timestamp).toLocaleDateString('default', { month: 'long', year: 'numeric' })}</span><span className="text-xs font-black text-primary">{entry.clarityScore}% Clarity</span></div>
-                    <p className="text-sm font-heading font-bold text-text-primary leading-snug">{i === 0 ? "Alignment Increasing" : i === 1 ? "Direction Forming" : "Exploring Options"}</p>
-                    <p className="text-xs text-text-secondary font-soft italic line-clamp-2">{entry.purposeStatement}</p>
+               <motion.div 
+                 key={entry.id} 
+                 initial={{ opacity: 0, x: 20 }} 
+                 animate={{ opacity: 1, x: 0 }} 
+                 transition={{ delay: i * 0.1 }} 
+                 className={cn(
+                   "relative pl-16 pr-8 py-8 rounded-[40px] border-2 transition-all duration-500 group cursor-default", 
+                   i === 0 ? "bg-card border-primary/30 shadow-2xl scale-[1.02]" : "bg-background border-border/40 opacity-50 hover:opacity-100 hover:border-border hover:bg-card/50"
+                 )}
+               >
+                 <div className={cn(
+                   "absolute left-6 top-10 h-3.5 w-3.5 rounded-full border-[3px] border-background shadow-sm transition-all duration-500", 
+                   i === 0 ? "bg-primary scale-125 shadow-primary/40" : "bg-border group-hover:bg-text-secondary"
+                 )} />
+                 <div className="space-y-4">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[10px] font-black text-text-secondary uppercase tracking-[0.25em] opacity-60">
+                        {new Date(entry.timestamp).toLocaleDateString('default', { month: 'long', year: 'numeric' })}
+                      </span>
+                      <div className="px-3 py-1 bg-primary/10 rounded-full">
+                        <span className="text-[10px] font-black text-primary uppercase tracking-widest">{entry.clarityScore}% Alignment</span>
+                      </div>
+                    </div>
+                    <p className="text-lg font-heading font-black text-text-primary leading-tight italic">
+                      {i === 0 ? "Optimizing Trajectory" : i === 1 ? "Directional Anchor" : "Initial Encoding"}
+                    </p>
+                    <p className="text-sm text-text-secondary font-soft italic line-clamp-2 leading-relaxed">&quot;{entry.purposeStatement}&quot;</p>
                  </div>
                </motion.div>
              ))}
-             {evolution.entries.length === 0 && <div className="py-20 text-center opacity-30 space-y-4"><History className="h-16 w-16 mx-auto" /><p className="text-[10px] font-black uppercase tracking-[0.3em]">No evolution recorded yet</p></div>}
+             {evolution.entries.length === 0 && (
+              <div className="py-24 text-center opacity-40 space-y-6">
+                <div className="h-20 w-20 bg-secondary/30 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                  <History className="h-10 w-10 text-text-secondary" />
+                </div>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em]">No Evolution History</p>
+              </div>
+             )}
            </div>
         </div>
       </div>
@@ -372,3 +434,4 @@ export default function IkigaiPage() {
     </div>
   );
 }
+

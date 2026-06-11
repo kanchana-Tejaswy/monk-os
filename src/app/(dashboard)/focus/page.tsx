@@ -157,140 +157,149 @@ export default function FocusPage() {
   const seconds = timeLeft % 60;
 
   return (
-    <div className="max-w-4xl mx-auto min-h-[calc(100vh-10rem)] py-6 md:py-12 flex flex-col items-center justify-center space-y-6 md:space-y-12 animate-in fade-in zoom-in duration-700 relative">
-      
+    <div className="max-w-4xl mx-auto min-h-[calc(100vh-10rem)] py-8 md:py-16 flex flex-col items-center justify-center space-y-10 md:space-y-16 animate-in fade-in zoom-in duration-700 relative">
+
       {/* Top Header Actions */}
-      <div className="absolute top-0 right-0 p-2 md:p-0 flex gap-2 md:gap-4 z-20">
-        <button 
+      <div className="absolute top-0 right-0 p-4 md:p-0 flex gap-3 md:gap-4 z-20">
+        <button
           onClick={() => setShowSettings(true)}
-          className="p-3 md:p-3 bg-card border border-border rounded-xl text-text-secondary hover:text-primary transition-all shadow-sm active:scale-95"
+          className="h-12 w-12 flex items-center justify-center bg-card border border-border rounded-2xl text-text-secondary hover:text-primary transition-all shadow-sm active:scale-90"
           title="Focus Settings"
         >
-          <Settings2 className="h-4 md:h-4 w-4 md:w-4" />
+          <Settings2 className="h-5 w-5" />
         </button>
-        <button 
+        <button
           onClick={() => setShowLogs(true)}
-          className="flex items-center gap-2 px-4 py-3 md:px-4 md:py-2 bg-card border border-border rounded-xl text-[10px] font-black uppercase tracking-widest text-text-secondary hover:text-primary transition-all shadow-sm active:scale-95"
+          className="flex items-center justify-center gap-2.5 px-5 h-12 bg-card border border-border rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary hover:text-primary transition-all shadow-sm active:scale-95"
         >
-          <History className="h-4 w-4" /> <span className="hidden sm:inline">View Logs</span>
+          <History className="h-5 w-5" /> <span className="hidden sm:inline">Analytics</span>
         </button>
       </div>
 
-      {/* Mode Selection */}
+      {/* Mode Selection - Scrollable on Mobile */}
       {!isActive && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-wrap justify-center gap-2 md:gap-4 px-2 md:px-0 max-w-2xl mt-12 md:mt-0 w-full"
+          className="w-full flex flex-col items-center gap-4 mt-16 md:mt-0"
         >
-          {Object.keys(customModes).map((m) => {
-            const Icon = customModes[m]?.icon || Zap;
-            return (
+          <div className="text-[10px] font-black text-text-secondary uppercase tracking-[0.4em] mb-2 opacity-40">Select Protocol</div>
+          <div className="w-screen md:w-full overflow-x-auto flex md:flex-wrap md:justify-center gap-3 px-6 md:px-0 no-scrollbar pb-4 md:pb-0">
+            {Object.keys(customModes).map((m) => {
+              const Icon = customModes[m]?.icon || Zap;
+              return (
+                <button
+                  key={m}
+                  onClick={() => setMode(m)}
+                  className={cn(
+                    "flex items-center gap-3 px-6 py-4 rounded-2xl font-bold transition-all duration-500 border-2 shrink-0 active:scale-95",
+                    mode === m
+                      ? cn("border-primary bg-primary/5 text-primary scale-105 shadow-xl shadow-primary/10")
+                      : "border-transparent bg-secondary/30 dark:bg-white/[0.03] text-text-secondary hover:bg-secondary dark:hover:bg-white/[0.05]"
+                  )}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="text-sm md:text-base">{m}</span>
+                </button>
+              );
+            })}
+
+            {isAddingMode ? (
+              <div className="flex items-center gap-3 bg-card border-2 border-primary/30 p-2 px-4 rounded-2xl animate-in zoom-in duration-300 shadow-xl shrink-0">
+                 <input
+                   autoFocus
+                   value={newModeName}
+                   onChange={(e) => setNewModeName(e.target.value)}
+                   onKeyDown={(e) => e.key === 'Enter' && addCustomMode()}
+                   placeholder="Name..."
+                   className="bg-transparent border-none focus:ring-0 text-sm font-bold w-24 md:w-32"
+                 />
+                 <button onClick={addCustomMode} className="h-10 w-10 flex items-center justify-center text-primary hover:bg-primary/10 rounded-xl transition-colors"><Check className="h-5 w-5 stroke-[2.5px]" /></button>
+                 <button onClick={() => setIsAddMode(false)} className="h-10 w-10 flex items-center justify-center text-text-secondary hover:bg-secondary rounded-xl transition-colors"><X className="h-5 w-5" /></button>
+              </div>
+            ) : (
               <button
-                key={m}
-                onClick={() => setMode(m)}
-                className={cn(
-                  "flex items-center gap-2 md:gap-2.5 px-4 md:px-6 py-3 rounded-xl md:rounded-2xl font-bold transition-all duration-300 border-2 active:scale-95 md:active:scale-100",
-                  mode === m 
-                    ? cn("border-primary bg-primary/5 text-primary scale-105 shadow-md shadow-primary/10") 
-                    : "border-transparent bg-card text-text-secondary hover:bg-secondary dark:bg-secondary/30"
-                )}
+                onClick={() => setIsAddMode(true)}
+                className="flex items-center gap-3 px-6 py-4 rounded-2xl font-bold border-2 border-dashed border-border text-text-secondary hover:border-primary/40 hover:text-primary transition-all hover:bg-primary/5 shrink-0"
               >
-                <Icon className="h-4 w-4 md:h-5 md:w-5" />
-                <span className="text-xs md:text-base">{m}</span>
+                <Plus className="h-5 w-5" /> <span className="text-sm md:text-base">Custom</span>
               </button>
-            );
-          })}
-          
-          {isAddingMode ? (
-            <div className="flex items-center gap-2 bg-card border-2 border-primary/30 p-1.5 px-3 md:px-4 rounded-xl md:rounded-2xl animate-in zoom-in duration-300 shadow-lg">
-               <input 
-                 autoFocus
-                 value={newModeName}
-                 onChange={(e) => setNewModeName(e.target.value)}
-                 onKeyDown={(e) => e.key === 'Enter' && addCustomMode()}
-                 placeholder="Mode Name..."
-                 className="bg-transparent border-none focus:ring-0 text-xs md:text-sm font-bold w-20 md:w-32"
-               />
-               <button onClick={addCustomMode} className="p-2 md:p-1.5 text-primary hover:bg-primary/10 rounded-lg transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"><Check className="h-4 w-4 md:h-5 md:w-5" /></button>
-               <button onClick={() => setIsAddMode(false)} className="p-2 md:p-1.5 text-text-secondary hover:bg-secondary rounded-lg transition-colors"><X className="h-4 w-4 md:h-5 md:w-5" /></button>
-            </div>
-          ) : (
-            <button 
-              onClick={() => setIsAddMode(true)}
-              className="flex items-center gap-2.5 px-6 md:px-6 py-3.5 md:py-3 rounded-2xl font-bold border-2 border-dashed border-border text-text-secondary hover:border-primary/40 hover:text-primary transition-all hover:bg-primary/5"
-            >
-              <Plus className="h-5 w-5" /> <span className="text-sm md:text-base">Custom</span>
-            </button>
-          )}
+            )}
+          </div>
         </motion.div>
       )}
 
       {/* Timer Display */}
-      <div className="relative flex items-center justify-center scale-90 md:scale-100">
-        <svg className="w-64 h-64 md:w-80 md:h-80 -rotate-90">
-          <circle cx="50%" cy="50%" r="45%" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-secondary/10" />
+      <div className={cn("relative flex items-center justify-center transition-all duration-1000", isActive ? "scale-110 md:scale-125" : "scale-100")}>
+        <div className="absolute inset-0 bg-primary/5 rounded-full blur-[100px] animate-pulse pointer-events-none" />
+        <svg className="w-72 h-72 md:w-96 md:h-96 -rotate-90 relative z-10">
+          <circle cx="50%" cy="50%" r="45%" stroke="currentColor" strokeWidth="6" fill="transparent" className="text-secondary/20 dark:text-white/5" />
           <motion.circle
             cx="50%" cy="50%" r="45%" stroke="currentColor" strokeWidth="8" fill="transparent"
-            strokeDasharray="942"
-            animate={{ strokeDashoffset: 942 * (1 - timeLeft / (targetDuration * 60)) }}
+            strokeDasharray="1000"
+            animate={{ strokeDashoffset: 1000 * (1 - timeLeft / (targetDuration * 60)) }}
             transition={{ duration: 1, ease: "linear" }}
-            className="text-primary"
+            className="text-primary drop-shadow-[0_0_8px_rgba(217,167,167,0.4)]"
             strokeLinecap="round"
           />
         </svg>
 
-        <div className="absolute flex flex-col items-center">
-          <motion.div 
+        <div className="absolute flex flex-col items-center z-20">
+          <motion.div
             key={timeLeft}
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0.5, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-4xl md:text-5xl md:text-7xl font-heading font-bold tabular-nums tracking-tighter"
+            className="text-5xl md:text-8xl font-heading font-black tabular-nums tracking-tighter text-text-primary"
           >
             {minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}
           </motion.div>
-          <div className="text-xs md:text-sm font-bold text-text-secondary uppercase tracking-[0.2em] mt-2 text-center">
-            {isActive ? "Deep Work" : "Ready to Focus"}
+          <div className="text-[10px] md:text-xs font-black text-text-secondary uppercase tracking-[0.4em] mt-4 text-center opacity-60">
+            {isActive ? "Deep Work Active" : "Protocol Standby"}
           </div>
         </div>
       </div>
 
-      {/* Controls */}
-      <div className="flex items-center gap-4 md:gap-6">
-        <button 
+      {/* Controls - The Thumb Zone */}
+      <div className="flex items-center gap-6 md:gap-10 relative z-20">
+        <button
           onClick={resetTimer}
-          className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-secondary dark:bg-secondary/20 text-text-secondary hover:bg-secondary dark:bg-secondary/40 transition-all min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"
+          className="h-14 w-14 md:h-16 md:w-16 rounded-2xl bg-secondary/50 dark:bg-white/[0.03] text-text-secondary hover:text-primary transition-all active:scale-90 flex items-center justify-center border border-border/50 shadow-sm"
+          title="Reset Protocol"
         >
-          <RotateCcw className="h-5 md:h-6 w-5 md:w-6" />
-        </button>
-        
-        <button 
-          onClick={toggleTimer}
-          className={cn(
-            "h-16 w-16 md:h-20 md:w-20 rounded-2xl md:rounded-3xl flex items-center justify-center transition-all duration-500 shadow-xl shadow-primary/20",
-            isActive ? "bg-card text-primary border-2 border-primary" : "bg-primary text-primary-foreground"
-          )}
-        >
-          {isActive ? <Pause className="h-6 md:h-8 w-6 md:w-8 fill-current" /> : <Play className="h-6 md:h-8 w-6 md:w-8 fill-current ml-1" />}
+          <RotateCcw className="h-6 w-6" />
         </button>
 
-        <button 
-          onClick={() => setShowSettings(true)}
-          className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-secondary dark:bg-secondary/20 text-text-secondary hover:bg-secondary dark:bg-secondary/40 transition-all"
+        <button
+          onClick={toggleTimer}
+          className={cn(
+            "h-20 w-20 md:h-24 md:w-24 rounded-[32px] flex items-center justify-center transition-all duration-500 shadow-2xl active:scale-90",
+            isActive 
+              ? "bg-card text-primary border-4 border-primary shadow-primary/20" 
+              : "bg-primary text-primary-foreground shadow-primary/40 hover:scale-105"
+          )}
         >
-          <Settings2 className="h-5 md:h-6 w-5 md:w-6" />
+          {isActive ? <Pause className="h-8 w-8 md:h-10 md:w-10 fill-current" /> : <Play className="h-8 w-8 md:h-10 md:w-10 fill-current ml-1.5" />}
+        </button>
+
+        <button
+          onClick={() => setShowSettings(true)}
+          className="h-14 w-14 md:h-16 md:w-16 rounded-2xl bg-secondary/50 dark:bg-white/[0.03] text-text-secondary hover:text-primary transition-all active:scale-90 flex items-center justify-center border border-border/50 shadow-sm"
+          title="Configure System"
+        >
+          <Settings2 className="h-6 w-6" />
         </button>
       </div>
 
       {/* Sessions Tracker */}
-      <div className="flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-card rounded-xl md:rounded-2xl border border-border">
-        <div className="flex -space-x-1">
+      <div className="flex items-center gap-4 px-6 py-3.5 bg-secondary/30 dark:bg-white/[0.02] rounded-2xl border border-border shadow-inner">
+        <div className="flex gap-2">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className={cn("h-2 md:h-2.5 w-2 md:w-2.5 rounded-full border-2 border-card", i < sessionsCompleted ? "bg-monk-mint" : "bg-secondary dark:bg-secondary/40")} />
+            <div key={i} className={cn("h-2.5 w-2.5 rounded-full transition-all duration-700", i < sessionsCompleted ? "bg-monk-mint shadow-[0_0_8px_rgba(142,217,204,0.6)]" : "bg-secondary dark:bg-white/10")} />
           ))}
         </div>
-        <span className="text-[10px] md:text-xs font-bold text-text-secondary uppercase tracking-wider ml-2">
-          {sessionsCompleted}/4 Sessions Completed
+        <div className="h-4 w-px bg-border mx-1" />
+        <span className="text-[10px] md:text-xs font-black text-text-secondary uppercase tracking-[0.2em]">
+          {sessionsCompleted} / 4 Blocks Done
         </span>
       </div>
 
@@ -325,7 +334,7 @@ export default function FocusPage() {
                         </div>
                       </div>
                     </div>
-                    <button onClick={() => deleteLog(session.id)} className="p-2 text-text-secondary/20 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100"><Trash2 className="h-4 w-4" /></button>
+                    <button onClick={() => deleteLog(session.id)} className="p-2 text-text-secondary hover:text-red-500 transition-all opacity-100 lg:opacity-0 lg:group-hover:opacity-100 min-h-[44px] min-w-[44px] flex items-center justify-center md:min-h-0 md:min-w-0 md:inline-flex"><Trash2 className="h-4 w-4" /></button>
                   </div>
                 )) : <div className="h-full flex flex-col items-center justify-center text-center space-y-4 opacity-30"><History className="h-16 w-16" /><p className="text-sm font-bold uppercase tracking-[0.2em]">No history yet</p></div>}
               </div>
